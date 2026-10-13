@@ -14,6 +14,8 @@ This is an open-source reference project — the bar is "code high-end developer
 - DI is via Koin, across all targets — don't introduce a platform-specific DI framework.
 - Any new or changed shared component/token must be reflected in the `designsheet` module (the component catalog / living style guide) in the same change.
 - Always target the latest stable versions pinned in `gradle/libs.versions.toml`; don't add dependencies outside the version catalog.
+- Every screen must support foldable devices and resizable/arbitrary window sizes (material3-adaptive + Navigation 3's `ListDetailSceneStrategy`, not hardcoded breakpoints). Never nest a lazy/scrollable composable inside another scrollable in the same orientation — it crashes with an infinite-constraint exception; each piece of content owns its own scrolling.
+- Navigation is Navigation 3 (`androidx.navigation3`), not Navigation Compose.
 
 ## Modules
 
@@ -24,6 +26,7 @@ This is an open-source reference project — the bar is "code high-end developer
 - `androidApp/` — Android application entry point (`MainActivity.kt`), depends on `:shared`.
 - `desktopApp/` — JVM desktop application entry point (`main.kt`), depends on `:shared`.
 - `webApp/` — Web application entry point, builds for both `js` and `wasmJs` targets, depends on `:shared`.
+- `designsheet/` — standalone, runnable component catalog / living style guide for the shared design system (tokens + every reusable component), navigable via Navigation 3 with an adaptive list-detail layout. Builds for `jvm` (desktop) and `js`/`wasmJs` (web); depends on `:shared`. See CONTRIBUTING.md for what belongs here.
 - `iosApp/` — Xcode project; the actual iOS entry point. Even though UI is shared via Compose Multiplatform, this project is required to build/run on iOS and is where SwiftUI code would go. Must be opened/run in Xcode, not Gradle.
 
 When adding a new `expect` declaration in `commonMain`, you must add a matching `actual` implementation in every platform source set (`androidMain`, `iosMain`, `jvmMain`, `jsMain`, `wasmJsMain`) or the corresponding target will fail to compile.
@@ -40,6 +43,8 @@ Run all commands from the repo root using the Gradle wrapper (`./gradlew`).
 - Web app, Wasm target (faster, modern browsers): `./gradlew :webApp:wasmJsBrowserDevelopmentRun`
 - Web app, JS target (slower, supports older browsers): `./gradlew :webApp:jsBrowserDevelopmentRun`
 - iOS app: open `iosApp/` in Xcode and run from there (not buildable via Gradle alone).
+- Design sheet (desktop): `./gradlew :designsheet:run`
+- Design sheet (web, Wasm): `./gradlew :designsheet:wasmJsBrowserDevelopmentRun`
 
 ### Tests
 
@@ -53,6 +58,8 @@ Shared logic tests live in `shared/src/*Test` and are run per-platform:
 
 To run a single test class/method, append Gradle's `--tests` filter, e.g.:
 `./gradlew :shared:jvmTest --tests "io.redigit.skimbyte.SharedLogicDesktopTest"`
+
+Roborazzi screenshot tests run as part of `:shared:testAndroidHostTest`. Golden images live in `shared/src/androidHostTest/roborazzi/` (committed, not in `build/`). Regenerate with `./gradlew :shared:recordRoborazziAndroidHostTest`; check without updating with `./gradlew :shared:verifyRoborazziAndroidHostTest`.
 
 ## Dependency management
 
