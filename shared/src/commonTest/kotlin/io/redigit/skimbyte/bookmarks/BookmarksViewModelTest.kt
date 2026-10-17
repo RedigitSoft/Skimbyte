@@ -39,6 +39,8 @@ private class FakeAuthRepository(initialSession: Session?) : AuthRepository {
     private val _session = MutableStateFlow(initialSession)
     override val session: StateFlow<Session?> = _session
     override suspend fun login(email: String, password: String): Result<Unit> = Result.success(Unit)
+    override suspend fun register(email: String, password: String): Result<Unit> = Result.success(Unit)
+    override suspend fun completeGoogleSignIn(redirectUri: String): Result<Unit> = Result.success(Unit)
     override fun logout() {
         _session.value = null
     }

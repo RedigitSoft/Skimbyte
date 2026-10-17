@@ -22,7 +22,14 @@ fun LoginSheetCatalogContent() {
         modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        LoginSheetContent(state = LoginSheetUiState(), onEmailChanged = {}, onPasswordChanged = {}, onSubmit = {})
+        LoginSheetContent(
+            state = LoginSheetUiState(),
+            onEmailChanged = {},
+            onPasswordChanged = {},
+            onToggleMode = {},
+            onSubmit = {},
+            onGoogleSignInClick = {},
+        )
         LoginSheetContent(
             state = LoginSheetUiState(
                 email = "demo@skimbyte.app",
@@ -31,7 +38,17 @@ fun LoginSheetCatalogContent() {
             ),
             onEmailChanged = {},
             onPasswordChanged = {},
+            onToggleMode = {},
             onSubmit = {},
+            onGoogleSignInClick = {},
+        )
+        LoginSheetContent(
+            state = LoginSheetUiState(isRegisterMode = true),
+            onEmailChanged = {},
+            onPasswordChanged = {},
+            onToggleMode = {},
+            onSubmit = {},
+            onGoogleSignInClick = {},
         )
     }
 }

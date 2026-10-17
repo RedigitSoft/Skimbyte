@@ -53,7 +53,7 @@ private fun HttpClientConfig<*>.configureSkimbyteClient(sessionStorage: SessionS
             }
             refreshTokens {
                 val refreshToken = sessionStorage.refreshToken() ?: return@refreshTokens null
-                val response = client.post("${ApiConfig.BASE_URL}/v1/auth/refresh") {
+                val response = client.post("${ApiConfig.AUTH_BASE_URL}/auth/token/refresh") {
                     contentType(ContentType.Application.Json)
                     setBody(RefreshRequestDto(refreshToken = refreshToken))
                 }.body<LoginResponseDto>()

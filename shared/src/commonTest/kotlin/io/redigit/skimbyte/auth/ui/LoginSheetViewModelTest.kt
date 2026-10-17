@@ -17,9 +17,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private class FakeAuthRepository(private val loginResult: Result<Unit>) : AuthRepository {
+private class FakeAuthRepository(
+    private val loginResult: Result<Unit>,
+    private val registerResult: Result<Unit> = loginResult,
+    private val googleResult: Result<Unit> = loginResult,
+) : AuthRepository {
     override val session: StateFlow<Session?> = MutableStateFlow(null)
     override suspend fun login(email: String, password: String): Result<Unit> = loginResult
+    override suspend fun register(email: String, password: String): Result<Unit> = registerResult
+    override suspend fun completeGoogleSignIn(redirectUri: String): Result<Unit> = googleResult
     override fun logout() = Unit
 }
 
@@ -69,6 +75,49 @@ class LoginSheetViewModelTest {
         assertTrue(!succeeded)
         assertEquals(false, viewModel.uiState.value.isSubmitting)
         assertTrue(viewModel.uiState.value.error != null)
+    }
+
+    @Test
+    fun onToggleMode_switchesToRegisterMode() = runTest {
+        val viewModel = LoginSheetViewModel(FakeAuthRepository(Result.success(Unit)))
+
+        viewModel.onToggleMode()
+
+        assertTrue(viewModel.uiState.value.isRegisterMode)
+    }
+
+    @Test
+    fun onSubmit_inRegisterMode_callsRegister_notLogin() = runTest {
+        var registerCalled = false
+        val repository = object : AuthRepository {
+            override val session: StateFlow<Session?> = MutableStateFlow(null)
+            override suspend fun login(email: String, password: String) = Result.failure<Unit>(RuntimeException("login should not be called"))
+            override suspend fun register(email: String, password: String): Result<Unit> {
+                registerCalled = true
+                return Result.success(Unit)
+            }
+            override suspend fun completeGoogleSignIn(redirectUri: String) = Result.success(Unit)
+            override fun logout() = Unit
+        }
+        val viewModel = LoginSheetViewModel(repository)
+        viewModel.onToggleMode()
+        viewModel.onEmailChanged("new@skimbyte.app")
+        viewModel.onPasswordChanged("newpass")
+
+        viewModel.onSubmit {}
+
+        assertTrue(registerCalled)
+    }
+
+    @Test
+    fun onGoogleRedirect_success_resetsState_andInvokesCallback() = runTest {
+        val viewModel = LoginSheetViewModel(FakeAuthRepository(Result.success(Unit)))
+        var succeeded = false
+
+        viewModel.onGoogleRedirect("skimbyte://auth/callback?access_token=a&refresh_token=b") { succeeded = true }
+
+        assertTrue(succeeded)
+        assertEquals(LoginSheetUiState(), viewModel.uiState.value)
     }
 
     @Test

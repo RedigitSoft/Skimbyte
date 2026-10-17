@@ -25,6 +25,7 @@ private class FakeSessionStorage(initialAccessToken: String? = null) : SessionSt
 
 private class FakeAuthApi(private val result: Result<LoginResponseDto>) : AuthApi {
     override suspend fun login(email: String, password: String): LoginResponseDto = result.getOrThrow()
+    override suspend fun register(email: String, password: String): LoginResponseDto = result.getOrThrow()
     override suspend fun refresh(refreshToken: String): LoginResponseDto = result.getOrThrow()
 }
 
@@ -62,6 +63,45 @@ class AuthRepositoryImplTest {
         val repository = AuthRepositoryImpl(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
 
         assertEquals("already-logged-in", repository.session.value?.accessToken)
+    }
+
+    @Test
+    fun register_success_persistsSession_andUpdatesSessionFlow() = runTest {
+        val sessionStorage = FakeSessionStorage()
+        val authApi = FakeAuthApi(Result.success(LoginResponseDto("access-2", "refresh-2", 3600)))
+        val repository = AuthRepositoryImpl(authApi, sessionStorage)
+
+        val result = repository.register("new@skimbyte.app", "newpass")
+
+        assertTrue(result.isSuccess)
+        assertEquals("access-2", sessionStorage.accessToken())
+        assertEquals("access-2", repository.session.value?.accessToken)
+    }
+
+    @Test
+    fun completeGoogleSignIn_parsesTokensFromRedirectUri_andPersistsSession() = runTest {
+        val sessionStorage = FakeSessionStorage()
+        val repository = AuthRepositoryImpl(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
+
+        val result = repository.completeGoogleSignIn(
+            "skimbyte://auth/callback?access_token=google-access&refresh_token=google-refresh&token_type=Bearer",
+        )
+
+        assertTrue(result.isSuccess)
+        assertEquals("google-access", sessionStorage.accessToken())
+        assertEquals("google-refresh", sessionStorage.refreshToken())
+        assertEquals("google-access", repository.session.value?.accessToken)
+    }
+
+    @Test
+    fun completeGoogleSignIn_missingTokenInRedirect_returnsFailure() = runTest {
+        val sessionStorage = FakeSessionStorage()
+        val repository = AuthRepositoryImpl(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
+
+        val result = repository.completeGoogleSignIn("skimbyte://auth/callback?access_token=only-access")
+
+        assertTrue(result.isFailure)
+        assertNull(repository.session.value)
     }
 
     @Test

@@ -12,11 +12,28 @@
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity
             android:exported="true"
+            android:launchMode="singleTask"
             android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Captures the redirect the auth server's Google OAuth callback forwards here with
+                 the issued tokens as query params, once Google consent completes. The
+                 scheme/host/pathPrefix below are generated from local.properties's
+                 googleAuthRedirectUri (gitignored — see local.properties.example and this
+                 module's build.gradle.kts) — see GoogleAuthCallback. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${authRedirectHost}"
+                    android:pathPrefix="${authRedirectPathPrefix}"
+                    android:scheme="${authRedirectScheme}" />
             </intent-filter>
         </activity>
     </application>

@@ -37,7 +37,7 @@ class TokenRefreshTest {
 
         val mockEngine = MockEngine { request ->
             when (request.url.encodedPath) {
-                "/v1/auth/refresh" -> {
+                "/auth/token/refresh" -> {
                     refreshCallCount++
                     respond(
                         content = """{"accessToken":"new-access","refreshToken":"new-refresh","expiresIn":3600}""",

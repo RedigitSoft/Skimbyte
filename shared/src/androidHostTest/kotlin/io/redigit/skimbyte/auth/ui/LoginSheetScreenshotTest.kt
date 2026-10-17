@@ -23,7 +23,14 @@ class LoginSheetScreenshotTest {
     fun emptyState() {
         composeTestRule.setContent {
             SkimbyteTheme {
-                LoginSheetContent(state = LoginSheetUiState(), onEmailChanged = {}, onPasswordChanged = {}, onSubmit = {})
+                LoginSheetContent(
+                    state = LoginSheetUiState(),
+                    onEmailChanged = {},
+                    onPasswordChanged = {},
+                    onToggleMode = {},
+                    onSubmit = {},
+                    onGoogleSignInClick = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage()
@@ -41,7 +48,9 @@ class LoginSheetScreenshotTest {
                     ),
                     onEmailChanged = {},
                     onPasswordChanged = {},
+                    onToggleMode = {},
                     onSubmit = {},
+                    onGoogleSignInClick = {},
                 )
             }
         }

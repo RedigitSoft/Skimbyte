@@ -1,0 +1,9 @@
+# Copy the relevant lines into your local.properties (gitignored) — never commit real values here.
+
+# Android SDK path (auto-written by Android Studio; usually no need to set this yourself).
+#sdk.dir=/path/to/Android/sdk
+
+# Auth endpoint configuration — fetched into AuthConfig.kt (generated, :shared) and into the
+# Android manifest's OAuth-callback intent-filter (androidApp's manifestPlaceholders).
+authBaseUrl=https://com.example.app
+googleAuthRedirectUri=skimbyte://auth/callback

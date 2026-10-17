@@ -21,7 +21,9 @@ class LoginSheetContentTest {
                     state = LoginSheetUiState(),
                     onEmailChanged = {},
                     onPasswordChanged = {},
+                    onToggleMode = {},
                     onSubmit = { submitted = true },
+                    onGoogleSignInClick = {},
                 )
             }
         }
@@ -40,7 +42,9 @@ class LoginSheetContentTest {
                     state = LoginSheetUiState(email = "demo@skimbyte.app", password = "demo"),
                     onEmailChanged = {},
                     onPasswordChanged = {},
+                    onToggleMode = {},
                     onSubmit = { submitted = true },
+                    onGoogleSignInClick = {},
                 )
             }
         }
@@ -58,7 +62,9 @@ class LoginSheetContentTest {
                     state = LoginSheetUiState(error = "Invalid email or password"),
                     onEmailChanged = {},
                     onPasswordChanged = {},
+                    onToggleMode = {},
                     onSubmit = {},
+                    onGoogleSignInClick = {},
                 )
             }
         }
