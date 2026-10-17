@@ -1,0 +1,20 @@
+package io.redigit.skimbyte.feed
+
+import io.redigit.skimbyte.posts.Post
+import io.redigit.skimbyte.posts.Topic
+
+data class FeedUiState(
+    val selectedTopic: Topic = Topic.All,
+    val posts: List<Post> = emptyList(),
+    val currentIndex: Int = 0,
+    val isLoadingInitial: Boolean = false,
+    val isLoadingMore: Boolean = false,
+    val nextCursor: String? = null,
+    val error: FeedError? = null,
+    val pendingBookmarkAction: PendingBookmarkAction? = null,
+    val pendingBookmarkToggles: Set<String> = emptySet(),
+)
+
+data class PendingBookmarkAction(val postId: String)
+
+enum class FeedError { Network, Unknown }

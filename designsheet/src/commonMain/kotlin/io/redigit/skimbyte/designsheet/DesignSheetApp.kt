@@ -1,6 +1,5 @@
 package io.redigit.skimbyte.designsheet
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
@@ -16,6 +15,7 @@ import io.redigit.skimbyte.designsheet.catalog.CatalogDetailScreen
 import io.redigit.skimbyte.designsheet.catalog.CatalogListScreen
 import io.redigit.skimbyte.designsheet.catalog.catalogItems
 import io.redigit.skimbyte.di.appModule
+import io.redigit.skimbyte.theme.SkimbyteTheme
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -47,7 +47,7 @@ private val navConfig = SavedStateConfiguration {
 @Preview
 fun DesignSheetApp() {
     KoinApplication(configuration = koinConfiguration { modules(appModule) }) {
-        MaterialTheme {
+        SkimbyteTheme {
             val backStack = rememberNavBackStack(navConfig, CatalogList)
             val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
 

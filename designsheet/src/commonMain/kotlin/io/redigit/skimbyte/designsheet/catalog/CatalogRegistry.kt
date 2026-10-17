@@ -1,8 +1,18 @@
 package io.redigit.skimbyte.designsheet.catalog
 
+import io.redigit.skimbyte.designsheet.components.AccountScreenCatalogContent
+import io.redigit.skimbyte.designsheet.components.BookmarkButtonCatalogContent
 import io.redigit.skimbyte.designsheet.components.ButtonsCatalogContent
+import io.redigit.skimbyte.designsheet.components.LoginSheetCatalogContent
+import io.redigit.skimbyte.designsheet.components.PostCardCatalogContent
+import io.redigit.skimbyte.designsheet.components.SearchScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SelectionControlsCatalogContent
+import io.redigit.skimbyte.designsheet.components.SkimbyteBottomNavBarCatalogContent
+import io.redigit.skimbyte.designsheet.components.SkimbyteFabMenuCatalogContent
+import io.redigit.skimbyte.designsheet.components.SourceDetailScreenCatalogContent
+import io.redigit.skimbyte.designsheet.components.StackedCardBrowserCatalogContent
 import io.redigit.skimbyte.designsheet.components.TextFieldsCatalogContent
+import io.redigit.skimbyte.designsheet.components.TopicFilterCatalogContent
 import io.redigit.skimbyte.designsheet.tokens.ColorTokensContent
 import io.redigit.skimbyte.designsheet.tokens.ShapeTokensContent
 import io.redigit.skimbyte.designsheet.tokens.SpacingTokensContent
@@ -20,4 +30,14 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("buttons", "Buttons", "Components") { ButtonsCatalogContent() },
     CatalogItem("selection-controls", "Selection controls", "Components") { SelectionControlsCatalogContent() },
     CatalogItem("text-fields", "Text fields", "Components") { TextFieldsCatalogContent() },
+    CatalogItem("post-card", "Post card", "Feed") { PostCardCatalogContent() },
+    CatalogItem("topic-filter", "Topic filter", "Feed") { TopicFilterCatalogContent() },
+    CatalogItem("bookmark-button", "Bookmark button", "Feed") { BookmarkButtonCatalogContent() },
+    CatalogItem("stacked-card-browser", "Stacked card browser", "Feed") { StackedCardBrowserCatalogContent() },
+    CatalogItem("source-detail", "Source detail", "Feed") { SourceDetailScreenCatalogContent() },
+    CatalogItem("search-screen", "Search", "Feed") { SearchScreenCatalogContent() },
+    CatalogItem("fab-menu", "FAB menu", "Navigation") { SkimbyteFabMenuCatalogContent() },
+    CatalogItem("bottom-nav-bar", "Bottom nav bar", "Navigation") { SkimbyteBottomNavBarCatalogContent() },
+    CatalogItem("login-sheet", "Login sheet", "Bookmarks") { LoginSheetCatalogContent() },
+    CatalogItem("account-screen", "Account", "Bookmarks") { AccountScreenCatalogContent() },
 )

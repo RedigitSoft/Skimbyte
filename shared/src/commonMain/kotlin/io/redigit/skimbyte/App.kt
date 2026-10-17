@@ -1,53 +1,62 @@
 package io.redigit.skimbyte
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import io.redigit.skimbyte.auth.ui.AccountRoute
+import io.redigit.skimbyte.bookmarks.ui.BookmarksNavHost
 import io.redigit.skimbyte.di.appModule
-import org.jetbrains.compose.resources.painterResource
+import io.redigit.skimbyte.feed.ui.FeedNavHost
+import io.redigit.skimbyte.nav.TopLevelDestination
+import io.redigit.skimbyte.nav.ui.SkimbyteBottomNavBar
+import io.redigit.skimbyte.theme.SkimbyteTheme
 import org.koin.compose.KoinApplication
-import org.koin.compose.koinInject
 import org.koin.dsl.koinConfiguration
-
-import skimbyte.shared.generated.resources.Res
-import skimbyte.shared.generated.resources.compose_multiplatform
 
 @Composable
 @Preview
 fun App() {
     KoinApplication(configuration = koinConfiguration { modules(appModule) }) {
-        MaterialTheme {
-            var showContent by remember { mutableStateOf(false) }
-            Column(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .safeContentPadding()
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Button(onClick = { showContent = !showContent }) {
-                    Text("Click me!")
+        SkimbyteTheme {
+            var selectedTopLevel by remember { mutableStateOf(TopLevelDestination.Feed) }
+            when (selectedTopLevel) {
+                TopLevelDestination.Feed -> FeedNavHost(
+                    selected = selectedTopLevel,
+                    onDestinationSelected = { selectedTopLevel = it },
+                )
+                TopLevelDestination.Bookmarks -> Scaffold(
+                    bottomBar = {
+                        SkimbyteBottomNavBar(
+                            selected = selectedTopLevel,
+                            onDestinationSelected = { selectedTopLevel = it },
+                            onSearchClick = null,
+                            fabMenu = null,
+                        )
+                    },
+                ) { padding ->
+                    Box(modifier = Modifier.padding(padding)) {
+                        BookmarksNavHost()
+                    }
                 }
-                AnimatedVisibility(showContent) {
-                    val greeter = koinInject<Greeting>()
-                    val greeting = remember(greeter) { greeter.greet() }
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Image(painterResource(Res.drawable.compose_multiplatform), null)
-                        Text("Compose: $greeting")
+                TopLevelDestination.Account -> Scaffold(
+                    bottomBar = {
+                        SkimbyteBottomNavBar(
+                            selected = selectedTopLevel,
+                            onDestinationSelected = { selectedTopLevel = it },
+                            onSearchClick = null,
+                            fabMenu = null,
+                        )
+                    },
+                ) { padding ->
+                    Box(modifier = Modifier.padding(padding)) {
+                        AccountRoute()
                     }
                 }
             }
