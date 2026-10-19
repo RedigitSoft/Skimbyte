@@ -42,10 +42,10 @@ fun PostCardCatalogContent() {
         modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        PostCard(post = shortPost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onSourceClick = {})
-        PostCard(post = bookmarkedPost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onSourceClick = {})
-        PostCard(post = longTitlePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onSourceClick = {})
-        PostCard(post = imagePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onSourceClick = {})
+        PostCard(post = shortPost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
+        PostCard(post = bookmarkedPost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
+        PostCard(post = longTitlePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
+        PostCard(post = imagePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
     }
 }
 
