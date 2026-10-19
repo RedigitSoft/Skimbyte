@@ -18,6 +18,7 @@ import io.redigit.skimbyte.theme.SkimbyteTheme
 
 @Composable
 fun TopicFilterRow(
+    topics: List<Topic>,
     selectedTopic: Topic,
     onTopicSelected: (Topic) -> Unit,
     modifier: Modifier = Modifier,
@@ -28,7 +29,7 @@ fun TopicFilterRow(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Topic.entries.forEach { topic ->
+        topics.forEach { topic ->
             if (topic == selectedTopic) {
                 Surface(
                     shape = MaterialTheme.shapes.extraLarge,
@@ -60,7 +61,7 @@ fun TopicFilterRow(
 @Composable
 private fun TopicFilterRowPreview() {
     SkimbyteTheme {
-        TopicFilterRow(selectedTopic = Topic.Kotlin, onTopicSelected = {})
+        TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.Kotlin, onTopicSelected = {})
     }
 }
 
@@ -68,7 +69,7 @@ private fun TopicFilterRowPreview() {
 @Composable
 private fun TopicFilterRowLightPreview() {
     SkimbyteTheme(darkTheme = false) {
-        TopicFilterRow(selectedTopic = Topic.Kotlin, onTopicSelected = {})
+        TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.Kotlin, onTopicSelected = {})
     }
 }
 
@@ -76,6 +77,6 @@ private fun TopicFilterRowLightPreview() {
 @Composable
 private fun TopicFilterRowAllSelectedPreview() {
     SkimbyteTheme {
-        TopicFilterRow(selectedTopic = Topic.All, onTopicSelected = {})
+        TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.All, onTopicSelected = {})
     }
 }

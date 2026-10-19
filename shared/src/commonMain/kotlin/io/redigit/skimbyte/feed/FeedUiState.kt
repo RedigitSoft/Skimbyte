@@ -5,6 +5,8 @@ import io.redigit.skimbyte.posts.Topic
 
 data class FeedUiState(
     val selectedTopic: Topic = Topic.All,
+    val viewMode: FeedViewMode = FeedViewMode.Stack,
+    val availableTopics: List<Topic> = emptyList(),
     val posts: List<Post> = emptyList(),
     val currentIndex: Int = 0,
     val isLoadingInitial: Boolean = false,

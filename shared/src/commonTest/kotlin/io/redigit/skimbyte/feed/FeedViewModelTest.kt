@@ -4,6 +4,7 @@ import io.redigit.skimbyte.auth.AuthRepository
 import io.redigit.skimbyte.auth.Session
 import io.redigit.skimbyte.network.Page
 import io.redigit.skimbyte.network.dto.PageDto
+import io.redigit.skimbyte.onboarding.TopicPreferencesStore
 import io.redigit.skimbyte.posts.BookmarkIdsStore
 import io.redigit.skimbyte.posts.Post
 import io.redigit.skimbyte.posts.PostsApi
@@ -75,6 +76,23 @@ private fun fakeBookmarkIdsStore() = BookmarkIdsStore(object : PostsApi {
     override suspend fun unbookmark(postId: String) = Unit
 })
 
+private class FakeTopicPreferencesStore : TopicPreferencesStore {
+    private var topics: Set<Topic> = emptySet()
+    private var onboardingCompleted: Boolean = false
+
+    override fun selectedTopics(): Set<Topic> = topics
+
+    override fun setSelectedTopics(topics: Set<Topic>) {
+        this.topics = topics
+    }
+
+    override fun hasCompletedOnboarding(): Boolean = onboardingCompleted
+
+    override fun setOnboardingCompleted() {
+        onboardingCompleted = true
+    }
+}
+
 class FeedViewModelTest {
 
     // FeedViewModel uses viewModelScope, which defaults to Dispatchers.Main.immediate; redirect
@@ -96,7 +114,7 @@ class FeedViewModelTest {
     fun initialLoad_populatesPosts_andNextCursor() = runTest {
         val posts = listOf(fakePost("1"), fakePost("2"))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, "cursor-2")) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
         assertEquals(posts, viewModel.uiState.value.posts)
         assertEquals("cursor-2", viewModel.uiState.value.nextCursor)
@@ -106,7 +124,7 @@ class FeedViewModelTest {
     @Test
     fun initialLoad_failure_setsNetworkError() = runTest {
         val repository = FakePostsRepository { _, _ -> Result.failure(RuntimeException("boom")) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
         assertEquals(FeedError.Network, viewModel.uiState.value.error)
         assertTrue(viewModel.uiState.value.posts.isEmpty())
@@ -119,7 +137,7 @@ class FeedViewModelTest {
             lastRequestedTopic = topic
             Result.success(Page(listOf(fakePost("1", topic = topic)), nextCursor = null))
         }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
         viewModel.onTopicSelected(Topic.Android)
 
@@ -135,7 +153,7 @@ class FeedViewModelTest {
             fetchCount++
             Result.success(Page(emptyList(), null))
         }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
         val countAfterInitialLoad = fetchCount
 
         viewModel.onTopicSelected(Topic.All)
@@ -154,7 +172,7 @@ class FeedViewModelTest {
                 Result.success(Page(List(5) { fakePost("page2-$it") }, nextCursor = null))
             }
         }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
         val callsAfterInitial = fetchCalls
 
         viewModel.onPageChanged(3) // posts.size - 3 == index 2, so index 3 should trigger load-more (size=5)
@@ -168,7 +186,7 @@ class FeedViewModelTest {
     fun onBookmarkTapped_loggedOut_setsPendingAction_withoutCallingRepository() = runTest {
         val posts = listOf(fakePost("1"))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, null)) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
         viewModel.onBookmarkTapped("1")
 
@@ -180,7 +198,7 @@ class FeedViewModelTest {
     fun onLoginSucceeded_replaysPendingBookmarkAction_andClearsIt() = runTest {
         val posts = listOf(fakePost("1", isBookmarked = false))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, null)) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
         viewModel.onBookmarkTapped("1")
 
         viewModel.onLoginSucceeded()
@@ -194,7 +212,7 @@ class FeedViewModelTest {
     fun onLoginDismissed_clearsPendingAction_withoutCallingRepository() = runTest {
         val posts = listOf(fakePost("1"))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, null)) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
         viewModel.onBookmarkTapped("1")
 
         viewModel.onLoginDismissed()
@@ -208,11 +226,38 @@ class FeedViewModelTest {
         val posts = listOf(fakePost("1", isBookmarked = false))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, null)) }
         repository.setBookmarkedResult = Result.failure(RuntimeException("network error"))
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = Session("t")), fakeBookmarkIdsStore())
+        val viewModel = FeedViewModel(
+            repository,
+            FakeAuthRepository(initialSession = Session("t")),
+            fakeBookmarkIdsStore(),
+            FakeTopicPreferencesStore(),
+        )
 
         viewModel.onBookmarkTapped("1")
 
         assertFalse(viewModel.uiState.value.posts.first { it.id == "1" }.isBookmarked)
         assertTrue(viewModel.uiState.value.pendingBookmarkToggles.isEmpty())
+    }
+
+    @Test
+    fun `initial selected topic comes from stored interests, not Topic All`() = runTest {
+        val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
+        val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Kotlin, Topic.Android)) }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
+
+        assertEquals(Topic.Kotlin, viewModel.uiState.value.selectedTopic)
+        assertEquals(listOf(Topic.Kotlin, Topic.Android), viewModel.uiState.value.availableTopics)
+    }
+
+    @Test
+    fun `onViewModeToggled flips between Stack and List`() = runTest {
+        val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+
+        viewModel.onViewModeToggled()
+        assertEquals(FeedViewMode.List, viewModel.uiState.value.viewMode)
+
+        viewModel.onViewModeToggled()
+        assertEquals(FeedViewMode.Stack, viewModel.uiState.value.viewMode)
     }
 }

@@ -3,6 +3,7 @@ package io.redigit.skimbyte.feed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redigit.skimbyte.auth.AuthRepository
+import io.redigit.skimbyte.onboarding.TopicPreferencesStore
 import io.redigit.skimbyte.posts.BookmarkIdsStore
 import io.redigit.skimbyte.posts.PostsRepository
 import io.redigit.skimbyte.posts.Topic
@@ -15,12 +16,21 @@ class FeedViewModel(
     private val postsRepository: PostsRepository,
     private val authRepository: AuthRepository,
     private val bookmarkIdsStore: BookmarkIdsStore,
+    private val topicPreferencesStore: TopicPreferencesStore,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FeedUiState())
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
 
     init {
+        val storedTopics = topicPreferencesStore.selectedTopics()
+        if (storedTopics.isNotEmpty()) {
+            val availableTopics = storedTopics.toList()
+            _uiState.value = _uiState.value.copy(
+                availableTopics = availableTopics,
+                selectedTopic = availableTopics.first(),
+            )
+        }
         if (authRepository.session.value != null) {
             viewModelScope.launch { bookmarkIdsStore.refresh() }
         }
@@ -41,6 +51,11 @@ class FeedViewModel(
             nextCursor = null,
         )
         loadInitial()
+    }
+
+    fun onViewModeToggled() {
+        val newMode = if (_uiState.value.viewMode == FeedViewMode.Stack) FeedViewMode.List else FeedViewMode.Stack
+        _uiState.value = _uiState.value.copy(viewMode = newMode)
     }
 
     fun onPageChanged(index: Int) {

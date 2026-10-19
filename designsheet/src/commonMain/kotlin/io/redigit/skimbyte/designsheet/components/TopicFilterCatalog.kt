@@ -24,7 +24,7 @@ fun TopicFilterCatalogContent() {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         var selected by remember { mutableStateOf(Topic.All) }
-        TopicFilterRow(selectedTopic = selected, onTopicSelected = { selected = it })
+        TopicFilterRow(topics = Topic.entries, selectedTopic = selected, onTopicSelected = { selected = it })
     }
 }
 
