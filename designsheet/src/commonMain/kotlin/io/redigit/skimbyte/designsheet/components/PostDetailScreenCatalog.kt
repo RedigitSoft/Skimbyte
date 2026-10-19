@@ -1,5 +1,6 @@
 package io.redigit.skimbyte.designsheet.components
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ private val catalogPost = Post(
     isBookmarked = false,
 )
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PostDetailScreenCatalogContent() {
     PostDetailScreen(

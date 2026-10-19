@@ -1,5 +1,6 @@
 package io.redigit.skimbyte.feed.ui
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -27,7 +28,7 @@ class PostCardTest {
         isBookmarked = false,
     )
 
-    @OptIn(ExperimentalTestApi::class)
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
     fun bookmarkClick_invokesCallback() = runComposeUiTest {
         var clicked = false
@@ -41,7 +42,7 @@ class PostCardTest {
         assertEquals(true, clicked)
     }
 
-    @OptIn(ExperimentalTestApi::class)
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
     fun readSourceClick_invokesCallbackWithSourceUrl() = runComposeUiTest {
         var clickedUrl: String? = null
@@ -55,7 +56,7 @@ class PostCardTest {
         assertEquals(samplePost.sourceUrl, clickedUrl)
     }
 
-    @OptIn(ExperimentalTestApi::class)
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
     fun cardClick_invokesCallbackWithPostId() = runComposeUiTest {
         var clickedId: String? = null
@@ -69,7 +70,7 @@ class PostCardTest {
         assertEquals(samplePost.id, clickedId)
     }
 
-    @OptIn(ExperimentalTestApi::class)
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
     fun bookmarkedState_showsRemoveBookmarkIcon() = runComposeUiTest {
         setContent {
@@ -80,7 +81,7 @@ class PostCardTest {
         onNodeWithContentDescription("Remove bookmark").assertExists()
     }
 
-    @OptIn(ExperimentalTestApi::class)
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
     fun notBookmarkedState_showsBookmarkIcon() = runComposeUiTest {
         setContent {

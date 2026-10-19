@@ -1,5 +1,6 @@
 package io.redigit.skimbyte.designsheet.components
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ private val bookmarkedPost = shortPost.copy(id = "catalog-bookmarked", isBookmar
 
 private val imagePost = shortPost.copy(id = "catalog-image", imageUrl = "https://picsum.photos/seed/skimbyte/800/400")
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PostCardCatalogContent() {
     Column(
