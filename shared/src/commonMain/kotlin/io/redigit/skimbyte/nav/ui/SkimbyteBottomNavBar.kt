@@ -20,7 +20,6 @@ import io.redigit.skimbyte.theme.SkimbyteTheme
 fun SkimbyteBottomNavBar(
     selected: TopLevelDestination,
     onDestinationSelected: (TopLevelDestination) -> Unit,
-    onSearchClick: (() -> Unit)?,
     fabMenu: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
@@ -33,11 +32,6 @@ fun SkimbyteBottomNavBar(
                 Icon(destination.icon(), contentDescription = destination.name)
             }
         }
-        if (onSearchClick != null) {
-            IconButton(onClick = onSearchClick) {
-                Icon(Icons.Filled.Search, contentDescription = "Search")
-            }
-        }
         fabMenu?.invoke()
     }
 }
@@ -45,6 +39,7 @@ fun SkimbyteBottomNavBar(
 private fun TopLevelDestination.icon() = when (this) {
     TopLevelDestination.Feed -> Icons.Filled.Home
     TopLevelDestination.Bookmarks -> Icons.Filled.Bookmark
+    TopLevelDestination.Search -> Icons.Filled.Search
     TopLevelDestination.Account -> Icons.Filled.Person
 }
 
@@ -55,7 +50,6 @@ private fun SkimbyteBottomNavBarFeedPreview() {
         SkimbyteBottomNavBar(
             selected = TopLevelDestination.Feed,
             onDestinationSelected = {},
-            onSearchClick = {},
             fabMenu = null,
         )
     }
@@ -68,7 +62,18 @@ private fun SkimbyteBottomNavBarBookmarksPreview() {
         SkimbyteBottomNavBar(
             selected = TopLevelDestination.Bookmarks,
             onDestinationSelected = {},
-            onSearchClick = null,
+            fabMenu = null,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SkimbyteBottomNavBarSearchPreview() {
+    SkimbyteTheme {
+        SkimbyteBottomNavBar(
+            selected = TopLevelDestination.Search,
+            onDestinationSelected = {},
             fabMenu = null,
         )
     }

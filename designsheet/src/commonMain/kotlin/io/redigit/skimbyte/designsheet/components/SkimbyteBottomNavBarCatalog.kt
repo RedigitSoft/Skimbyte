@@ -17,19 +17,21 @@ fun SkimbyteBottomNavBarCatalogContent() {
         SkimbyteBottomNavBar(
             selected = TopLevelDestination.Feed,
             onDestinationSelected = {},
-            onSearchClick = {},
             fabMenu = null,
         )
         SkimbyteBottomNavBar(
             selected = TopLevelDestination.Bookmarks,
             onDestinationSelected = {},
-            onSearchClick = null,
+            fabMenu = null,
+        )
+        SkimbyteBottomNavBar(
+            selected = TopLevelDestination.Search,
+            onDestinationSelected = {},
             fabMenu = null,
         )
         SkimbyteBottomNavBar(
             selected = TopLevelDestination.Account,
             onDestinationSelected = {},
-            onSearchClick = null,
             fabMenu = null,
         )
     }

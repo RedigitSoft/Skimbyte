@@ -1,67 +1,49 @@
 package io.redigit.skimbyte.feed.ui
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.feed.SearchUiState
 import io.redigit.skimbyte.posts.Post
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.util.openUrl
 import kotlin.time.Instant
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SearchScreen(
-    posts: List<Post>,
-    pendingBookmarkToggles: Set<String>,
+    uiState: SearchUiState,
+    onQueryChanged: (String) -> Unit,
     onBookmarkClick: (String) -> Unit,
-    onReadSourceClick: (String) -> Unit,
-    onSourceClick: (String) -> Unit,
-    onBack: () -> Unit,
+    onCardClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    sharedTransition: SharedElementContext? = null,
 ) {
-    var query by remember { mutableStateOf("") }
-    val results = remember(posts, query) {
-        if (query.isBlank()) emptyList() else posts.filter { it.title.contains(query, ignoreCase = true) }
-    }
     Column(modifier = modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-            OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
-                placeholder = { Text("Search titles") },
-                singleLine = true,
-                modifier = Modifier.weight(1f).padding(end = 8.dp),
-            )
-        }
+        OutlinedTextField(
+            value = uiState.query,
+            onValueChange = onQueryChanged,
+            placeholder = { Text("Search titles") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        )
         when {
-            query.isBlank() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            uiState.query.isBlank() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Type to search your loaded posts.", style = MaterialTheme.typography.bodyLarge)
             }
             else -> StackedCardBrowser(
-                items = results,
+                items = uiState.results,
                 onIndexChanged = {},
                 emptyContent = {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -72,11 +54,12 @@ fun SearchScreen(
             ) { post ->
                 PostCard(
                     post = post,
-                    isBookmarkLoading = post.id in pendingBookmarkToggles,
+                    isBookmarkLoading = post.id in uiState.pendingBookmarkToggles,
                     onBookmarkClick = { onBookmarkClick(post.id) },
-                    onReadSourceClick = onReadSourceClick,
-                    onSourceClick = onSourceClick,
+                    onReadSourceClick = ::openUrl,
+                    onCardClick = onCardClick,
                     modifier = Modifier.fillMaxSize(),
+                    sharedTransition = sharedTransition,
                 )
             }
         }
@@ -98,32 +81,30 @@ private val previewPosts = listOf(
     ),
 )
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun SearchScreenEmptyQueryPreview() {
     SkimbyteTheme {
         SearchScreen(
-            posts = previewPosts,
-            pendingBookmarkToggles = emptySet(),
+            uiState = SearchUiState(),
+            onQueryChanged = {},
             onBookmarkClick = {},
-            onReadSourceClick = {},
-            onSourceClick = {},
-            onBack = {},
+            onCardClick = {},
         )
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun SearchScreenLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         SearchScreen(
-            posts = previewPosts,
-            pendingBookmarkToggles = emptySet(),
+            uiState = SearchUiState(query = "kotlin", results = previewPosts),
+            onQueryChanged = {},
             onBookmarkClick = {},
-            onReadSourceClick = {},
-            onSourceClick = {},
-            onBack = {},
+            onCardClick = {},
         )
     }
 }
