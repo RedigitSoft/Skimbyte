@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.ktor.http.URLBuilder
-import io.redigit.skimbyte.auth.AuthConfig
+import io.redigit.skimbyte.auth.BackendConfig
 import io.redigit.skimbyte.auth.GoogleAuthCallback
 import io.redigit.skimbyte.network.ApiConfig
 import io.redigit.skimbyte.theme.SkimbyteTheme
@@ -43,7 +43,7 @@ import org.koin.compose.viewmodel.koinViewModel
 // local.properties, via androidApp's manifestPlaceholders).
 private fun googleSignInStartUrl(): String =
     URLBuilder("${ApiConfig.AUTH_BASE_URL}/auth/oauth/google/start").apply {
-        parameters.append("redirect_uri", AuthConfig.GOOGLE_REDIRECT_URI)
+        parameters.append("redirect_uri", BackendConfig.GOOGLE_REDIRECT_URI)
     }.buildString()
 
 @OptIn(ExperimentalMaterial3Api::class)

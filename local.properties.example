@@ -3,7 +3,9 @@
 # Android SDK path (auto-written by Android Studio; usually no need to set this yourself).
 #sdk.dir=/path/to/Android/sdk
 
-# Auth endpoint configuration — fetched into AuthConfig.kt (generated, :shared) and into the
-# Android manifest's OAuth-callback intent-filter (androidApp's manifestPlaceholders).
+# Backend endpoint configuration — fetched into BackendConfig.kt (generated, :shared) and into
+# the Android manifest's OAuth-callback intent-filter (androidApp's manifestPlaceholders).
 authBaseUrl=https://com.example.app
-googleAuthRedirectUri=skimbyte://auth/callback
+googleAuthRedirectUri=app://callback
+# Leave blank to run the app against the built-in demo/mock data instead of a real backend.
+skimbyteApiBaseUrl=

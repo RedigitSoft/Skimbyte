@@ -15,7 +15,10 @@ class BookmarkIdsStore(private val postsApi: PostsApi) {
     val ids: StateFlow<Set<String>> = _ids.asStateFlow()
 
     suspend fun refresh() {
-        _ids.value = postsApi.fetchBookmarkedPosts(cursor = null).items.map { it.id }.toSet()
+        // Best-effort: a failed refresh (network blip, expired session) just leaves the
+        // bookmark badges stale rather than crashing the feed that doesn't depend on them.
+        runCatching { postsApi.fetchBookmarkedPosts(cursor = null).items.map { it.id }.toSet() }
+            .onSuccess { _ids.value = it }
     }
 
     fun clear() {

@@ -9,10 +9,12 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import io.redigit.skimbyte.auth.SessionStorage
@@ -43,7 +45,13 @@ private fun HttpClientConfig<*>.configureSkimbyteClient(sessionStorage: SessionS
         json(Json { ignoreUnknownKeys = true })
     }
     install(Logging) {
-        level = LogLevel.INFO
+        // Not Logger.DEFAULT: that routes through SLF4J, which is a silent no-op without a
+        // binding on the classpath (Android/iOS/JS have none) — this prints directly instead.
+        logger = object : Logger {
+            override fun log(message: String) = println("HttpClient: $message")
+        }
+        level = LogLevel.ALL
+        sanitizeHeader { header -> header == HttpHeaders.Authorization }
     }
     install(Auth) {
         bearer {
