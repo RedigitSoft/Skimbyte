@@ -42,6 +42,15 @@ class FeedViewModel(
         }
     }
 
+    fun onTopicPreferencesChanged() {
+        val storedTopics = topicPreferencesStore.selectedTopics().toList()
+        _uiState.value = _uiState.value.copy(availableTopics = storedTopics)
+        val currentTopic = _uiState.value.selectedTopic
+        if (storedTopics.isNotEmpty() && currentTopic !in storedTopics) {
+            onTopicSelected(storedTopics.first())
+        }
+    }
+
     fun onTopicSelected(topic: Topic) {
         if (topic == _uiState.value.selectedTopic) return
         _uiState.value = _uiState.value.copy(

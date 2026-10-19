@@ -250,6 +250,20 @@ class FeedViewModelTest {
     }
 
     @Test
+    fun `editing interests away from the active filter falls back to a remaining topic`() = runTest {
+        val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
+        val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Android, Topic.Kotlin)) }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
+        viewModel.onTopicSelected(Topic.Android) // user is filtered on Android
+        store.setSelectedTopics(setOf(Topic.Kotlin)) // edits interests, drops Android
+
+        viewModel.onTopicPreferencesChanged()
+
+        assertEquals(Topic.Kotlin, viewModel.uiState.value.selectedTopic)
+        assertEquals(listOf(Topic.Kotlin), viewModel.uiState.value.availableTopics)
+    }
+
+    @Test
     fun `onViewModeToggled flips between Stack and List`() = runTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
