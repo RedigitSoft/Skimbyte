@@ -1,0 +1,11 @@
+package io.redigit.skimbyte.onboarding
+
+import io.redigit.skimbyte.posts.Topic
+
+data class TopicsUiState(
+    val available: List<Topic> = Topic.entries.filter { it != Topic.All },
+    val selected: Set<Topic> = emptySet(),
+    val isEditing: Boolean = false,
+) {
+    val canConfirm: Boolean get() = selected.size in 3..4
+}

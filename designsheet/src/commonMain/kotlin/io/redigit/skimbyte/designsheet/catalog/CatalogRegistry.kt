@@ -13,6 +13,7 @@ import io.redigit.skimbyte.designsheet.components.SourceDetailScreenCatalogConte
 import io.redigit.skimbyte.designsheet.components.StackedCardBrowserCatalogContent
 import io.redigit.skimbyte.designsheet.components.TextFieldsCatalogContent
 import io.redigit.skimbyte.designsheet.components.TopicFilterCatalogContent
+import io.redigit.skimbyte.designsheet.components.TopicsScreenCatalogContent
 import io.redigit.skimbyte.designsheet.tokens.ColorTokensContent
 import io.redigit.skimbyte.designsheet.tokens.ShapeTokensContent
 import io.redigit.skimbyte.designsheet.tokens.SpacingTokensContent
@@ -40,4 +41,5 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("bottom-nav-bar", "Bottom nav bar", "Navigation") { SkimbyteBottomNavBarCatalogContent() },
     CatalogItem("login-sheet", "Login sheet", "Bookmarks") { LoginSheetCatalogContent() },
     CatalogItem("account-screen", "Account", "Bookmarks") { AccountScreenCatalogContent() },
+    CatalogItem("topics-screen", "Topics", "Onboarding") { TopicsScreenCatalogContent() },
 )
