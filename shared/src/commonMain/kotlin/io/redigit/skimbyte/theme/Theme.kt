@@ -1,12 +1,11 @@
 package io.redigit.skimbyte.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-// The shipped app is always dark per the product spec; darkTheme exists so individual components
-// can still have a light-mode @Preview without contradicting that.
 @Composable
 fun SkimbyteTheme(darkTheme: Boolean = true, content: @Composable () -> Unit) {
     val colorScheme = if (darkTheme) {
@@ -25,4 +24,14 @@ fun SkimbyteTheme(darkTheme: Boolean = true, content: @Composable () -> Unit) {
         lightColorScheme(primary = SkimbyteAccent)
     }
     MaterialTheme(colorScheme = colorScheme, shapes = SkimbyteShapes, content = content)
+}
+
+@Composable
+fun SkimbyteTheme(themeMode: ThemeMode, content: @Composable () -> Unit) {
+    val dark = when (themeMode) {
+        ThemeMode.Light -> false
+        ThemeMode.Dark -> true
+        ThemeMode.System -> isSystemInDarkTheme()
+    }
+    SkimbyteTheme(darkTheme = dark, content = content)
 }

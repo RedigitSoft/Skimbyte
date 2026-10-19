@@ -7,6 +7,7 @@ import io.redigit.skimbyte.network.ApiConfig
 import io.redigit.skimbyte.network.demoNetworkModule
 import io.redigit.skimbyte.network.networkModule
 import io.redigit.skimbyte.posts.postsModule
+import io.redigit.skimbyte.theme.themeModule
 import org.koin.dsl.module
 
 /**
@@ -21,5 +22,6 @@ val appModule = module {
         postsModule,
         feedModule,
         bookmarksModule,
+        themeModule,
     )
 }
