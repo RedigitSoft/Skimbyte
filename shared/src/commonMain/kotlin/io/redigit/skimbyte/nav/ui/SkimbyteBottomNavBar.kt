@@ -21,7 +21,6 @@ fun SkimbyteBottomNavBar(
     selected: TopLevelDestination,
     onDestinationSelected: (TopLevelDestination) -> Unit,
     fabMenu: (@Composable () -> Unit)?,
-    onSearchClick: (@Composable () -> Unit)? = {},
     modifier: Modifier = Modifier,
 ) {
     HorizontalFloatingToolbar(

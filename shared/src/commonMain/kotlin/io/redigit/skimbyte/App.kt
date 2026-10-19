@@ -36,7 +36,6 @@ fun App() {
                         SkimbyteBottomNavBar(
                             selected = selectedTopLevel,
                             onDestinationSelected = { selectedTopLevel = it },
-                            onSearchClick = null,
                             fabMenu = null,
                         )
                     },
@@ -50,7 +49,6 @@ fun App() {
                         SkimbyteBottomNavBar(
                             selected = selectedTopLevel,
                             onDestinationSelected = { selectedTopLevel = it },
-                            onSearchClick = null,
                             fabMenu = null,
                         )
                     },
