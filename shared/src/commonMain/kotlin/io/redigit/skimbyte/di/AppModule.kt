@@ -8,6 +8,7 @@ import io.redigit.skimbyte.network.demoNetworkModule
 import io.redigit.skimbyte.network.networkModule
 import io.redigit.skimbyte.onboarding.onboardingModule
 import io.redigit.skimbyte.posts.postsModule
+import io.redigit.skimbyte.settings.settingsModule
 import io.redigit.skimbyte.theme.themeModule
 import org.koin.dsl.module
 
@@ -25,5 +26,6 @@ val appModule = module {
         bookmarksModule,
         themeModule,
         onboardingModule,
+        settingsModule,
     )
 }

@@ -17,6 +17,7 @@ fun AccountScreenCatalogContent() {
             isLoggedIn = true,
             onLogout = {},
             onLoginSucceeded = {},
+            onSettingsClick = {},
             modifier = Modifier.height(200.dp),
         )
     }

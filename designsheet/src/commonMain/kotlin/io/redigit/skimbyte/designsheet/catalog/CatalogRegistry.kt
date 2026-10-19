@@ -8,8 +8,10 @@ import io.redigit.skimbyte.designsheet.components.PostCardCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostDetailScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SearchScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SelectionControlsCatalogContent
+import io.redigit.skimbyte.designsheet.components.SettingsScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SkimbyteBottomNavBarCatalogContent
 import io.redigit.skimbyte.designsheet.components.SkimbyteFabMenuCatalogContent
+import io.redigit.skimbyte.designsheet.components.SkimbyteNavigationRailCatalogContent
 import io.redigit.skimbyte.designsheet.components.StackedCardBrowserCatalogContent
 import io.redigit.skimbyte.designsheet.components.TextFieldsCatalogContent
 import io.redigit.skimbyte.designsheet.components.TopicFilterCatalogContent
@@ -39,7 +41,9 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("search-screen", "Search", "Feed") { SearchScreenCatalogContent() },
     CatalogItem("fab-menu", "FAB menu", "Navigation") { SkimbyteFabMenuCatalogContent() },
     CatalogItem("bottom-nav-bar", "Bottom nav bar", "Navigation") { SkimbyteBottomNavBarCatalogContent() },
+    CatalogItem("navigation-rail", "Navigation rail", "Navigation") { SkimbyteNavigationRailCatalogContent() },
     CatalogItem("login-sheet", "Login sheet", "Bookmarks") { LoginSheetCatalogContent() },
     CatalogItem("account-screen", "Account", "Bookmarks") { AccountScreenCatalogContent() },
     CatalogItem("topics-screen", "Topics", "Onboarding") { TopicsScreenCatalogContent() },
+    CatalogItem("settings-screen", "Settings", "Account") { SettingsScreenCatalogContent() },
 )

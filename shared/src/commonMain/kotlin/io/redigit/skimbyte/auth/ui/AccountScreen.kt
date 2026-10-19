@@ -5,7 +5,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +28,7 @@ fun AccountScreen(
     isLoggedIn: Boolean,
     onLogout: () -> Unit,
     onLoginSucceeded: () -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (!isLoggedIn) {
@@ -38,6 +43,9 @@ fun AccountScreen(
             if (isLoggedIn) {
                 Text("You're logged in", style = MaterialTheme.typography.titleMedium)
                 Button(onClick = onLogout) { Text("Log out") }
+                IconButton(onClick = onSettingsClick) {
+                    Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                }
             } else {
                 Text("Log in to manage your account", style = MaterialTheme.typography.titleMedium)
             }
@@ -46,12 +54,17 @@ fun AccountScreen(
 }
 
 @Composable
-fun AccountRoute(authRepository: AuthRepository = koinInject(), modifier: Modifier = Modifier) {
+fun AccountRoute(
+    onSettingsClick: () -> Unit,
+    authRepository: AuthRepository = koinInject(),
+    modifier: Modifier = Modifier,
+) {
     val session by authRepository.session.collectAsState()
     AccountScreen(
         isLoggedIn = session != null,
         onLogout = authRepository::logout,
         onLoginSucceeded = {},
+        onSettingsClick = onSettingsClick,
         modifier = modifier,
     )
 }
@@ -60,7 +73,7 @@ fun AccountRoute(authRepository: AuthRepository = koinInject(), modifier: Modifi
 @Composable
 private fun AccountScreenLoggedOutPreview() {
     SkimbyteTheme {
-        AccountScreen(isLoggedIn = false, onLogout = {}, onLoginSucceeded = {})
+        AccountScreen(isLoggedIn = false, onLogout = {}, onLoginSucceeded = {}, onSettingsClick = {})
     }
 }
 
@@ -68,7 +81,7 @@ private fun AccountScreenLoggedOutPreview() {
 @Composable
 private fun AccountScreenLoggedInPreview() {
     SkimbyteTheme {
-        AccountScreen(isLoggedIn = true, onLogout = {}, onLoginSucceeded = {})
+        AccountScreen(isLoggedIn = true, onLogout = {}, onLoginSucceeded = {}, onSettingsClick = {})
     }
 }
 
@@ -76,6 +89,6 @@ private fun AccountScreenLoggedInPreview() {
 @Composable
 private fun AccountScreenLoggedInLightPreview() {
     SkimbyteTheme(darkTheme = false) {
-        AccountScreen(isLoggedIn = true, onLogout = {}, onLoginSucceeded = {})
+        AccountScreen(isLoggedIn = true, onLogout = {}, onLoginSucceeded = {}, onSettingsClick = {})
     }
 }

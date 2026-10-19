@@ -21,6 +21,7 @@ fun SkimbyteBottomNavBar(
     selected: TopLevelDestination,
     onDestinationSelected: (TopLevelDestination) -> Unit,
     fabMenu: (@Composable () -> Unit)?,
+    onSearchClick: (@Composable () -> Unit)? = {},
     modifier: Modifier = Modifier,
 ) {
     HorizontalFloatingToolbar(
@@ -36,7 +37,7 @@ fun SkimbyteBottomNavBar(
     }
 }
 
-private fun TopLevelDestination.icon() = when (this) {
+internal fun TopLevelDestination.icon() = when (this) {
     TopLevelDestination.Feed -> Icons.Filled.Home
     TopLevelDestination.Bookmarks -> Icons.Filled.Bookmark
     TopLevelDestination.Search -> Icons.Filled.Search
