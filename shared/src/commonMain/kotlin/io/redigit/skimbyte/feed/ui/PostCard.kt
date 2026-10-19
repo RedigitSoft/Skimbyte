@@ -1,5 +1,8 @@
 package io.redigit.skimbyte.feed.ui
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,21 +38,47 @@ import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.util.toDisplayDate
 import kotlin.time.Instant
 
+/**
+ * Bundles the pieces Navigation 3's shared-element transition between [PostCard] and
+ * `PostDetailScreen` needs: the enclosing [SharedTransitionScope] and the per-entry
+ * [AnimatedVisibilityScope] that scopes the transition's enter/exit animation. Nullable and
+ * optional everywhere it's consumed, so `@Preview`s and designsheet call sites - which have
+ * neither a `SharedTransitionLayout` nor an `AnimatedVisibilityScope` available - keep compiling
+ * unchanged by simply omitting it.
+ */
+@ExperimentalSharedTransitionApi
+data class SharedElementContext(
+    val scope: SharedTransitionScope,
+    val animatedVisibilityScope: AnimatedVisibilityScope,
+)
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PostCard(
     post: Post,
     isBookmarkLoading: Boolean,
     onBookmarkClick: () -> Unit,
     onReadSourceClick: (String) -> Unit,
-    onSourceClick: (String) -> Unit,
+    onCardClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    sharedTransition: SharedElementContext? = null,
 ) {
     Card(
         shape = MaterialTheme.shapes.extraLarge,
-        modifier = modifier.fillMaxWidth().widthIn(max = 480.dp),
+        modifier = modifier.fillMaxWidth().widthIn(max = 480.dp).clickable { onCardClick(post.id) },
     ) {
         Column {
-            Box(modifier = Modifier.fillMaxWidth().height(220.dp)) {
+            val imageModifier = if (sharedTransition != null) {
+                with(sharedTransition.scope) {
+                    Modifier.fillMaxWidth().height(220.dp).sharedElement(
+                        rememberSharedContentState(key = "post-image-${post.id}"),
+                        sharedTransition.animatedVisibilityScope,
+                    )
+                }
+            } else {
+                Modifier.fillMaxWidth().height(220.dp)
+            }
+            Box(modifier = imageModifier) {
                 if (post.imageUrl != null) {
                     AsyncImage(
                         model = post.imageUrl,
@@ -78,7 +107,6 @@ fun PostCard(
                         text = post.sourceName,
                         color = Color.White,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.clickable { onSourceClick(post.sourceName) },
                     )
                 }
                 Surface(
@@ -130,6 +158,7 @@ private val previewPost = Post(
     isBookmarked = false,
 )
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun PostCardPreview() {
@@ -139,11 +168,12 @@ private fun PostCardPreview() {
             isBookmarkLoading = false,
             onBookmarkClick = {},
             onReadSourceClick = {},
-            onSourceClick = {},
+            onCardClick = {},
         )
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun PostCardLightPreview() {
@@ -153,11 +183,12 @@ private fun PostCardLightPreview() {
             isBookmarkLoading = false,
             onBookmarkClick = {},
             onReadSourceClick = {},
-            onSourceClick = {},
+            onCardClick = {},
         )
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun PostCardWithImagePreview() {
@@ -167,11 +198,12 @@ private fun PostCardWithImagePreview() {
             isBookmarkLoading = false,
             onBookmarkClick = {},
             onReadSourceClick = {},
-            onSourceClick = {},
+            onCardClick = {},
         )
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun PostCardBookmarkedPreview() {
@@ -181,11 +213,12 @@ private fun PostCardBookmarkedPreview() {
             isBookmarkLoading = false,
             onBookmarkClick = {},
             onReadSourceClick = {},
-            onSourceClick = {},
+            onCardClick = {},
         )
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun PostCardLongTitlePreview() {
@@ -197,7 +230,7 @@ private fun PostCardLongTitlePreview() {
             isBookmarkLoading = false,
             onBookmarkClick = {},
             onReadSourceClick = {},
-            onSourceClick = {},
+            onCardClick = {},
         )
     }
 }

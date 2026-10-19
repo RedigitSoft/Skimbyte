@@ -33,7 +33,7 @@ class PostCardTest {
         var clicked = false
         setContent {
             SkimbyteTheme {
-                PostCard(post = samplePost, isBookmarkLoading = false, onBookmarkClick = { clicked = true }, onReadSourceClick = {}, onSourceClick = {})
+                PostCard(post = samplePost, isBookmarkLoading = false, onBookmarkClick = { clicked = true }, onReadSourceClick = {}, onCardClick = {})
             }
         }
         onNodeWithTag("bookmarkButton").performClick()
@@ -47,7 +47,7 @@ class PostCardTest {
         var clickedUrl: String? = null
         setContent {
             SkimbyteTheme {
-                PostCard(post = samplePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = { clickedUrl = it }, onSourceClick = {})
+                PostCard(post = samplePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = { clickedUrl = it }, onCardClick = {})
             }
         }
         onNodeWithText("Read full source").performClick()
@@ -57,10 +57,24 @@ class PostCardTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
+    fun cardClick_invokesCallbackWithPostId() = runComposeUiTest {
+        var clickedId: String? = null
+        setContent {
+            SkimbyteTheme {
+                PostCard(post = samplePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = { clickedId = it })
+            }
+        }
+        onNodeWithText(samplePost.title).performClick()
+        waitForIdle()
+        assertEquals(samplePost.id, clickedId)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
     fun bookmarkedState_showsRemoveBookmarkIcon() = runComposeUiTest {
         setContent {
             SkimbyteTheme {
-                PostCard(post = samplePost.copy(isBookmarked = true), isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onSourceClick = {})
+                PostCard(post = samplePost.copy(isBookmarked = true), isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
             }
         }
         onNodeWithContentDescription("Remove bookmark").assertExists()
@@ -71,7 +85,7 @@ class PostCardTest {
     fun notBookmarkedState_showsBookmarkIcon() = runComposeUiTest {
         setContent {
             SkimbyteTheme {
-                PostCard(post = samplePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onSourceClick = {})
+                PostCard(post = samplePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
             }
         }
         onNodeWithContentDescription("Bookmark").assertExists()

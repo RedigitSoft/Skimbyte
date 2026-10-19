@@ -5,11 +5,11 @@ import io.redigit.skimbyte.designsheet.components.BookmarkButtonCatalogContent
 import io.redigit.skimbyte.designsheet.components.ButtonsCatalogContent
 import io.redigit.skimbyte.designsheet.components.LoginSheetCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostCardCatalogContent
+import io.redigit.skimbyte.designsheet.components.PostDetailScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SearchScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SelectionControlsCatalogContent
 import io.redigit.skimbyte.designsheet.components.SkimbyteBottomNavBarCatalogContent
 import io.redigit.skimbyte.designsheet.components.SkimbyteFabMenuCatalogContent
-import io.redigit.skimbyte.designsheet.components.SourceDetailScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.StackedCardBrowserCatalogContent
 import io.redigit.skimbyte.designsheet.components.TextFieldsCatalogContent
 import io.redigit.skimbyte.designsheet.components.TopicFilterCatalogContent
@@ -35,7 +35,7 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("topic-filter", "Topic filter", "Feed") { TopicFilterCatalogContent() },
     CatalogItem("bookmark-button", "Bookmark button", "Feed") { BookmarkButtonCatalogContent() },
     CatalogItem("stacked-card-browser", "Stacked card browser", "Feed") { StackedCardBrowserCatalogContent() },
-    CatalogItem("source-detail", "Source detail", "Feed") { SourceDetailScreenCatalogContent() },
+    CatalogItem("post-detail", "Post detail", "Feed") { PostDetailScreenCatalogContent() },
     CatalogItem("search-screen", "Search", "Feed") { SearchScreenCatalogContent() },
     CatalogItem("fab-menu", "FAB menu", "Navigation") { SkimbyteFabMenuCatalogContent() },
     CatalogItem("bottom-nav-bar", "Bottom nav bar", "Navigation") { SkimbyteBottomNavBarCatalogContent() },
