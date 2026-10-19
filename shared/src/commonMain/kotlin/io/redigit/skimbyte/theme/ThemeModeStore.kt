@@ -1,8 +1,12 @@
 package io.redigit.skimbyte.theme
 
 import com.russhwolf.settings.Settings
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 interface ThemeModeStore {
+    val themeModeFlow: StateFlow<ThemeMode>
     fun get(): ThemeMode
     fun set(mode: ThemeMode)
 }
@@ -13,6 +17,9 @@ interface ThemeModeStore {
  * which this app's target list requires.
  */
 class SettingsThemeModeStore(private val settings: Settings) : ThemeModeStore {
+
+    private val _themeModeFlow = MutableStateFlow(get())
+    override val themeModeFlow: StateFlow<ThemeMode> = _themeModeFlow.asStateFlow()
 
     override fun get(): ThemeMode {
         val stored = settings.getStringOrNull(KEY_THEME_MODE)
@@ -31,6 +38,7 @@ class SettingsThemeModeStore(private val settings: Settings) : ThemeModeStore {
 
     override fun set(mode: ThemeMode) {
         settings.putString(KEY_THEME_MODE, mode.name)
+        _themeModeFlow.value = mode
     }
 
     private companion object {

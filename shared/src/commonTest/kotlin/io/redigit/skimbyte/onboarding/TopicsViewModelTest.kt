@@ -1,6 +1,8 @@
 package io.redigit.skimbyte.onboarding
 
 import io.redigit.skimbyte.posts.Topic
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -9,11 +11,14 @@ import kotlin.test.assertTrue
 private class FakeTopicPreferencesStore : TopicPreferencesStore {
     private var topics: Set<Topic> = emptySet()
     private var onboardingCompleted: Boolean = false
+    private val _selectedTopicsFlow = MutableStateFlow(topics)
+    override val selectedTopicsFlow: StateFlow<Set<Topic>> = _selectedTopicsFlow
 
     override fun selectedTopics(): Set<Topic> = topics
 
     override fun setSelectedTopics(topics: Set<Topic>) {
         this.topics = topics
+        _selectedTopicsFlow.value = topics
     }
 
     override fun hasCompletedOnboarding(): Boolean = onboardingCompleted

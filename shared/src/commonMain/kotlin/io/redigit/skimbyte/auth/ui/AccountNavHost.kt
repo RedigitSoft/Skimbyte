@@ -12,7 +12,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import io.redigit.skimbyte.feed.FeedViewModel
 import io.redigit.skimbyte.nav.AccountHome
 import io.redigit.skimbyte.nav.Settings
 import io.redigit.skimbyte.nav.Topics
@@ -76,14 +75,12 @@ fun AccountNavHost(
                     }
                     entry<Topics> {
                         val viewModel = koinViewModel<TopicsViewModel> { parametersOf(true) }
-                        val feedViewModel = koinViewModel<FeedViewModel>()
                         val uiState by viewModel.uiState.collectAsState()
                         TopicsScreen(
                             uiState = uiState,
                             onTopicToggled = viewModel::onTopicToggled,
                             onConfirm = {
                                 viewModel.onConfirm()
-                                feedViewModel.onTopicPreferencesChanged()
                                 backStack.removeLastOrNull()
                             },
                         )

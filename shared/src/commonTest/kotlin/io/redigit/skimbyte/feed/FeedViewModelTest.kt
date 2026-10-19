@@ -16,6 +16,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -79,11 +80,14 @@ private fun fakeBookmarkIdsStore() = BookmarkIdsStore(object : PostsApi {
 private class FakeTopicPreferencesStore : TopicPreferencesStore {
     private var topics: Set<Topic> = emptySet()
     private var onboardingCompleted: Boolean = false
+    private val _selectedTopicsFlow = MutableStateFlow(topics)
+    override val selectedTopicsFlow: StateFlow<Set<Topic>> = _selectedTopicsFlow
 
     override fun selectedTopics(): Set<Topic> = topics
 
     override fun setSelectedTopics(topics: Set<Topic>) {
         this.topics = topics
+        _selectedTopicsFlow.value = topics
     }
 
     override fun hasCompletedOnboarding(): Boolean = onboardingCompleted
@@ -258,6 +262,22 @@ class FeedViewModelTest {
         store.setSelectedTopics(setOf(Topic.Kotlin)) // edits interests, drops Android
 
         viewModel.onTopicPreferencesChanged()
+
+        assertEquals(Topic.Kotlin, viewModel.uiState.value.selectedTopic)
+        assertEquals(listOf(Topic.Kotlin), viewModel.uiState.value.availableTopics)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `FeedViewModel reacts automatically when the store's topics change after construction`() = runTest {
+        val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
+        val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Android, Topic.Kotlin)) }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
+
+        assertEquals(Topic.Android, viewModel.uiState.value.selectedTopic)
+
+        store.setSelectedTopics(setOf(Topic.Kotlin)) // simulates editing interests from Settings, without calling any method on vm directly
+        advanceUntilIdle() // let the reactive collector process the change
 
         assertEquals(Topic.Kotlin, viewModel.uiState.value.selectedTopic)
         assertEquals(listOf(Topic.Kotlin), viewModel.uiState.value.availableTopics)

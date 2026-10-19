@@ -2,16 +2,21 @@ package io.redigit.skimbyte.settings
 
 import io.redigit.skimbyte.theme.ThemeMode
 import io.redigit.skimbyte.theme.ThemeModeStore
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 private class FakeThemeModeStore(initial: ThemeMode) : ThemeModeStore {
     private var mode: ThemeMode = initial
+    private val _themeModeFlow = MutableStateFlow(initial)
+    override val themeModeFlow: StateFlow<ThemeMode> = _themeModeFlow
 
     override fun get(): ThemeMode = mode
 
     override fun set(mode: ThemeMode) {
         this.mode = mode
+        _themeModeFlow.value = mode
     }
 }
 

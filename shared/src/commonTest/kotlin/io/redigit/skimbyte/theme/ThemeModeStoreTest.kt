@@ -25,4 +25,11 @@ class ThemeModeStoreTest {
         val store = SettingsThemeModeStore(settings)
         assertEquals(ThemeMode.System, store.get())
     }
+
+    @Test
+    fun `themeModeFlow emits the new value after set`() {
+        val store = SettingsThemeModeStore(FakeSettings())
+        store.set(ThemeMode.Dark)
+        assertEquals(ThemeMode.Dark, store.themeModeFlow.value)
+    }
 }

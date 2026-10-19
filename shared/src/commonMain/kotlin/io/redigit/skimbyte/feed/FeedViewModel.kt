@@ -10,6 +10,7 @@ import io.redigit.skimbyte.posts.Topic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 class FeedViewModel(
@@ -39,6 +40,9 @@ class FeedViewModel(
             authRepository.session.collect { session ->
                 if (session != null) bookmarkIdsStore.refresh() else bookmarkIdsStore.clear()
             }
+        }
+        viewModelScope.launch {
+            topicPreferencesStore.selectedTopicsFlow.drop(1).collect { onTopicPreferencesChanged() }
         }
     }
 

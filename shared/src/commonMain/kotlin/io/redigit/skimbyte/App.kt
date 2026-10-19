@@ -44,7 +44,8 @@ sealed interface AppStage {
 fun App() {
     KoinApplication(configuration = koinConfiguration { modules(appModule) }) {
         val themeModeStore = koinInject<ThemeModeStore>()
-        SkimbyteTheme(themeMode = themeModeStore.get()) {
+        val themeMode by themeModeStore.themeModeFlow.collectAsState()
+        SkimbyteTheme(themeMode = themeMode) {
             val topicPreferencesStore = koinInject<TopicPreferencesStore>()
             var stage by remember { mutableStateOf<AppStage>(AppStage.Splash) }
             LaunchedEffect(Unit) {

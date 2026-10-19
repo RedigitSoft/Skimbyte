@@ -43,11 +43,11 @@ fun AccountScreen(
             if (isLoggedIn) {
                 Text("You're logged in", style = MaterialTheme.typography.titleMedium)
                 Button(onClick = onLogout) { Text("Log out") }
-                IconButton(onClick = onSettingsClick) {
-                    Icon(Icons.Filled.Settings, contentDescription = "Settings")
-                }
             } else {
                 Text("Log in to manage your account", style = MaterialTheme.typography.titleMedium)
+            }
+            IconButton(onClick = onSettingsClick) {
+                Icon(Icons.Filled.Settings, contentDescription = "Settings")
             }
         }
     }

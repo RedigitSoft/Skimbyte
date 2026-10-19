@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -69,7 +68,6 @@ fun PostCard(
         modifier = modifier
             .fillMaxWidth()
             .widthIn(max = 480.dp)
-            .testTag("post-card-${post.id}")
             .clickable { onCardClick(post.id) },
     ) {
         Column {
