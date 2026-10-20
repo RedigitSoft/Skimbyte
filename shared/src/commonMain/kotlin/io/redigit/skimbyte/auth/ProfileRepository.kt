@@ -1,5 +1,6 @@
 package io.redigit.skimbyte.auth
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +26,12 @@ class ProfileRepositoryImpl(
                 if (current == null) {
                     _profile.value = null
                 } else {
-                    _profile.value = runCatching { authApi.me().toDomain() }.getOrNull()
+                    // Rethrow cancellation rather than swallowing it: collectLatest cancels this
+                    // block on the next session change, and a caught CancellationException must
+                    // not be treated as an ordinary fetch failure.
+                    _profile.value = runCatching { authApi.me().toDomain() }
+                        .onFailure { if (it is CancellationException) throw it }
+                        .getOrNull()
                 }
             }
         }
