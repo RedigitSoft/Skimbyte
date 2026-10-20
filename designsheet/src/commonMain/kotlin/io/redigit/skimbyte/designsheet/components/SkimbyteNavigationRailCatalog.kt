@@ -17,22 +17,18 @@ fun SkimbyteNavigationRailCatalogContent() {
         SkimbyteNavigationRail(
             selected = TopLevelDestination.Feed,
             onDestinationSelected = {},
-            fabMenu = null,
         )
         SkimbyteNavigationRail(
             selected = TopLevelDestination.Bookmarks,
             onDestinationSelected = {},
-            fabMenu = null,
         )
         SkimbyteNavigationRail(
             selected = TopLevelDestination.Search,
             onDestinationSelected = {},
-            fabMenu = null,
         )
         SkimbyteNavigationRail(
             selected = TopLevelDestination.Account,
             onDestinationSelected = {},
-            fabMenu = null,
         )
     }
 }

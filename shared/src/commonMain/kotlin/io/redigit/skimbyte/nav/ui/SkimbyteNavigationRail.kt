@@ -13,13 +13,9 @@ import io.redigit.skimbyte.theme.SkimbyteTheme
 fun SkimbyteNavigationRail(
     selected: TopLevelDestination,
     onDestinationSelected: (TopLevelDestination) -> Unit,
-    fabMenu: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    NavigationRail(
-        modifier = modifier,
-        header = fabMenu?.let { menu -> { menu() } },
-    ) {
+    NavigationRail(modifier = modifier) {
         TopLevelDestination.entries.forEach { destination ->
             NavigationRailItem(
                 selected = destination == selected,
@@ -37,7 +33,6 @@ private fun SkimbyteNavigationRailFeedPreview() {
         SkimbyteNavigationRail(
             selected = TopLevelDestination.Feed,
             onDestinationSelected = {},
-            fabMenu = null,
         )
     }
 }
@@ -49,7 +44,6 @@ private fun SkimbyteNavigationRailBookmarksPreview() {
         SkimbyteNavigationRail(
             selected = TopLevelDestination.Bookmarks,
             onDestinationSelected = {},
-            fabMenu = null,
         )
     }
 }
@@ -61,7 +55,6 @@ private fun SkimbyteNavigationRailSearchPreview() {
         SkimbyteNavigationRail(
             selected = TopLevelDestination.Search,
             onDestinationSelected = {},
-            fabMenu = null,
         )
     }
 }
