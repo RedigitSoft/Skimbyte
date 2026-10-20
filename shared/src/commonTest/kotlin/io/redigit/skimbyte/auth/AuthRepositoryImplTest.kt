@@ -1,6 +1,7 @@
 package io.redigit.skimbyte.auth
 
 import io.redigit.skimbyte.auth.dto.LoginResponseDto
+import io.redigit.skimbyte.auth.dto.MeResponseDto
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,6 +28,7 @@ private class FakeAuthApi(private val result: Result<LoginResponseDto>) : AuthAp
     override suspend fun login(email: String, password: String): LoginResponseDto = result.getOrThrow()
     override suspend fun register(email: String, password: String): LoginResponseDto = result.getOrThrow()
     override suspend fun refresh(refreshToken: String): LoginResponseDto = result.getOrThrow()
+    override suspend fun me(): MeResponseDto = error("unused")
 }
 
 class AuthRepositoryImplTest {
