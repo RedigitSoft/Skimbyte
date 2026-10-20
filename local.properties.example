@@ -9,3 +9,7 @@ authBaseUrl=https://com.example.app
 googleAuthRedirectUri=app://callback
 # Leave blank to run the app against the built-in demo/mock data instead of a real backend.
 skimbyteApiBaseUrl=
+
+# DigitalOcean Spaces CDN domain for avatar/banner images — defaults to the real domain below;
+# override only if pointing at a different CDN (e.g. staging).
+#spacesCdnBaseUrl=https://cdn.example.com

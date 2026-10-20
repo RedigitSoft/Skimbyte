@@ -16,6 +16,13 @@ object ApiConfig {
     // so a fresh clone without local.properties still runs end to end on fake data.
     val DEMO_MODE = BASE_URL.isBlank()
 
+    // DigitalOcean Spaces CDN domain for avatar/banner images — a different host than
+    // ASSET_BASE_URL (skimbyte-server's own asset base, used by resolveImageUrl below).
+    const val SPACES_CDN_BASE_URL = BackendConfig.SPACES_CDN_BASE_URL
+
     fun resolveImageUrl(raw: String): String =
         if (raw.startsWith("http://") || raw.startsWith("https://")) raw else "$ASSET_BASE_URL$raw"
+
+    fun resolveSpacesUrl(raw: String): String =
+        if (raw.startsWith("http://") || raw.startsWith("https://")) raw else "$SPACES_CDN_BASE_URL/$raw"
 }
