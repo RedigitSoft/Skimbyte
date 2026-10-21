@@ -1,6 +1,7 @@
 package io.redigit.skimbyte.auth
 
 import com.russhwolf.settings.Settings
+import io.redigit.skimbyte.auth.ui.AccountViewModel
 import io.redigit.skimbyte.auth.ui.LoginSheetViewModel
 import io.redigit.skimbyte.network.createHttpClient
 import kotlinx.coroutines.CoroutineScope
@@ -25,4 +26,5 @@ val authModule = module {
         ProfileRepositoryImpl(get(), get<AuthRepository>().session, CoroutineScope(SupervisorJob() + Dispatchers.Default))
     }
     viewModel { LoginSheetViewModel(get()) }
+    viewModel { AccountViewModel(get(), get()) }
 }
