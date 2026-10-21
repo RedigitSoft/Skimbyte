@@ -156,6 +156,7 @@ val generateAuthConfig by tasks.registering {
         val googleRedirectUri = props.getProperty("googleAuthRedirectUri", "")
         val skimbyteApiBaseUrl = props.getProperty("skimbyteApiBaseUrl", "")
         val spacesCdnBaseUrl = props.getProperty("spacesCdnBaseUrl", "https://cdn.example.com")
+        val productId = props.getProperty("skimbyteProductId", "")
 
         val file = outputDir.get().file("io/redigit/skimbyte/auth/BackendConfig.kt").asFile
         file.parentFile.mkdirs()
@@ -171,6 +172,8 @@ val generateAuthConfig by tasks.registering {
                 // falls back to the mock network module automatically in that case.
                 const val API_BASE_URL = "$skimbyteApiBaseUrl"
                 const val SPACES_CDN_BASE_URL = "$spacesCdnBaseUrl"
+                // the auth server's product id for this app — provisioned via POST /admin/products.
+                const val PRODUCT_ID = "$productId"
             }
 
             """.trimIndent(),

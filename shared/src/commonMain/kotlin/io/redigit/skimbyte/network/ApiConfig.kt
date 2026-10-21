@@ -12,6 +12,10 @@ object ApiConfig {
     // The auth server is live independent of DEMO_MODE — see AuthModule's dedicated HttpClient.
     const val AUTH_BASE_URL = BackendConfig.AUTH_BASE_URL
 
+    // the auth server's product id for this app (provisioned via POST /admin/products) — sent on every
+    // register/login call so the auth server knows which app the auth event is for.
+    const val PRODUCT_ID = BackendConfig.PRODUCT_ID
+
     // Falls back to the mock network module automatically when no real API URL is configured,
     // so a fresh clone without local.properties still runs end to end on fake data.
     val DEMO_MODE = BASE_URL.isBlank()

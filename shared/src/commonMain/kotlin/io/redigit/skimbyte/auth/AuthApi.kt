@@ -28,13 +28,13 @@ class KtorAuthApi(private val client: HttpClient) : AuthApi {
     override suspend fun login(email: String, password: String): LoginResponseDto =
         client.post("${ApiConfig.AUTH_BASE_URL}/auth/login") {
             contentType(ContentType.Application.Json)
-            setBody(LoginRequestDto(email = email, password = password))
+            setBody(LoginRequestDto(email = email, password = password, productId = ApiConfig.PRODUCT_ID))
         }.body()
 
     override suspend fun register(email: String, password: String): LoginResponseDto =
         client.post("${ApiConfig.AUTH_BASE_URL}/auth/register") {
             contentType(ContentType.Application.Json)
-            setBody(RegisterRequestDto(email = email, password = password))
+            setBody(RegisterRequestDto(email = email, password = password, productId = ApiConfig.PRODUCT_ID))
         }.body()
 
     override suspend fun refresh(refreshToken: String): LoginResponseDto =

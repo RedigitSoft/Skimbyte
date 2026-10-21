@@ -10,6 +10,10 @@ googleAuthRedirectUri=app://callback
 # Leave blank to run the app against the built-in demo/mock data instead of a real backend.
 skimbyteApiBaseUrl=
 
+# the auth server (auth-server) product id for this app — provisioned once via POST /admin/products.
+# Sent on every register/login call so the auth server knows which app the auth event is for.
+skimbyteProductId=
+
 # DigitalOcean Spaces CDN domain for avatar/banner images — defaults to the real domain below;
 # override only if pointing at a different CDN (e.g. staging).
 #spacesCdnBaseUrl=https://cdn.example.com
