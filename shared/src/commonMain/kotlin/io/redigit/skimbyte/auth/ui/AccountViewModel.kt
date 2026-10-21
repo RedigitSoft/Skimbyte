@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class AccountViewModel(
-    authRepository: AuthRepository,
+    private val authRepository: AuthRepository,
     private val profileRepository: ProfileRepository,
 ) : ViewModel() {
 
@@ -31,6 +31,8 @@ class AccountViewModel(
                 }
         }
     }
+
+    fun onLogout() = authRepository.logout()
 
     fun onAvatarPicked(image: PickedImage) {
         if (_uiState.value.avatarUploadInProgress) return
