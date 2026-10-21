@@ -1,6 +1,7 @@
 package io.redigit.skimbyte.auth
 
 import io.redigit.skimbyte.auth.dto.MeResponseDto
+import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -10,12 +11,19 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 private class FakeAuthApiForProfile(private val result: Result<MeResponseDto>) : AuthApi {
+    var uploadResult: Result<Unit> = Result.success(Unit)
+    var uploadCallCount = 0
     override suspend fun login(email: String, password: String) = error("unused")
     override suspend fun register(email: String, password: String) = error("unused")
     override suspend fun refresh(refreshToken: String) = error("unused")
     override suspend fun me(): MeResponseDto = result.getOrThrow()
+    override suspend fun uploadImage(type: String, image: PickedImage) {
+        uploadCallCount++
+        uploadResult.getOrThrow()
+    }
 }
 
 class ProfileRepositoryImplTest {
@@ -77,6 +85,7 @@ class ProfileRepositoryImplTest {
                 call++
                 return MeResponseDto("u$call")
             }
+            override suspend fun uploadImage(type: String, image: PickedImage) = error("unused")
         }
         val sessionFlow = MutableStateFlow<Session?>(null)
         val repo = ProfileRepositoryImpl(api, sessionFlow, backgroundScope)
@@ -99,6 +108,7 @@ class ProfileRepositoryImplTest {
             override suspend fun register(email: String, password: String) = error("unused")
             override suspend fun refresh(refreshToken: String) = error("unused")
             override suspend fun me(): MeResponseDto = gate.await()
+            override suspend fun uploadImage(type: String, image: PickedImage) = error("unused")
         }
         val sessionFlow = MutableStateFlow<Session?>(null)
         val repo = ProfileRepositoryImpl(api, sessionFlow, backgroundScope)
@@ -126,6 +136,7 @@ class ProfileRepositoryImplTest {
                 // completing gate1 later exercises only the (should-be-cancelled) first fetch.
                 return if (callCount == 1) gate1.await() else MeResponseDto("u2")
             }
+            override suspend fun uploadImage(type: String, image: PickedImage) = error("unused")
         }
         val sessionFlow = MutableStateFlow<Session?>(null)
         val repo = ProfileRepositoryImpl(api, sessionFlow, backgroundScope)
@@ -140,5 +151,49 @@ class ProfileRepositoryImplTest {
         advanceUntilIdle()
 
         assertEquals("u2", repo.profile.value?.userId)
+    }
+
+    @Test
+    fun uploadAvatar_oversizedImage_failsWithoutCallingTheApi() = runTest(UnconfinedTestDispatcher()) {
+        val api = FakeAuthApiForProfile(Result.success(MeResponseDto("u1")))
+        val sessionFlow = MutableStateFlow(Session("token"))
+        val repo = ProfileRepositoryImpl(api, sessionFlow, backgroundScope)
+        advanceUntilIdle()
+
+        val oversized = PickedImage(ByteArray(3 * 1024 * 1024 + 1), "image/png")
+        val result = repo.uploadAvatar(oversized)
+
+        assertTrue(result.isFailure)
+        assertEquals(0, api.uploadCallCount)
+    }
+
+    @Test
+    fun uploadAvatar_success_refetchesProfile() = runTest(UnconfinedTestDispatcher()) {
+        val api = FakeAuthApiForProfile(Result.success(MeResponseDto("u1", avatarUrl = "avatars/u1/new.jpg")))
+        val sessionFlow = MutableStateFlow(Session("token"))
+        val repo = ProfileRepositoryImpl(api, sessionFlow, backgroundScope)
+        advanceUntilIdle()
+
+        val result = repo.uploadAvatar(PickedImage(ByteArray(10), "image/png"))
+        advanceUntilIdle()
+
+        assertTrue(result.isSuccess)
+        assertEquals(1, api.uploadCallCount)
+        assertEquals("u1", repo.profile.value?.userId)
+    }
+
+    @Test
+    fun uploadAvatar_apiFailure_leavesExistingProfileUntouched() = runTest(UnconfinedTestDispatcher()) {
+        val api = FakeAuthApiForProfile(Result.success(MeResponseDto("u1")))
+        api.uploadResult = Result.failure(RuntimeException("boom"))
+        val sessionFlow = MutableStateFlow(Session("token"))
+        val repo = ProfileRepositoryImpl(api, sessionFlow, backgroundScope)
+        advanceUntilIdle()
+        val profileBeforeUpload = repo.profile.value
+
+        val result = repo.uploadAvatar(PickedImage(ByteArray(10), "image/png"))
+
+        assertTrue(result.isFailure)
+        assertEquals(profileBeforeUpload, repo.profile.value)
     }
 }

@@ -1,5 +1,6 @@
 package io.redigit.skimbyte.auth
 
+import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +11,8 @@ import kotlinx.coroutines.launch
 
 interface ProfileRepository {
     val profile: StateFlow<Profile?>
+    suspend fun uploadAvatar(image: PickedImage): Result<Unit>
+    suspend fun uploadBanner(image: PickedImage): Result<Unit>
 }
 
 class ProfileRepositoryImpl(
@@ -35,5 +38,20 @@ class ProfileRepositoryImpl(
                 }
             }
         }
+    }
+
+    override suspend fun uploadAvatar(image: PickedImage): Result<Unit> = upload("avatar", image)
+    override suspend fun uploadBanner(image: PickedImage): Result<Unit> = upload("banner", image)
+
+    private suspend fun upload(type: String, image: PickedImage): Result<Unit> {
+        if (image.bytes.size > MAX_IMAGE_BYTES) return Result.failure(IllegalArgumentException("Image too large"))
+        return runCatching {
+            authApi.uploadImage(type, image)
+            _profile.value = runCatching { authApi.me().toDomain() }.getOrNull() ?: _profile.value
+        }
+    }
+
+    companion object {
+        const val MAX_IMAGE_BYTES = 3 * 1024 * 1024
     }
 }
