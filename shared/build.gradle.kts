@@ -155,7 +155,7 @@ val generateAuthConfig by tasks.registering {
         val authBaseUrl = props.getProperty("authBaseUrl", "")
         val googleRedirectUri = props.getProperty("googleAuthRedirectUri", "")
         val skimbyteApiBaseUrl = props.getProperty("skimbyteApiBaseUrl", "")
-        val spacesCdnBaseUrl = props.getProperty("spacesCdnBaseUrl", "https://cdn.example.com")
+        val spacesCdnBaseUrl = props.getProperty("spacesCdnBaseUrl", "")
         val productId = props.getProperty("skimbyteProductId", "")
 
         val file = outputDir.get().file("io/redigit/skimbyte/auth/BackendConfig.kt").asFile

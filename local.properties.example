@@ -14,6 +14,7 @@ skimbyteApiBaseUrl=
 # Sent on every register/login call so the auth server knows which app the auth event is for.
 skimbyteProductId=
 
-# DigitalOcean Spaces CDN domain for avatar/banner images — defaults to the real domain below;
-# override only if pointing at a different CDN (e.g. staging).
-#spacesCdnBaseUrl=https://cdn.example.com
+# DigitalOcean Spaces CDN domain for avatar/banner images — defaults to the real domain below
+# (DO's own CDN endpoint for the app's Spaces bucket; cdn.example.com's DNS was never set up).
+# Override only if pointing at a different CDN (e.g. staging).
+#spacesCdnBaseUrl=
