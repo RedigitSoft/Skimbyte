@@ -44,6 +44,7 @@ import org.koin.compose.viewmodel.koinViewModel
 private fun googleSignInStartUrl(): String =
     URLBuilder("${ApiConfig.AUTH_BASE_URL}/auth/oauth/google/start").apply {
         parameters.append("redirect_uri", BackendConfig.GOOGLE_REDIRECT_URI)
+        parameters.append("product_id", ApiConfig.PRODUCT_ID)
     }.buildString()
 
 @OptIn(ExperimentalMaterial3Api::class)
