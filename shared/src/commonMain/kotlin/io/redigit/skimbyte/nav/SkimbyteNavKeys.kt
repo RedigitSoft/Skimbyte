@@ -30,3 +30,9 @@ data object Settings : NavKey
 
 @Serializable
 data object Topics : NavKey
+
+@Serializable
+data object AvatarViewer : NavKey
+
+@Serializable
+data object BannerViewer : NavKey
