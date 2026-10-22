@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.network
+package io.redigit.skimbyte.data.remote
 
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
@@ -9,7 +9,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
-import io.redigit.skimbyte.data.remote.RefreshCoordinator
 import io.redigit.skimbyte.testing.FakeSessionStorage
 import kotlinx.coroutines.async
 import kotlinx.coroutines.sync.Mutex

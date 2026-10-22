@@ -1,7 +1,7 @@
 package io.redigit.skimbyte.posts
 
-import io.redigit.skimbyte.network.Page
-import io.redigit.skimbyte.network.toDomain
+import io.redigit.skimbyte.data.remote.Page
+import io.redigit.skimbyte.data.remote.toDomain
 
 class PostsRepositoryImpl(
     private val postsApi: PostsApi,

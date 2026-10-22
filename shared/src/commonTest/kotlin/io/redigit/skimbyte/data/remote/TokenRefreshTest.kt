@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.network
+package io.redigit.skimbyte.data.remote
 
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -6,7 +6,6 @@ import io.ktor.client.request.get
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
-import io.redigit.skimbyte.data.remote.RefreshCoordinator
 import io.redigit.skimbyte.testing.FakeSessionStorage
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

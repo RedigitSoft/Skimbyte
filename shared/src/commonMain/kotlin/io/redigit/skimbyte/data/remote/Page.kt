@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.network
+package io.redigit.skimbyte.data.remote
 
 import io.redigit.skimbyte.data.models.dto.PageDto
 

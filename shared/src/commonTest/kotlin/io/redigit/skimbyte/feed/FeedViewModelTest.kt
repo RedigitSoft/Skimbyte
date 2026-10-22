@@ -2,7 +2,7 @@ package io.redigit.skimbyte.feed
 
 import io.redigit.skimbyte.auth.AuthRepository
 import io.redigit.skimbyte.auth.Session
-import io.redigit.skimbyte.network.Page
+import io.redigit.skimbyte.data.remote.Page
 import io.redigit.skimbyte.data.models.dto.PageDto
 import io.redigit.skimbyte.onboarding.TopicPreferencesStore
 import io.redigit.skimbyte.posts.BookmarkIdsStore

@@ -1,6 +1,6 @@
 package io.redigit.skimbyte.posts
 
-import io.redigit.skimbyte.network.Page
+import io.redigit.skimbyte.data.remote.Page
 
 interface PostsRepository {
     suspend fun fetchPosts(topic: Topic, cursor: String?): Result<Page<Post>>

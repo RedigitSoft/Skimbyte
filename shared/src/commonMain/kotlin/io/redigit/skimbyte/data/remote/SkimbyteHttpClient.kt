@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.network
+package io.redigit.skimbyte.data.remote
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -17,17 +17,10 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import io.redigit.skimbyte.data.remote.RefreshCoordinator
 import io.redigit.skimbyte.data.local.SessionStorage
 import io.redigit.skimbyte.data.models.dto.LoginResponseDto
 import io.redigit.skimbyte.data.models.dto.RefreshRequestDto
-import io.redigit.skimbyte.data.remote.ApiConfig
 import kotlinx.serialization.json.Json
-import org.koin.dsl.module
-
-val networkModule = module {
-    single<HttpClient> { createHttpClient(get(), get()) }
-}
 
 fun createHttpClient(sessionStorage: SessionStorage, refreshCoordinator: RefreshCoordinator): HttpClient =
     HttpClient { configureSkimbyteClient(sessionStorage, refreshCoordinator) }

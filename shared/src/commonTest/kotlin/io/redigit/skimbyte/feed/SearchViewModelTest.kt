@@ -1,6 +1,6 @@
 package io.redigit.skimbyte.feed
 
-import io.redigit.skimbyte.network.Page
+import io.redigit.skimbyte.data.remote.Page
 import io.redigit.skimbyte.posts.Post
 import io.redigit.skimbyte.posts.PostsRepository
 import io.redigit.skimbyte.posts.Topic
