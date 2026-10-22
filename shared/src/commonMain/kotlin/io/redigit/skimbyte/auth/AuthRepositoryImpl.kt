@@ -2,6 +2,7 @@ package io.redigit.skimbyte.auth
 
 import io.ktor.http.Url
 import io.redigit.skimbyte.data.local.SessionStorage
+import io.redigit.skimbyte.data.remote.AuthApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

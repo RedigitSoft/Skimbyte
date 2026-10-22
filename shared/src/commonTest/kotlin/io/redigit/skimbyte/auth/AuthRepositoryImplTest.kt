@@ -3,6 +3,7 @@ package io.redigit.skimbyte.auth
 import io.redigit.skimbyte.data.local.SessionStorage
 import io.redigit.skimbyte.data.models.dto.LoginResponseDto
 import io.redigit.skimbyte.data.models.dto.MeResponseDto
+import io.redigit.skimbyte.data.remote.AuthApi
 import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

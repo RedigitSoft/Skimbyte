@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth
+package io.redigit.skimbyte.data.remote
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -16,7 +16,6 @@ import io.redigit.skimbyte.data.models.dto.LoginResponseDto
 import io.redigit.skimbyte.data.models.dto.MeResponseDto
 import io.redigit.skimbyte.data.models.dto.RefreshRequestDto
 import io.redigit.skimbyte.data.models.dto.RegisterRequestDto
-import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.util.PickedImage
 
 // Talks to the live auth server (auth-server, the auth server) at ApiConfig.AUTH_BASE_URL — routes and
