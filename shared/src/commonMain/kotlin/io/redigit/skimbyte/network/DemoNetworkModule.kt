@@ -24,7 +24,7 @@ import kotlin.time.Instant
  * API is confirmed reachable; nothing above the HttpClient needs to change.
  */
 val demoNetworkModule = module {
-    single<HttpClient> { createHttpClient(get(), demoMockEngine()) }
+    single<HttpClient> { createHttpClient(get(), get(), demoMockEngine()) }
 }
 
 private const val DEMO_EMAIL = "demo@skimbyte.app"

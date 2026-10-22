@@ -16,10 +16,13 @@ private val authHttpClientQualifier = named("authHttpClient")
 val authModule = module {
     single<Settings> { Settings() }
     single<SessionStorage> { SettingsSessionStorage(get()) }
+    // Shared with networkModule's HttpClient so the two never race rotating the same
+    // single-use refresh token — see RefreshCoordinator's doc comment.
+    single { RefreshCoordinator(get()) }
     // The auth server is live independent of ApiConfig.DEMO_MODE (which still gates the
     // not-yet-live posts/bookmarks API), so it gets its own HttpClient rather than sharing the
     // demo-mode-toggled one injected into PostsApi.
-    single(authHttpClientQualifier) { createHttpClient(get()) }
+    single(authHttpClientQualifier) { createHttpClient(get(), get()) }
     single<AuthApi> { KtorAuthApi(get(authHttpClientQualifier)) }
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     single<ProfileRepository> {

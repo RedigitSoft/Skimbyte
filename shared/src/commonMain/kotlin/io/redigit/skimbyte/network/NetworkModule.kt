@@ -17,6 +17,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.redigit.skimbyte.auth.RefreshCoordinator
 import io.redigit.skimbyte.auth.SessionStorage
 import io.redigit.skimbyte.auth.dto.LoginResponseDto
 import io.redigit.skimbyte.auth.dto.RefreshRequestDto
@@ -24,22 +25,22 @@ import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
 val networkModule = module {
-    single<HttpClient> { createHttpClient(get()) }
+    single<HttpClient> { createHttpClient(get(), get()) }
 }
 
-fun createHttpClient(sessionStorage: SessionStorage): HttpClient =
-    HttpClient { configureSkimbyteClient(sessionStorage) }
+fun createHttpClient(sessionStorage: SessionStorage, refreshCoordinator: RefreshCoordinator): HttpClient =
+    HttpClient { configureSkimbyteClient(sessionStorage, refreshCoordinator) }
 
 /** Test-only entry point so TokenRefreshTest can substitute a MockEngine. */
-internal fun createHttpClient(sessionStorage: SessionStorage, engine: HttpClientEngine): HttpClient =
-    HttpClient(engine) { configureSkimbyteClient(sessionStorage) }
+internal fun createHttpClient(sessionStorage: SessionStorage, refreshCoordinator: RefreshCoordinator, engine: HttpClientEngine): HttpClient =
+    HttpClient(engine) { configureSkimbyteClient(sessionStorage, refreshCoordinator) }
 
 /**
  * The refresh call is made with the HttpClient the Auth plugin itself hands to the
  * refreshTokens callback, which is not subject to Auth interception — calling through the
  * regular injected client here would recurse back into this same callback on a 401.
  */
-private fun HttpClientConfig<*>.configureSkimbyteClient(sessionStorage: SessionStorage) {
+private fun HttpClientConfig<*>.configureSkimbyteClient(sessionStorage: SessionStorage, refreshCoordinator: RefreshCoordinator) {
     expectSuccess = true
     install(ContentNegotiation) {
         json(Json { ignoreUnknownKeys = true })
@@ -61,12 +62,14 @@ private fun HttpClientConfig<*>.configureSkimbyteClient(sessionStorage: SessionS
             }
             refreshTokens {
                 val refreshToken = sessionStorage.refreshToken() ?: return@refreshTokens null
-                val response = client.post("${ApiConfig.AUTH_BASE_URL}/auth/token/refresh") {
-                    contentType(ContentType.Application.Json)
-                    setBody(RefreshRequestDto(refreshToken = refreshToken))
-                }.body<LoginResponseDto>()
-                sessionStorage.save(response.accessToken, response.refreshToken)
-                BearerTokens(accessToken = response.accessToken, refreshToken = response.refreshToken)
+                val (accessToken, newRefreshToken) = refreshCoordinator.refresh(refreshToken) { presented ->
+                    val response = client.post("${ApiConfig.AUTH_BASE_URL}/auth/token/refresh") {
+                        contentType(ContentType.Application.Json)
+                        setBody(RefreshRequestDto(refreshToken = presented))
+                    }.body<LoginResponseDto>()
+                    response.accessToken to response.refreshToken
+                } ?: return@refreshTokens null
+                BearerTokens(accessToken = accessToken, refreshToken = newRefreshToken)
             }
         }
     }
