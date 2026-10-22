@@ -6,7 +6,7 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
-import io.redigit.skimbyte.network.ApiConfig
+import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.data.models.dto.PageDto
 import io.redigit.skimbyte.posts.dto.PostDto
 

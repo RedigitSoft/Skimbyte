@@ -21,6 +21,7 @@ import io.redigit.skimbyte.auth.RefreshCoordinator
 import io.redigit.skimbyte.auth.SessionStorage
 import io.redigit.skimbyte.data.models.dto.LoginResponseDto
 import io.redigit.skimbyte.data.models.dto.RefreshRequestDto
+import io.redigit.skimbyte.data.remote.ApiConfig
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 

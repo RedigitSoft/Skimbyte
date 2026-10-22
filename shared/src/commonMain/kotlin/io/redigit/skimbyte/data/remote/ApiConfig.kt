@@ -1,6 +1,4 @@
-package io.redigit.skimbyte.network
-
-import io.redigit.skimbyte.auth.BackendConfig
+package io.redigit.skimbyte.data.remote
 
 object ApiConfig {
     // skimbyte-server's base URL — sourced from local.properties (gitignored) via the generated

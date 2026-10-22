@@ -3,7 +3,7 @@ package io.redigit.skimbyte.di
 import io.redigit.skimbyte.auth.authModule
 import io.redigit.skimbyte.bookmarks.bookmarksModule
 import io.redigit.skimbyte.feed.feedModule
-import io.redigit.skimbyte.network.ApiConfig
+import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.network.demoNetworkModule
 import io.redigit.skimbyte.network.networkModule
 import io.redigit.skimbyte.onboarding.onboardingModule

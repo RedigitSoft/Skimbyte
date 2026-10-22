@@ -8,7 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import android.net.Uri
-import io.redigit.skimbyte.auth.BackendConfig
+import io.redigit.skimbyte.data.remote.BackendConfig
 import io.redigit.skimbyte.auth.GoogleAuthCallback
 import io.redigit.skimbyte.util.AndroidContextHolder
 import androidx.core.net.toUri

@@ -30,9 +30,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.ktor.http.URLBuilder
-import io.redigit.skimbyte.auth.BackendConfig
 import io.redigit.skimbyte.auth.GoogleAuthCallback
-import io.redigit.skimbyte.network.ApiConfig
+import io.redigit.skimbyte.data.remote.ApiConfig
+import io.redigit.skimbyte.data.remote.BackendConfig
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.util.openUrl
 import org.koin.compose.viewmodel.koinViewModel

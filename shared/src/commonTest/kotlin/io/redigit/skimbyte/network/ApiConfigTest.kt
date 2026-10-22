@@ -1,5 +1,6 @@
 package io.redigit.skimbyte.network
 
+import io.redigit.skimbyte.data.remote.ApiConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
