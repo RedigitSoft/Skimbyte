@@ -1,6 +1,6 @@
 package io.redigit.skimbyte.testing
 
-import io.redigit.skimbyte.auth.SessionStorage
+import io.redigit.skimbyte.data.local.SessionStorage
 
 class FakeSessionStorage(accessToken: String? = null, refreshToken: String? = null) : SessionStorage {
     private var access = accessToken

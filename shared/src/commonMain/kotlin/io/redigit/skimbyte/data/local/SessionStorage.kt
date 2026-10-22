@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth
+package io.redigit.skimbyte.data.local
 
 import com.russhwolf.settings.Settings
 

@@ -1,5 +1,6 @@
 package io.redigit.skimbyte.auth
 
+import io.redigit.skimbyte.data.local.SessionStorage
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
