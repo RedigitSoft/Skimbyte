@@ -19,7 +19,6 @@ fun AccountScreenCatalogContent() {
         AccountScreen(
             uiState = AccountUiState(isLoggedIn = true),
             onLogout = {},
-            onLoginSucceeded = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
