@@ -1,6 +1,6 @@
 package io.redigit.skimbyte.auth
 
-import io.redigit.skimbyte.auth.dto.MeResponseDto
+import io.redigit.skimbyte.data.models.dto.MeResponseDto
 import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow

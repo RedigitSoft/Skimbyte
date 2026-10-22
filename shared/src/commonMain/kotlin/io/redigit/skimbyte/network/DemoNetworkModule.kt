@@ -10,7 +10,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
-import io.redigit.skimbyte.network.dto.PageDto
+import io.redigit.skimbyte.data.models.dto.PageDto
 import io.redigit.skimbyte.posts.dto.PostDto
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

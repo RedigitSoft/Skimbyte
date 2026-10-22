@@ -1,5 +1,7 @@
 package io.redigit.skimbyte.auth
 
+import io.redigit.skimbyte.data.models.Profile
+import io.redigit.skimbyte.data.models.toDomain
 import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope

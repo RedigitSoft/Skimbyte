@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth.dto
+package io.redigit.skimbyte.data.models.dto
 
 import kotlinx.serialization.Serializable
 

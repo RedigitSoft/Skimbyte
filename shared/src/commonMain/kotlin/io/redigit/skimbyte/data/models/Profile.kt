@@ -1,6 +1,6 @@
-package io.redigit.skimbyte.auth
+package io.redigit.skimbyte.data.models
 
-import io.redigit.skimbyte.auth.dto.MeResponseDto
+import io.redigit.skimbyte.data.models.dto.MeResponseDto
 import io.redigit.skimbyte.network.ApiConfig
 
 data class Profile(val userId: String, val avatarUrl: String?, val bannerUrl: String?)

@@ -1,7 +1,7 @@
 package io.redigit.skimbyte.auth.ui
 
 import io.redigit.skimbyte.auth.AuthRepository
-import io.redigit.skimbyte.auth.Profile
+import io.redigit.skimbyte.data.models.Profile
 import io.redigit.skimbyte.auth.ProfileRepository
 import io.redigit.skimbyte.auth.Session
 import io.redigit.skimbyte.util.PickedImage

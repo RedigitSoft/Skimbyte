@@ -1,6 +1,6 @@
 package io.redigit.skimbyte.network
 
-import io.redigit.skimbyte.network.dto.PageDto
+import io.redigit.skimbyte.data.models.dto.PageDto
 
 data class Page<T>(
     val items: List<T>,

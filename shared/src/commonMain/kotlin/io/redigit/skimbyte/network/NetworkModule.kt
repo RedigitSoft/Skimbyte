@@ -19,8 +19,8 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import io.redigit.skimbyte.auth.RefreshCoordinator
 import io.redigit.skimbyte.auth.SessionStorage
-import io.redigit.skimbyte.auth.dto.LoginResponseDto
-import io.redigit.skimbyte.auth.dto.RefreshRequestDto
+import io.redigit.skimbyte.data.models.dto.LoginResponseDto
+import io.redigit.skimbyte.data.models.dto.RefreshRequestDto
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 

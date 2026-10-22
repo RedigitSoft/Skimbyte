@@ -11,11 +11,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
-import io.redigit.skimbyte.auth.dto.LoginRequestDto
-import io.redigit.skimbyte.auth.dto.LoginResponseDto
-import io.redigit.skimbyte.auth.dto.MeResponseDto
-import io.redigit.skimbyte.auth.dto.RefreshRequestDto
-import io.redigit.skimbyte.auth.dto.RegisterRequestDto
+import io.redigit.skimbyte.data.models.dto.LoginRequestDto
+import io.redigit.skimbyte.data.models.dto.LoginResponseDto
+import io.redigit.skimbyte.data.models.dto.MeResponseDto
+import io.redigit.skimbyte.data.models.dto.RefreshRequestDto
+import io.redigit.skimbyte.data.models.dto.RegisterRequestDto
 import io.redigit.skimbyte.network.ApiConfig
 import io.redigit.skimbyte.util.PickedImage
 
