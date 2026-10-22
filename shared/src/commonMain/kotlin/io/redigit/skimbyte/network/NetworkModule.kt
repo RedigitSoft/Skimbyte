@@ -17,7 +17,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import io.redigit.skimbyte.auth.RefreshCoordinator
+import io.redigit.skimbyte.data.remote.RefreshCoordinator
 import io.redigit.skimbyte.data.local.SessionStorage
 import io.redigit.skimbyte.data.models.dto.LoginResponseDto
 import io.redigit.skimbyte.data.models.dto.RefreshRequestDto

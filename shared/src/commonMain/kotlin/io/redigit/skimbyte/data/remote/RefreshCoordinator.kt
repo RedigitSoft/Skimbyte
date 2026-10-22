@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth
+package io.redigit.skimbyte.data.remote
 
 import io.redigit.skimbyte.data.local.SessionStorage
 import kotlinx.coroutines.sync.Mutex
