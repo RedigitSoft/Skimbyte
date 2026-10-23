@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.screens.auth
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.clickable
@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.auth.ui.LoginSheet
 import io.redigit.skimbyte.feed.ui.SharedElementContext
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.AvatarWithEditBadge
@@ -51,8 +52,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AccountScreen(
-    uiState: AccountUiState,
-    onLogout: () -> Unit,
+    state: AccountState,
+    onIntent: (AccountIntent) -> Unit,
     onSettingsClick: () -> Unit,
     onAvatarClick: () -> Unit,
     onAvatarEditClick: () -> Unit,
@@ -70,16 +71,16 @@ fun AccountScreen(
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             BannerImage(
-                bannerUrl = uiState.bannerUrl,
-                isUploading = uiState.bannerUploadInProgress,
+                bannerUrl = state.bannerUrl,
+                isUploading = state.bannerUploadInProgress,
                 onBannerClick = onBannerClick,
                 onEditClick = onBannerEditClick,
                 sharedTransition = bannerSharedTransition,
             )
             Box(modifier = Modifier.fillMaxWidth().offset(y = (-48).dp), contentAlignment = Alignment.CenterStart) {
                 AvatarWithEditBadge(
-                    avatarUrl = uiState.avatarUrl,
-                    isUploading = uiState.avatarUploadInProgress,
+                    avatarUrl = state.avatarUrl,
+                    isUploading = state.avatarUploadInProgress,
                     onAvatarClick = onAvatarClick,
                     onEditClick = onAvatarEditClick,
                     modifier = Modifier.padding(start = 24.dp),
@@ -93,10 +94,10 @@ fun AccountScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            uiState.avatarError?.let { AccountErrorBanner(message = it) }
-            uiState.bannerError?.let { AccountErrorBanner(message = it) }
+            state.avatarError?.let { AccountErrorBanner(message = it) }
+            state.bannerError?.let { AccountErrorBanner(message = it) }
 
-            if (uiState.isLoggedIn) {
+            if (state.isLoggedIn) {
                 Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
                     Column {
                         AccountActionRow(icon = Icons.Filled.Settings, label = "Settings", onClick = onSettingsClick)
@@ -126,7 +127,7 @@ fun AccountScreen(
                     modifier = Modifier.testTag("confirmLogout"),
                     onClick = {
                         showLogoutConfirm = false
-                        onLogout()
+                        onIntent(AccountIntent.Logout)
                     },
                 ) { Text("Log out") }
             },
@@ -213,15 +214,15 @@ fun AccountRoute(
     avatarSharedTransition: SharedElementContext? = null,
     bannerSharedTransition: SharedElementContext? = null,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val pickAvatar = rememberImagePickerLauncher { image -> image?.let(viewModel::onAvatarPicked) }
-    val pickBanner = rememberImagePickerLauncher { image -> image?.let(viewModel::onBannerPicked) }
-    if (!uiState.isLoggedIn) {
+    val state by viewModel.state.collectAsState()
+    val pickAvatar = rememberImagePickerLauncher { image -> image?.let { viewModel.onIntent(AccountIntent.AvatarPicked(it)) } }
+    val pickBanner = rememberImagePickerLauncher { image -> image?.let { viewModel.onIntent(AccountIntent.BannerPicked(it)) } }
+    if (!state.isLoggedIn) {
         LoginSheet(onDismiss = {}, onLoginSuccess = {})
     }
     AccountScreen(
-        uiState = uiState,
-        onLogout = viewModel::onLogout,
+        state = state,
+        onIntent = viewModel::onIntent,
         onSettingsClick = onSettingsClick,
         onAvatarClick = onAvatarClick,
         onAvatarEditClick = pickAvatar,
@@ -239,8 +240,8 @@ fun AccountRoute(
 private fun AccountScreenLoggedOutPreview() {
     SkimbyteTheme {
         AccountScreen(
-            uiState = AccountUiState(isLoggedIn = false),
-            onLogout = {},
+            state = AccountState(isLoggedIn = false),
+            onIntent = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -256,8 +257,8 @@ private fun AccountScreenLoggedOutPreview() {
 private fun AccountScreenLoggedOutLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         AccountScreen(
-            uiState = AccountUiState(isLoggedIn = false),
-            onLogout = {},
+            state = AccountState(isLoggedIn = false),
+            onIntent = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -273,8 +274,8 @@ private fun AccountScreenLoggedOutLightPreview() {
 private fun AccountScreenLoggedInPreview() {
     SkimbyteTheme {
         AccountScreen(
-            uiState = AccountUiState(isLoggedIn = true),
-            onLogout = {},
+            state = AccountState(isLoggedIn = true),
+            onIntent = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -290,8 +291,8 @@ private fun AccountScreenLoggedInPreview() {
 private fun AccountScreenLoggedInLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         AccountScreen(
-            uiState = AccountUiState(isLoggedIn = true),
-            onLogout = {},
+            state = AccountState(isLoggedIn = true),
+            onIntent = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -307,12 +308,12 @@ private fun AccountScreenLoggedInLightPreview() {
 private fun AccountScreenWithImagesPreview() {
     SkimbyteTheme {
         AccountScreen(
-            uiState = AccountUiState(
+            state = AccountState(
                 isLoggedIn = true,
                 avatarUrl = "https://picsum.photos/seed/skimbyte-avatar/200",
                 bannerUrl = "https://picsum.photos/seed/skimbyte-banner/800/300",
             ),
-            onLogout = {},
+            onIntent = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -328,12 +329,12 @@ private fun AccountScreenWithImagesPreview() {
 private fun AccountScreenWithImagesLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         AccountScreen(
-            uiState = AccountUiState(
+            state = AccountState(
                 isLoggedIn = true,
                 avatarUrl = "https://picsum.photos/seed/skimbyte-avatar/200",
                 bannerUrl = "https://picsum.photos/seed/skimbyte-banner/800/300",
             ),
-            onLogout = {},
+            onIntent = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -349,8 +350,8 @@ private fun AccountScreenWithImagesLightPreview() {
 private fun AccountScreenWithErrorPreview() {
     SkimbyteTheme {
         AccountScreen(
-            uiState = AccountUiState(isLoggedIn = true, avatarError = "Could not update avatar"),
-            onLogout = {},
+            state = AccountState(isLoggedIn = true, avatarError = "Could not update avatar"),
+            onIntent = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -366,8 +367,8 @@ private fun AccountScreenWithErrorPreview() {
 private fun AccountScreenWithErrorLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         AccountScreen(
-            uiState = AccountUiState(isLoggedIn = true, avatarError = "Could not update avatar"),
-            onLogout = {},
+            state = AccountState(isLoggedIn = true, avatarError = "Could not update avatar"),
+            onIntent = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},

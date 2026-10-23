@@ -1,8 +1,8 @@
 package io.redigit.skimbyte.di.modules
 
 import com.russhwolf.settings.Settings
-import io.redigit.skimbyte.auth.ui.AccountViewModel
 import io.redigit.skimbyte.auth.ui.LoginSheetViewModel
+import io.redigit.skimbyte.ui.screens.auth.AccountViewModel
 import io.redigit.skimbyte.data.local.SessionStorage
 import io.redigit.skimbyte.data.local.SettingsSessionStorage
 import io.redigit.skimbyte.data.remote.AuthApi

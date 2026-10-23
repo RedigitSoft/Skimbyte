@@ -1,0 +1,9 @@
+package io.redigit.skimbyte.ui.screens.auth
+
+import io.redigit.skimbyte.util.PickedImage
+
+sealed interface AccountIntent {
+    data object Logout : AccountIntent
+    data class AvatarPicked(val image: PickedImage) : AccountIntent
+    data class BannerPicked(val image: PickedImage) : AccountIntent
+}

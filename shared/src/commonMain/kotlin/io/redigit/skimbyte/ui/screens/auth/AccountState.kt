@@ -1,6 +1,6 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.screens.auth
 
-data class AccountUiState(
+data class AccountState(
     val isLoggedIn: Boolean = false,
     val avatarUrl: String? = null,
     val bannerUrl: String? = null,

@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.screens.auth
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -10,7 +10,7 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.assertNull
 
 class AccountScreenContentTest {
 
@@ -21,8 +21,8 @@ class AccountScreenContentTest {
         setContent {
             SkimbyteTheme {
                 AccountScreen(
-                    uiState = AccountUiState(isLoggedIn = true),
-                    onLogout = {},
+                    state = AccountState(isLoggedIn = true),
+                    onIntent = {},
                     onSettingsClick = {},
                     onAvatarClick = { clicked = true },
                     onAvatarEditClick = {},
@@ -43,8 +43,8 @@ class AccountScreenContentTest {
         setContent {
             SkimbyteTheme {
                 AccountScreen(
-                    uiState = AccountUiState(isLoggedIn = true),
-                    onLogout = {},
+                    state = AccountState(isLoggedIn = true),
+                    onIntent = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = { clicked = true },
@@ -65,8 +65,8 @@ class AccountScreenContentTest {
         setContent {
             SkimbyteTheme {
                 AccountScreen(
-                    uiState = AccountUiState(isLoggedIn = true),
-                    onLogout = {},
+                    state = AccountState(isLoggedIn = true),
+                    onIntent = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -86,8 +86,8 @@ class AccountScreenContentTest {
         setContent {
             SkimbyteTheme {
                 AccountScreen(
-                    uiState = AccountUiState(isLoggedIn = true, avatarError = "Could not update avatar"),
-                    onLogout = {},
+                    state = AccountState(isLoggedIn = true, avatarError = "Could not update avatar"),
+                    onIntent = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -105,8 +105,8 @@ class AccountScreenContentTest {
         setContent {
             SkimbyteTheme {
                 AccountScreen(
-                    uiState = AccountUiState(isLoggedIn = true, bannerError = "Could not update banner"),
-                    onLogout = {},
+                    state = AccountState(isLoggedIn = true, bannerError = "Could not update banner"),
+                    onIntent = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -125,8 +125,8 @@ class AccountScreenContentTest {
         setContent {
             SkimbyteTheme {
                 AccountScreen(
-                    uiState = AccountUiState(isLoggedIn = true),
-                    onLogout = {},
+                    state = AccountState(isLoggedIn = true),
+                    onIntent = {},
                     onSettingsClick = { clicked = true },
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -142,13 +142,13 @@ class AccountScreenContentTest {
 
     @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
-    fun tappingLogoutRow_showsConfirmationDialog_withoutInvokingOnLogout() = runComposeUiTest {
-        var loggedOut = false
+    fun tappingLogoutRow_showsConfirmationDialog_withoutInvokingOnIntent() = runComposeUiTest {
+        var capturedIntent: AccountIntent? = null
         setContent {
             SkimbyteTheme {
                 AccountScreen(
-                    uiState = AccountUiState(isLoggedIn = true),
-                    onLogout = { loggedOut = true },
+                    state = AccountState(isLoggedIn = true),
+                    onIntent = { capturedIntent = it },
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -160,23 +160,19 @@ class AccountScreenContentTest {
         onNodeWithTag("logoutRow").performClick()
         waitForIdle()
         onNodeWithText("Log out?").assertExists()
-        assertFalse(loggedOut)
+        assertNull(capturedIntent)
     }
 
     @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
-    fun confirmingLogoutDialog_invokesOnLogout() = runComposeUiTest {
-        var loggedOut = false
+    fun confirmingLogoutDialog_invokesOnIntentWithLogout() = runComposeUiTest {
+        var capturedIntent: AccountIntent? = null
         setContent {
             SkimbyteTheme {
                 AccountScreen(
-                    uiState = AccountUiState(isLoggedIn = true),
-                    onLogout = { loggedOut = true },
-                    onSettingsClick = {},
-                    onAvatarClick = {},
-                    onAvatarEditClick = {},
-                    onBannerClick = {},
-                    onBannerEditClick = {},
+                    state = AccountState(isLoggedIn = true),
+                    onIntent = { capturedIntent = it },
+                    onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
                 )
             }
         }
@@ -184,18 +180,18 @@ class AccountScreenContentTest {
         waitForIdle()
         onNodeWithTag("confirmLogout").performClick()
         waitForIdle()
-        assertEquals(true, loggedOut)
+        assertEquals(AccountIntent.Logout, capturedIntent)
     }
 
     @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
-    fun dismissingLogoutDialog_doesNotInvokeOnLogout() = runComposeUiTest {
-        var loggedOut = false
+    fun dismissingLogoutDialog_doesNotInvokeOnIntent() = runComposeUiTest {
+        var capturedIntent: AccountIntent? = null
         setContent {
             SkimbyteTheme {
                 AccountScreen(
-                    uiState = AccountUiState(isLoggedIn = true),
-                    onLogout = { loggedOut = true },
+                    state = AccountState(isLoggedIn = true),
+                    onIntent = { capturedIntent = it },
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -209,7 +205,7 @@ class AccountScreenContentTest {
         onNodeWithText("Cancel").performClick()
         waitForIdle()
         onNodeWithText("Log out?").assertDoesNotExist()
-        assertFalse(loggedOut)
+        assertNull(capturedIntent)
     }
 
     @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
@@ -218,8 +214,8 @@ class AccountScreenContentTest {
         setContent {
             SkimbyteTheme {
                 AccountScreen(
-                    uiState = AccountUiState(isLoggedIn = false),
-                    onLogout = {},
+                    state = AccountState(isLoggedIn = false),
+                    onIntent = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},

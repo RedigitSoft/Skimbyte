@@ -8,17 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.auth.ui.AccountScreen
-import io.redigit.skimbyte.auth.ui.AccountUiState
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.screens.auth.AccountScreen
+import io.redigit.skimbyte.ui.screens.auth.AccountState
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AccountScreenCatalogContent() {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         AccountScreen(
-            uiState = AccountUiState(isLoggedIn = true),
-            onLogout = {},
+            state = AccountState(isLoggedIn = true),
+            onIntent = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},

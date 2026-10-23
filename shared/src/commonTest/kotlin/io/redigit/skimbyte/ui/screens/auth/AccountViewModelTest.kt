@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.screens.auth
 
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.models.Profile
@@ -63,7 +63,7 @@ class AccountViewModelTest {
         val repo = FakeProfileRepository(Profile("u1", avatarUrl = "https://cdn/a.jpg", bannerUrl = null))
         val vm = AccountViewModel(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
-        assertEquals(AccountUiState(isLoggedIn = true, avatarUrl = "https://cdn/a.jpg", bannerUrl = null), vm.uiState.value)
+        assertEquals(AccountState(isLoggedIn = true, avatarUrl = "https://cdn/a.jpg", bannerUrl = null), vm.state.value)
     }
 
     @Test
@@ -71,10 +71,10 @@ class AccountViewModelTest {
         val repo = FakeProfileRepository()
         val vm = AccountViewModel(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
-        vm.onAvatarPicked(PickedImage(ByteArray(10), "image/png"))
+        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
 
-        assertEquals(false, vm.uiState.value.avatarUploadInProgress)
-        assertNull(vm.uiState.value.avatarError)
+        assertEquals(false, vm.state.value.avatarUploadInProgress)
+        assertNull(vm.state.value.avatarError)
         assertEquals(1, repo.uploadAvatarCallCount)
     }
 
@@ -84,10 +84,10 @@ class AccountViewModelTest {
         repo.avatarResult = Result.failure(RuntimeException("boom"))
         val vm = AccountViewModel(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
-        vm.onAvatarPicked(PickedImage(ByteArray(10), "image/png"))
+        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
 
-        assertEquals(false, vm.uiState.value.avatarUploadInProgress)
-        assertEquals("Could not update avatar", vm.uiState.value.avatarError)
+        assertEquals(false, vm.state.value.avatarUploadInProgress)
+        assertEquals("Could not update avatar", vm.state.value.avatarError)
     }
 
     @Test
@@ -97,8 +97,8 @@ class AccountViewModelTest {
         repo.avatarUploadGate = gate
         val vm = AccountViewModel(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
-        vm.onAvatarPicked(PickedImage(ByteArray(10), "image/png")) // suspends on the gate
-        vm.onAvatarPicked(PickedImage(ByteArray(10), "image/png")) // should be ignored: still in progress
+        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png"))) // suspends on the gate
+        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png"))) // should be ignored: still in progress
         gate.complete(Unit)
 
         assertEquals(1, repo.uploadAvatarCallCount)
@@ -109,10 +109,10 @@ class AccountViewModelTest {
         val repo = FakeProfileRepository()
         val vm = AccountViewModel(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
-        vm.onBannerPicked(PickedImage(ByteArray(10), "image/png"))
+        vm.onIntent(AccountIntent.BannerPicked(PickedImage(ByteArray(10), "image/png")))
 
-        assertEquals(false, vm.uiState.value.bannerUploadInProgress)
-        assertNull(vm.uiState.value.bannerError)
+        assertEquals(false, vm.state.value.bannerUploadInProgress)
+        assertNull(vm.state.value.bannerError)
         assertEquals(1, repo.uploadBannerCallCount)
     }
 }
