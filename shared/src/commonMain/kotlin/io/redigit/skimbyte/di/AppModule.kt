@@ -1,6 +1,6 @@
 package io.redigit.skimbyte.di
 
-import io.redigit.skimbyte.auth.authModule
+import io.redigit.skimbyte.di.modules.authModule
 import io.redigit.skimbyte.bookmarks.bookmarksModule
 import io.redigit.skimbyte.feed.feedModule
 import io.redigit.skimbyte.data.remote.ApiConfig
