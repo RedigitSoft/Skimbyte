@@ -43,6 +43,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.feed.ui.SharedElementContext
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.components.AvatarWithEditBadge
+import io.redigit.skimbyte.ui.components.BannerImage
 import io.redigit.skimbyte.util.rememberImagePickerLauncher
 import org.koin.compose.viewmodel.koinViewModel
 

@@ -23,6 +23,8 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import io.redigit.skimbyte.feed.ui.SharedElementContext
 import io.redigit.skimbyte.nav.AccountHome
+import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
+import io.redigit.skimbyte.ui.components.BANNER_SHARED_ELEMENT_KEY
 import io.redigit.skimbyte.nav.AvatarViewer
 import io.redigit.skimbyte.nav.BannerViewer
 import io.redigit.skimbyte.nav.Settings

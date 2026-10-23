@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.components
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.ui.test.junit4.v2.createComposeRule
