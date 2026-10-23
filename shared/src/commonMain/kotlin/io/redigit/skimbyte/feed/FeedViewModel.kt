@@ -2,7 +2,7 @@ package io.redigit.skimbyte.feed
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redigit.skimbyte.auth.AuthRepository
+import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.onboarding.TopicPreferencesStore
 import io.redigit.skimbyte.posts.BookmarkIdsStore
 import io.redigit.skimbyte.posts.PostsRepository

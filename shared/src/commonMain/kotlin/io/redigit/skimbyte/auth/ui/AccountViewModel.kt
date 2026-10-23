@@ -2,8 +2,8 @@ package io.redigit.skimbyte.auth.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redigit.skimbyte.auth.AuthRepository
-import io.redigit.skimbyte.auth.ProfileRepository
+import io.redigit.skimbyte.data.repositories.AuthRepository
+import io.redigit.skimbyte.data.repositories.ProfileRepository
 import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

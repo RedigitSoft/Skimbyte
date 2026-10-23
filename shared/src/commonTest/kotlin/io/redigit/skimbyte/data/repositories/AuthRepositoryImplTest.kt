@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth
+package io.redigit.skimbyte.data.repositories
 
 import io.redigit.skimbyte.data.local.SessionStorage
 import io.redigit.skimbyte.data.models.dto.LoginResponseDto

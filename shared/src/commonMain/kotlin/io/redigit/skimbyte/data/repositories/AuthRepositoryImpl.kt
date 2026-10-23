@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth
+package io.redigit.skimbyte.data.repositories
 
 import io.ktor.http.Url
 import io.redigit.skimbyte.data.local.SessionStorage

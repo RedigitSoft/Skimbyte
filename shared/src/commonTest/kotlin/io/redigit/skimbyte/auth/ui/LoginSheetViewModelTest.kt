@@ -1,7 +1,7 @@
 package io.redigit.skimbyte.auth.ui
 
-import io.redigit.skimbyte.auth.AuthRepository
-import io.redigit.skimbyte.auth.Session
+import io.redigit.skimbyte.data.repositories.AuthRepository
+import io.redigit.skimbyte.data.repositories.Session
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

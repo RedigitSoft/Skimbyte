@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth
+package io.redigit.skimbyte.data.repositories
 
 import kotlinx.coroutines.flow.StateFlow
 

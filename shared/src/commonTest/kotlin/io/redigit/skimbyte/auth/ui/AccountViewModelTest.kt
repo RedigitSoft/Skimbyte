@@ -1,9 +1,9 @@
 package io.redigit.skimbyte.auth.ui
 
-import io.redigit.skimbyte.auth.AuthRepository
+import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.models.Profile
-import io.redigit.skimbyte.auth.ProfileRepository
-import io.redigit.skimbyte.auth.Session
+import io.redigit.skimbyte.data.repositories.ProfileRepository
+import io.redigit.skimbyte.data.repositories.Session
 import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
