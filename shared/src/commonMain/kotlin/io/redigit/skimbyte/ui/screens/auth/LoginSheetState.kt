@@ -1,6 +1,6 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.screens.auth
 
-data class LoginSheetUiState(
+data class LoginSheetState(
     val email: String = "",
     val password: String = "",
     val isRegisterMode: Boolean = false,

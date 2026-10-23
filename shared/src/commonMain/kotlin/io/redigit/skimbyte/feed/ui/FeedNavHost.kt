@@ -15,10 +15,10 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import io.redigit.skimbyte.auth.ui.LoginSheet
 import io.redigit.skimbyte.feed.FeedViewModel
 import io.redigit.skimbyte.nav.FeedHome
 import io.redigit.skimbyte.nav.PostDetail
+import io.redigit.skimbyte.ui.screens.auth.LoginSheet
 import io.redigit.skimbyte.util.openUrl
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic

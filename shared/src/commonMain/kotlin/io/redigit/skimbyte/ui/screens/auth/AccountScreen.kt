@@ -41,7 +41,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.auth.ui.LoginSheet
 import io.redigit.skimbyte.feed.ui.SharedElementContext
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.AvatarWithEditBadge

@@ -21,10 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import io.redigit.skimbyte.auth.ui.LoginSheet
 import io.redigit.skimbyte.bookmarks.BookmarksUiState
 import io.redigit.skimbyte.posts.Post
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.screens.auth.LoginSheet
 import kotlin.time.Instant
 
 @Composable

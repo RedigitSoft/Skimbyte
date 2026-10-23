@@ -19,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.window.core.layout.WindowSizeClass
-import io.redigit.skimbyte.auth.ui.AccountNavHost
 import io.redigit.skimbyte.bookmarks.ui.BookmarksNavHost
 import io.redigit.skimbyte.di.appModule
 import io.redigit.skimbyte.feed.ui.FeedNavHost
@@ -33,6 +32,7 @@ import io.redigit.skimbyte.onboarding.ui.SplashScreen
 import io.redigit.skimbyte.onboarding.ui.TopicsScreen
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.theme.ThemeModeStore
+import io.redigit.skimbyte.ui.screens.auth.AccountNavHost
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel

@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.screens.auth
 
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.Session
@@ -6,6 +6,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -42,48 +45,52 @@ class LoginSheetViewModelTest {
     @Test
     fun onSubmit_blankFields_isNoOp() = runTest {
         val viewModel = LoginSheetViewModel(FakeAuthRepository(Result.success(Unit)))
-        var succeeded = false
 
-        viewModel.onSubmit { succeeded = true }
+        viewModel.onIntent(LoginSheetIntent.Submit)
 
-        assertTrue(!succeeded)
-        assertEquals(false, viewModel.uiState.value.isSubmitting)
+        assertEquals(false, viewModel.state.value.isSubmitting)
     }
 
     @Test
-    fun onSubmit_success_resetsState_andInvokesCallback() = runTest {
+    fun onSubmit_success_resetsState_andEmitsLoginSucceeded() = runTest {
         val viewModel = LoginSheetViewModel(FakeAuthRepository(Result.success(Unit)))
-        viewModel.onEmailChanged("demo@skimbyte.app")
-        viewModel.onPasswordChanged("demo")
-        var succeeded = false
+        viewModel.onIntent(LoginSheetIntent.EmailChanged("demo@skimbyte.app"))
+        viewModel.onIntent(LoginSheetIntent.PasswordChanged("demo"))
+        val effects = mutableListOf<LoginSheetEffect>()
+        val collectJob = launch { viewModel.effects.toList(effects) }
+        // Dispatchers.Main (set below) and this test's own coroutine scope are backed by two
+        // distinct UnconfinedTestDispatcher instances, so a yield() is needed on each side of the
+        // rendezvous: once to let the collector above actually subscribe before we emit, and once
+        // to let the emitted value actually reach the collector's buffer before we assert on it.
+        yield()
 
-        viewModel.onSubmit { succeeded = true }
+        viewModel.onIntent(LoginSheetIntent.Submit)
+        yield()
 
-        assertTrue(succeeded)
-        assertEquals(LoginSheetUiState(), viewModel.uiState.value)
+        assertEquals(listOf<LoginSheetEffect>(LoginSheetEffect.LoginSucceeded), effects)
+        assertEquals(LoginSheetState(), viewModel.state.value)
+        collectJob.cancel()
     }
 
     @Test
     fun onSubmit_failure_setsError_andStopsSubmitting() = runTest {
         val viewModel = LoginSheetViewModel(FakeAuthRepository(Result.failure(RuntimeException("invalid"))))
-        viewModel.onEmailChanged("wrong@skimbyte.app")
-        viewModel.onPasswordChanged("wrong")
-        var succeeded = false
+        viewModel.onIntent(LoginSheetIntent.EmailChanged("wrong@skimbyte.app"))
+        viewModel.onIntent(LoginSheetIntent.PasswordChanged("wrong"))
 
-        viewModel.onSubmit { succeeded = true }
+        viewModel.onIntent(LoginSheetIntent.Submit)
 
-        assertTrue(!succeeded)
-        assertEquals(false, viewModel.uiState.value.isSubmitting)
-        assertTrue(viewModel.uiState.value.error != null)
+        assertEquals(false, viewModel.state.value.isSubmitting)
+        assertTrue(viewModel.state.value.error != null)
     }
 
     @Test
     fun onToggleMode_switchesToRegisterMode() = runTest {
         val viewModel = LoginSheetViewModel(FakeAuthRepository(Result.success(Unit)))
 
-        viewModel.onToggleMode()
+        viewModel.onIntent(LoginSheetIntent.ModeToggled)
 
-        assertTrue(viewModel.uiState.value.isRegisterMode)
+        assertTrue(viewModel.state.value.isRegisterMode)
     }
 
     @Test
@@ -100,36 +107,40 @@ class LoginSheetViewModelTest {
             override fun logout() = Unit
         }
         val viewModel = LoginSheetViewModel(repository)
-        viewModel.onToggleMode()
-        viewModel.onEmailChanged("new@skimbyte.app")
-        viewModel.onPasswordChanged("newpass")
+        viewModel.onIntent(LoginSheetIntent.ModeToggled)
+        viewModel.onIntent(LoginSheetIntent.EmailChanged("new@skimbyte.app"))
+        viewModel.onIntent(LoginSheetIntent.PasswordChanged("newpass"))
 
-        viewModel.onSubmit {}
+        viewModel.onIntent(LoginSheetIntent.Submit)
 
         assertTrue(registerCalled)
     }
 
     @Test
-    fun onGoogleRedirect_success_resetsState_andInvokesCallback() = runTest {
+    fun onGoogleRedirect_success_resetsState_andEmitsLoginSucceeded() = runTest {
         val viewModel = LoginSheetViewModel(FakeAuthRepository(Result.success(Unit)))
-        var succeeded = false
+        val effects = mutableListOf<LoginSheetEffect>()
+        val collectJob = launch { viewModel.effects.toList(effects) }
+        yield()
 
-        viewModel.onGoogleRedirect("skimbyte://auth/callback?access_token=a&refresh_token=b") { succeeded = true }
+        viewModel.onIntent(LoginSheetIntent.GoogleRedirect("skimbyte://auth/callback?access_token=a&refresh_token=b"))
+        yield()
 
-        assertTrue(succeeded)
-        assertEquals(LoginSheetUiState(), viewModel.uiState.value)
+        assertEquals(listOf<LoginSheetEffect>(LoginSheetEffect.LoginSucceeded), effects)
+        assertEquals(LoginSheetState(), viewModel.state.value)
+        collectJob.cancel()
     }
 
     @Test
     fun onEmailChanged_clearsExistingError() = runTest {
         val viewModel = LoginSheetViewModel(FakeAuthRepository(Result.failure(RuntimeException())))
-        viewModel.onEmailChanged("a")
-        viewModel.onPasswordChanged("b")
-        viewModel.onSubmit {}
-        assertTrue(viewModel.uiState.value.error != null)
+        viewModel.onIntent(LoginSheetIntent.EmailChanged("a"))
+        viewModel.onIntent(LoginSheetIntent.PasswordChanged("b"))
+        viewModel.onIntent(LoginSheetIntent.Submit)
+        assertTrue(viewModel.state.value.error != null)
 
-        viewModel.onEmailChanged("new@skimbyte.app")
+        viewModel.onIntent(LoginSheetIntent.EmailChanged("new@skimbyte.app"))
 
-        assertNull(viewModel.uiState.value.error)
+        assertNull(viewModel.state.value.error)
     }
 }

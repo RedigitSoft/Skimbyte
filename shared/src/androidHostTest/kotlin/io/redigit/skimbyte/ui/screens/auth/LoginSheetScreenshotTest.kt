@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.screens.auth
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
@@ -24,11 +24,8 @@ class LoginSheetScreenshotTest {
         composeTestRule.setContent {
             SkimbyteTheme {
                 LoginSheetContent(
-                    state = LoginSheetUiState(),
-                    onEmailChanged = {},
-                    onPasswordChanged = {},
-                    onToggleMode = {},
-                    onSubmit = {},
+                    state = LoginSheetState(),
+                    onIntent = {},
                     onGoogleSignInClick = {},
                 )
             }
@@ -41,15 +38,12 @@ class LoginSheetScreenshotTest {
         composeTestRule.setContent {
             SkimbyteTheme {
                 LoginSheetContent(
-                    state = LoginSheetUiState(
+                    state = LoginSheetState(
                         email = "demo@skimbyte.app",
                         password = "wrong",
                         error = "Invalid email or password",
                     ),
-                    onEmailChanged = {},
-                    onPasswordChanged = {},
-                    onToggleMode = {},
-                    onSubmit = {},
+                    onIntent = {},
                     onGoogleSignInClick = {},
                 )
             }

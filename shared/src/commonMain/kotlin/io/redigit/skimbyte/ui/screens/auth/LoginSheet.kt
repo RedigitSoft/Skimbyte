@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,9 +30,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.ktor.http.URLBuilder
-import io.redigit.skimbyte.data.remote.GoogleAuthCallback
 import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.data.remote.BackendConfig
+import io.redigit.skimbyte.data.remote.GoogleAuthCallback
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.util.openUrl
 import org.koin.compose.viewmodel.koinViewModel
@@ -54,26 +54,30 @@ fun LoginSheet(
     onLoginSuccess: () -> Unit,
     viewModel: LoginSheetViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val state by viewModel.state.collectAsState()
     val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
     LaunchedEffect(Unit) {
-        GoogleAuthCallback.redirects.collect { uri -> viewModel.onGoogleRedirect(uri, onLoginSuccess) }
+        GoogleAuthCallback.redirects.collect { uri -> viewModel.onIntent(LoginSheetIntent.GoogleRedirect(uri)) }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.effects.collect { effect ->
+            when (effect) {
+                LoginSheetEffect.LoginSucceeded -> onLoginSuccess()
+            }
+        }
     }
     ModalBottomSheet(
         onDismissRequest = {
-            viewModel.resetForDismiss()
+            viewModel.onIntent(LoginSheetIntent.Dismissed)
             onDismiss()
         },
         sheetState = sheetState,
     ) {
         LoginSheetContent(
-            state = uiState,
-            onEmailChanged = viewModel::onEmailChanged,
-            onPasswordChanged = viewModel::onPasswordChanged,
-            onToggleMode = viewModel::onToggleMode,
-            onSubmit = { viewModel.onSubmit(onLoginSuccess) },
+            state = state,
+            onIntent = viewModel::onIntent,
             onGoogleSignInClick = {
-                viewModel.onGoogleSignInStarted()
+                viewModel.onIntent(LoginSheetIntent.GoogleSignInStarted)
                 openUrl(googleSignInStartUrl())
             },
         )
@@ -84,11 +88,8 @@ fun LoginSheet(
 // designsheet catalog) without needing sheet/scrim machinery.
 @Composable
 fun LoginSheetContent(
-    state: LoginSheetUiState,
-    onEmailChanged: (String) -> Unit,
-    onPasswordChanged: (String) -> Unit,
-    onToggleMode: () -> Unit,
-    onSubmit: () -> Unit,
+    state: LoginSheetState,
+    onIntent: (LoginSheetIntent) -> Unit,
     onGoogleSignInClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -115,7 +116,7 @@ fun LoginSheetContent(
         }
         OutlinedTextField(
             value = state.email,
-            onValueChange = onEmailChanged,
+            onValueChange = { onIntent(LoginSheetIntent.EmailChanged(it)) },
             label = { Text("Email") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -123,7 +124,7 @@ fun LoginSheetContent(
         )
         OutlinedTextField(
             value = state.password,
-            onValueChange = onPasswordChanged,
+            onValueChange = { onIntent(LoginSheetIntent.PasswordChanged(it)) },
             label = { Text("Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
@@ -134,7 +135,7 @@ fun LoginSheetContent(
             Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
         }
         Button(
-            onClick = onSubmit,
+            onClick = { onIntent(LoginSheetIntent.Submit) },
             enabled = !state.isSubmitting && state.email.isNotBlank() && state.password.isNotBlank(),
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -148,7 +149,7 @@ fun LoginSheetContent(
                 Text(if (state.isRegisterMode) "Sign up" else "Log in")
             }
         }
-        TextButton(onClick = onToggleMode, modifier = Modifier.fillMaxWidth()) {
+        TextButton(onClick = { onIntent(LoginSheetIntent.ModeToggled) }, modifier = Modifier.fillMaxWidth()) {
             Text(
                 if (state.isRegisterMode) "Already have an account? Log in" else "Don't have an account? Sign up",
             )
@@ -161,11 +162,8 @@ fun LoginSheetContent(
 private fun LoginSheetContentEmptyPreview() {
     SkimbyteTheme {
         LoginSheetContent(
-            state = LoginSheetUiState(),
-            onEmailChanged = {},
-            onPasswordChanged = {},
-            onToggleMode = {},
-            onSubmit = {},
+            state = LoginSheetState(),
+            onIntent = {},
             onGoogleSignInClick = {},
         )
     }
@@ -176,11 +174,8 @@ private fun LoginSheetContentEmptyPreview() {
 private fun LoginSheetContentErrorPreview() {
     SkimbyteTheme {
         LoginSheetContent(
-            state = LoginSheetUiState(email = "demo@skimbyte.app", password = "wrong", error = "Invalid email or password"),
-            onEmailChanged = {},
-            onPasswordChanged = {},
-            onToggleMode = {},
-            onSubmit = {},
+            state = LoginSheetState(email = "demo@skimbyte.app", password = "wrong", error = "Invalid email or password"),
+            onIntent = {},
             onGoogleSignInClick = {},
         )
     }
@@ -191,11 +186,8 @@ private fun LoginSheetContentErrorPreview() {
 private fun LoginSheetContentRegisterModePreview() {
     SkimbyteTheme {
         LoginSheetContent(
-            state = LoginSheetUiState(isRegisterMode = true),
-            onEmailChanged = {},
-            onPasswordChanged = {},
-            onToggleMode = {},
-            onSubmit = {},
+            state = LoginSheetState(isRegisterMode = true),
+            onIntent = {},
             onGoogleSignInClick = {},
         )
     }

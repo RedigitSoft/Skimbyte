@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.screens.auth
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box

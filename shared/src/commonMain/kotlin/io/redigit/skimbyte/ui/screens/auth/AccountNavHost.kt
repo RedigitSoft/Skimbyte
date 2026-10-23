@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.auth.ui
+package io.redigit.skimbyte.ui.screens.auth
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -23,8 +23,6 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import io.redigit.skimbyte.feed.ui.SharedElementContext
 import io.redigit.skimbyte.nav.AccountHome
-import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
-import io.redigit.skimbyte.ui.components.BANNER_SHARED_ELEMENT_KEY
 import io.redigit.skimbyte.nav.AvatarViewer
 import io.redigit.skimbyte.nav.BannerViewer
 import io.redigit.skimbyte.nav.Settings
@@ -33,9 +31,8 @@ import io.redigit.skimbyte.onboarding.TopicsViewModel
 import io.redigit.skimbyte.onboarding.ui.TopicsScreen
 import io.redigit.skimbyte.settings.SettingsViewModel
 import io.redigit.skimbyte.settings.ui.SettingsScreen
-import io.redigit.skimbyte.ui.screens.auth.AccountIntent
-import io.redigit.skimbyte.ui.screens.auth.AccountRoute
-import io.redigit.skimbyte.ui.screens.auth.AccountViewModel
+import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
+import io.redigit.skimbyte.ui.components.BANNER_SHARED_ELEMENT_KEY
 import io.redigit.skimbyte.util.rememberImagePickerLauncher
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic

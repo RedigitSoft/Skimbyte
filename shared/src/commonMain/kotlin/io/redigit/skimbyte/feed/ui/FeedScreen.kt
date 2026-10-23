@@ -26,13 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.auth.ui.LoginSheet
 import io.redigit.skimbyte.feed.FeedUiState
 import io.redigit.skimbyte.feed.FeedViewMode
 import io.redigit.skimbyte.posts.Post
 import io.redigit.skimbyte.posts.Topic
 import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.screens.auth.LoginSheet
 import kotlin.time.Instant
 
 @OptIn(ExperimentalSharedTransitionApi::class)

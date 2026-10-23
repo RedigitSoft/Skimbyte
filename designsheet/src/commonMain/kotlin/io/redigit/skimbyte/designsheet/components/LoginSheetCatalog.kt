@@ -9,13 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.auth.ui.LoginSheetContent
-import io.redigit.skimbyte.auth.ui.LoginSheetUiState
+import io.redigit.skimbyte.ui.screens.auth.LoginSheetContent
+import io.redigit.skimbyte.ui.screens.auth.LoginSheetState
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 // Renders LoginSheetContent directly rather than LoginSheet (the ModalBottomSheet container),
 // since the catalog doesn't need sheet/scrim machinery — just the content/container split
-// established in auth/ui/LoginSheet.kt.
+// established in ui/screens/auth/LoginSheet.kt.
 @Composable
 fun LoginSheetCatalogContent() {
     Column(
@@ -23,31 +23,22 @@ fun LoginSheetCatalogContent() {
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
         LoginSheetContent(
-            state = LoginSheetUiState(),
-            onEmailChanged = {},
-            onPasswordChanged = {},
-            onToggleMode = {},
-            onSubmit = {},
+            state = LoginSheetState(),
+            onIntent = {},
             onGoogleSignInClick = {},
         )
         LoginSheetContent(
-            state = LoginSheetUiState(
+            state = LoginSheetState(
                 email = "demo@skimbyte.app",
                 password = "wrong",
                 error = "Invalid email or password",
             ),
-            onEmailChanged = {},
-            onPasswordChanged = {},
-            onToggleMode = {},
-            onSubmit = {},
+            onIntent = {},
             onGoogleSignInClick = {},
         )
         LoginSheetContent(
-            state = LoginSheetUiState(isRegisterMode = true),
-            onEmailChanged = {},
-            onPasswordChanged = {},
-            onToggleMode = {},
-            onSubmit = {},
+            state = LoginSheetState(isRegisterMode = true),
+            onIntent = {},
             onGoogleSignInClick = {},
         )
     }
