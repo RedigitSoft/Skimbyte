@@ -56,10 +56,10 @@ fun AvatarWithEditBadge(
         Modifier
     }
 
-    Box(modifier = modifier.size(96.dp)) {
+    Box(modifier = modifier.size(124.dp)) {
         Box(
             modifier = avatarModifier
-                .size(96.dp)
+                .size(120.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .clickable(enabled = !isUploading, onClick = onAvatarClick)
@@ -71,18 +71,18 @@ fun AvatarWithEditBadge(
                     model = avatarUrl,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(96.dp).clip(CircleShape),
+                    modifier = Modifier.size(120.dp).clip(CircleShape),
                 )
             } else {
                 Icon(
                     Icons.Filled.AccountCircle,
                     contentDescription = null,
-                    modifier = Modifier.size(64.dp),
+                    modifier = Modifier.size(80.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             if (isUploading) {
-                CircularProgressIndicator(modifier = Modifier.size(32.dp))
+                CircularProgressIndicator(modifier = Modifier.size(40.dp))
             }
         }
         Box(

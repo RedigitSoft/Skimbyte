@@ -89,7 +89,7 @@ fun AccountScreen(
                 onEditClick = onBannerEditClick,
                 sharedTransition = bannerSharedTransition,
             )
-            Box(modifier = Modifier.fillMaxWidth().offset(y = (-48).dp), contentAlignment = Alignment.CenterStart) {
+            Box(modifier = Modifier.fillMaxWidth().offset(y = (-60).dp), contentAlignment = Alignment.CenterStart) {
                 AvatarWithEditBadge(
                     avatarUrl = state.avatarUrl,
                     isUploading = state.avatarUploadInProgress,

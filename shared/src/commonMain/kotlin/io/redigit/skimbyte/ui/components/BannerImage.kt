@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.CircularProgressIndicator
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -55,11 +57,13 @@ fun BannerImage(
         Modifier
     }
 
-    Box(modifier = modifier.fillMaxWidth().height(160.dp)) {
+    val bannerShape = RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
+    Box(modifier = modifier.fillMaxWidth().height(180.dp)) {
         Box(
             modifier = bannerModifier
                 .fillMaxWidth()
-                .height(160.dp)
+                .height(180.dp)
+                .clip(bannerShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .clickable(enabled = !isUploading, onClick = onBannerClick)
                 .semantics { contentDescription = "View banner" },
@@ -70,7 +74,7 @@ fun BannerImage(
                     model = bannerUrl,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth().height(160.dp),
+                    modifier = Modifier.fillMaxWidth().height(180.dp),
                 )
             }
             if (isUploading) {
