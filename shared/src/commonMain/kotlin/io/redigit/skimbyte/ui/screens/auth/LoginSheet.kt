@@ -2,19 +2,16 @@ package io.redigit.skimbyte.ui.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,8 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.ktor.http.URLBuilder
@@ -75,10 +71,14 @@ fun LoginSheet(
     ) {
         LoginSheetContent(
             state = state,
-            onIntent = viewModel::onIntent,
+            onGithubSignInClick = { viewModel.onIntent(LoginSheetIntent.GithubSignInStarted) },
             onGoogleSignInClick = {
                 viewModel.onIntent(LoginSheetIntent.GoogleSignInStarted)
                 openUrl(googleSignInStartUrl())
+            },
+            onNotNowClick = {
+                viewModel.onIntent(LoginSheetIntent.Dismissed)
+                onDismiss()
             },
         )
     }
@@ -89,82 +89,85 @@ fun LoginSheet(
 @Composable
 fun LoginSheetContent(
     state: LoginSheetState,
-    onIntent: (LoginSheetIntent) -> Unit,
+    onGithubSignInClick: () -> Unit,
     onGoogleSignInClick: () -> Unit,
+    onNotNowClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth().padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            if (state.isRegisterMode) "Create an account to bookmark posts" else "Log in to bookmark posts",
-            style = MaterialTheme.typography.titleMedium,
+            "Sign in to save stories",
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center,
         )
-        OutlinedButton(onClick = onGoogleSignInClick, modifier = Modifier.fillMaxWidth()) {
-            Text("Continue with Google")
-        }
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            HorizontalDivider(modifier = Modifier.weight(1f))
-            Text(
-                "OR",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 8.dp),
-            )
-            HorizontalDivider(modifier = Modifier.weight(1f))
-        }
-        OutlinedTextField(
-            value = state.email,
-            onValueChange = { onIntent(LoginSheetIntent.EmailChanged(it)) },
-            label = { Text("Email") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth(),
+        Text(
+            "Sync your bookmarks across devices and personalize your daily feed.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
         )
-        OutlinedTextField(
-            value = state.password,
-            onValueChange = { onIntent(LoginSheetIntent.PasswordChanged(it)) },
-            label = { Text("Password") },
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        state.error?.let { error ->
-            Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-        }
         Button(
-            onClick = { onIntent(LoginSheetIntent.Submit) },
-            enabled = !state.isSubmitting && state.email.isNotBlank() && state.password.isNotBlank(),
+            onClick = onGithubSignInClick,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.onSurface,
+                contentColor = MaterialTheme.colorScheme.surface,
+            ),
+        ) {
+            Text("Continue with GitHub")
+        }
+        OutlinedButton(
+            onClick = onGoogleSignInClick,
+            enabled = !state.isSubmitting,
             modifier = Modifier.fillMaxWidth(),
         ) {
             if (state.isSubmitting) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
+                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
             } else {
-                Text(if (state.isRegisterMode) "Sign up" else "Log in")
+                Text("Continue with Google")
             }
         }
-        TextButton(onClick = { onIntent(LoginSheetIntent.ModeToggled) }, modifier = Modifier.fillMaxWidth()) {
-            Text(
-                if (state.isRegisterMode) "Already have an account? Log in" else "Don't have an account? Sign up",
-            )
+        state.error?.let { error ->
+            Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
         }
+        TextButton(onClick = onNotNowClick, modifier = Modifier.fillMaxWidth()) {
+            Text("Not now")
+        }
+        Text(
+            "Developer-first privacy. No tracking.",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 
 @Preview
 @Composable
-private fun LoginSheetContentEmptyPreview() {
+private fun LoginSheetContentPreview() {
     SkimbyteTheme {
         LoginSheetContent(
             state = LoginSheetState(),
-            onIntent = {},
+            onGithubSignInClick = {},
             onGoogleSignInClick = {},
+            onNotNowClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoginSheetContentLightPreview() {
+    SkimbyteTheme(darkTheme = false) {
+        LoginSheetContent(
+            state = LoginSheetState(),
+            onGithubSignInClick = {},
+            onGoogleSignInClick = {},
+            onNotNowClick = {},
         )
     }
 }
@@ -174,21 +177,10 @@ private fun LoginSheetContentEmptyPreview() {
 private fun LoginSheetContentErrorPreview() {
     SkimbyteTheme {
         LoginSheetContent(
-            state = LoginSheetState(email = "demo@skimbyte.app", password = "wrong", error = "Invalid email or password"),
-            onIntent = {},
+            state = LoginSheetState(error = "Google sign-in failed"),
+            onGithubSignInClick = {},
             onGoogleSignInClick = {},
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun LoginSheetContentRegisterModePreview() {
-    SkimbyteTheme {
-        LoginSheetContent(
-            state = LoginSheetState(isRegisterMode = true),
-            onIntent = {},
-            onGoogleSignInClick = {},
+            onNotNowClick = {},
         )
     }
 }

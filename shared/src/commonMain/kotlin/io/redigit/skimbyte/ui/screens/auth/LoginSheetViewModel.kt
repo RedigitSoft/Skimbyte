@@ -21,36 +21,13 @@ class LoginSheetViewModel(private val authRepository: AuthRepository) : ViewMode
 
     fun onIntent(intent: LoginSheetIntent) {
         when (intent) {
-            is LoginSheetIntent.EmailChanged -> _state.value = _state.value.copy(email = intent.value, error = null)
-            is LoginSheetIntent.PasswordChanged -> _state.value = _state.value.copy(password = intent.value, error = null)
-            LoginSheetIntent.ModeToggled -> _state.value = _state.value.copy(isRegisterMode = !_state.value.isRegisterMode, error = null)
-            LoginSheetIntent.Submit -> submit()
+            // GitHub OAuth is not wired yet (needs server support); surface an honest message until
+            // the dedicated GitHub task lands.
+            LoginSheetIntent.GithubSignInStarted ->
+                _state.value = _state.value.copy(error = "GitHub sign-in is coming soon")
             LoginSheetIntent.GoogleSignInStarted -> _state.value = _state.value.copy(isSubmitting = true, error = null)
             is LoginSheetIntent.GoogleRedirect -> googleRedirect(intent.redirectUri)
             LoginSheetIntent.Dismissed -> _state.value = LoginSheetState()
-        }
-    }
-
-    private fun submit() {
-        val state = _state.value
-        if (state.email.isBlank() || state.password.isBlank() || state.isSubmitting) return
-        _state.value = state.copy(isSubmitting = true, error = null)
-        viewModelScope.launch {
-            val result = if (state.isRegisterMode) {
-                authRepository.register(state.email, state.password)
-            } else {
-                authRepository.login(state.email, state.password)
-            }
-            result.fold(
-                onSuccess = {
-                    _state.value = LoginSheetState()
-                    _effects.emit(LoginSheetEffect.LoginSucceeded)
-                },
-                onFailure = {
-                    val message = if (state.isRegisterMode) "Could not create account" else "Invalid email or password"
-                    _state.value = _state.value.copy(isSubmitting = false, error = message)
-                },
-            )
         }
     }
 

@@ -7,44 +7,64 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class LoginSheetContentTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun emptyFields_submitIsDisabled() = runComposeUiTest {
-        var submittedIntent: LoginSheetIntent? = null
+    fun githubButton_invokesCallback() = runComposeUiTest {
+        var clicked = false
         setContent {
             SkimbyteTheme {
                 LoginSheetContent(
                     state = LoginSheetState(),
-                    onIntent = { submittedIntent = it },
+                    onGithubSignInClick = { clicked = true },
                     onGoogleSignInClick = {},
+                    onNotNowClick = {},
                 )
             }
         }
-        onNodeWithText("Log in").performClick()
+        onNodeWithText("Continue with GitHub").performClick()
         waitForIdle()
-        assertNull(submittedIntent)
+        assertEquals(true, clicked)
     }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun filledFields_submitInvokesOnIntentWithSubmit() = runComposeUiTest {
-        var submittedIntent: LoginSheetIntent? = null
+    fun googleButton_invokesCallback() = runComposeUiTest {
+        var clicked = false
         setContent {
             SkimbyteTheme {
                 LoginSheetContent(
-                    state = LoginSheetState(email = "demo@skimbyte.app", password = "demo"),
-                    onIntent = { submittedIntent = it },
-                    onGoogleSignInClick = {},
+                    state = LoginSheetState(),
+                    onGithubSignInClick = {},
+                    onGoogleSignInClick = { clicked = true },
+                    onNotNowClick = {},
                 )
             }
         }
-        onNodeWithText("Log in").performClick()
+        onNodeWithText("Continue with Google").performClick()
         waitForIdle()
-        assertEquals(LoginSheetIntent.Submit, submittedIntent)
+        assertEquals(true, clicked)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun notNow_invokesCallback() = runComposeUiTest {
+        var clicked = false
+        setContent {
+            SkimbyteTheme {
+                LoginSheetContent(
+                    state = LoginSheetState(),
+                    onGithubSignInClick = {},
+                    onGoogleSignInClick = {},
+                    onNotNowClick = { clicked = true },
+                )
+            }
+        }
+        onNodeWithText("Not now").performClick()
+        waitForIdle()
+        assertEquals(true, clicked)
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -53,12 +73,13 @@ class LoginSheetContentTest {
         setContent {
             SkimbyteTheme {
                 LoginSheetContent(
-                    state = LoginSheetState(error = "Invalid email or password"),
-                    onIntent = {},
+                    state = LoginSheetState(error = "Google sign-in failed"),
+                    onGithubSignInClick = {},
                     onGoogleSignInClick = {},
+                    onNotNowClick = {},
                 )
             }
         }
-        onNodeWithText("Invalid email or password").assertExists()
+        onNodeWithText("Google sign-in failed").assertExists()
     }
 }

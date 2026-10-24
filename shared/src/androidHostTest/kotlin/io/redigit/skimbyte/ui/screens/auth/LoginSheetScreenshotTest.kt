@@ -25,8 +25,9 @@ class LoginSheetScreenshotTest {
             SkimbyteTheme {
                 LoginSheetContent(
                     state = LoginSheetState(),
-                    onIntent = {},
+                    onGithubSignInClick = {},
                     onGoogleSignInClick = {},
+                    onNotNowClick = {},
                 )
             }
         }
@@ -38,13 +39,10 @@ class LoginSheetScreenshotTest {
         composeTestRule.setContent {
             SkimbyteTheme {
                 LoginSheetContent(
-                    state = LoginSheetState(
-                        email = "demo@skimbyte.app",
-                        password = "wrong",
-                        error = "Invalid email or password",
-                    ),
-                    onIntent = {},
+                    state = LoginSheetState(error = "Google sign-in failed"),
+                    onGithubSignInClick = {},
                     onGoogleSignInClick = {},
+                    onNotNowClick = {},
                 )
             }
         }
