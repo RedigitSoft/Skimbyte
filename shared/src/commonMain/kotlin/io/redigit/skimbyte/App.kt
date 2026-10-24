@@ -1,5 +1,10 @@
 package io.redigit.skimbyte
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -16,7 +21,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.delay
 import androidx.window.core.layout.WindowSizeClass
 import io.redigit.skimbyte.ui.screens.bookmarks.BookmarksNavHost
 import io.redigit.skimbyte.di.appModule
@@ -80,10 +90,35 @@ fun App() {
 private fun MainShell() {
     var selected by remember { mutableStateOf(TopLevelDestination.Feed) }
     var isShowingRoot by remember { mutableStateOf(true) }
+    var navVisible by remember { mutableStateOf(true) }
+    var scrollTick by remember { mutableStateOf(0) }
     val saveableStateHolder = rememberSaveableStateHolder()
     val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
     val isCompact = !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
     val onDestinationSelected: (TopLevelDestination) -> Unit = { selected = it }
+
+    // Hide the floating nav while content scrolls vertically; each scroll bumps scrollTick and the
+    // effect below brings the bar back after a short idle gap.
+    val hideNavOnScroll = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (available.y != 0f) {
+                    navVisible = false
+                    scrollTick++
+                }
+                return Offset.Zero
+            }
+        }
+    }
+    LaunchedEffect(scrollTick) {
+        if (!navVisible) {
+            delay(1500)
+            navVisible = true
+        }
+    }
+    // Always show the bar again when switching tabs or returning to a tab's root.
+    LaunchedEffect(selected, isShowingRoot) { navVisible = true }
+
     Row {
         // The rail is never hidden: at medium/expanded width, ListDetailSceneStrategy always
         // shows list+detail as two simultaneous panes, so there is never an "immersive
@@ -92,7 +127,11 @@ private fun MainShell() {
         Scaffold(
             modifier = Modifier.weight(1f),
             floatingActionButton = {
-                if (isCompact && isShowingRoot) {
+                AnimatedVisibility(
+                    visible = isCompact && isShowingRoot && navVisible,
+                    enter = slideInVertically(initialOffsetY = { it * 2 }) + fadeIn(),
+                    exit = slideOutVertically(targetOffsetY = { it * 2 }) + fadeOut(),
+                ) {
                     SkimbyteBottomNavBar(
                         selected = selected,
                         onDestinationSelected = onDestinationSelected,
@@ -104,6 +143,7 @@ private fun MainShell() {
             Box(
                 modifier = Modifier
                     .padding(padding)
+                    .nestedScroll(hideNavOnScroll)
             ) {
                 saveableStateHolder.SaveableStateProvider(selected) {
                     when (selected) {
