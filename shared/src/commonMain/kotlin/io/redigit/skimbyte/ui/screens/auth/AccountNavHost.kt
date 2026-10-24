@@ -29,8 +29,8 @@ import io.redigit.skimbyte.ui.navigation.Settings
 import io.redigit.skimbyte.ui.navigation.Topics
 import io.redigit.skimbyte.onboarding.TopicsViewModel
 import io.redigit.skimbyte.onboarding.ui.TopicsScreen
-import io.redigit.skimbyte.settings.SettingsViewModel
-import io.redigit.skimbyte.settings.ui.SettingsScreen
+import io.redigit.skimbyte.ui.screens.settings.SettingsViewModel
+import io.redigit.skimbyte.ui.screens.settings.SettingsScreen
 import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
 import io.redigit.skimbyte.ui.components.BANNER_SHARED_ELEMENT_KEY
 import io.redigit.skimbyte.util.rememberImagePickerLauncher
@@ -112,10 +112,10 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
                 }
                 entry<Settings>(metadata = ListDetailSceneStrategy.detailPane()) {
                     val viewModel = koinViewModel<SettingsViewModel>()
-                    val settingsUiState by viewModel.uiState.collectAsState()
+                    val settingsState by viewModel.state.collectAsState()
                     SettingsScreen(
-                        uiState = settingsUiState,
-                        onThemeModeSelected = viewModel::onThemeModeSelected,
+                        state = settingsState,
+                        onIntent = viewModel::onIntent,
                         onEditInterestsClick = { backStack.add(Topics) },
                         onBack = { backStack.removeLastOrNull() },
                     )

@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.settings
+package io.redigit.skimbyte.ui.screens.settings
 
 import io.redigit.skimbyte.theme.ThemeMode
 import io.redigit.skimbyte.theme.ThemeModeStore
@@ -25,15 +25,15 @@ class SettingsViewModelTest {
     fun `reads initial theme mode from store`() {
         val store = FakeThemeModeStore(ThemeMode.Dark)
         val vm = SettingsViewModel(store)
-        assertEquals(ThemeMode.Dark, vm.uiState.value.themeMode)
+        assertEquals(ThemeMode.Dark, vm.state.value.themeMode)
     }
 
     @Test
     fun `onThemeModeSelected persists and updates state`() {
         val store = FakeThemeModeStore(ThemeMode.System)
         val vm = SettingsViewModel(store)
-        vm.onThemeModeSelected(ThemeMode.Light)
-        assertEquals(ThemeMode.Light, vm.uiState.value.themeMode)
+        vm.onIntent(SettingsIntent.ThemeModeSelected(ThemeMode.Light))
+        assertEquals(ThemeMode.Light, vm.state.value.themeMode)
         assertEquals(ThemeMode.Light, store.get())
     }
 }

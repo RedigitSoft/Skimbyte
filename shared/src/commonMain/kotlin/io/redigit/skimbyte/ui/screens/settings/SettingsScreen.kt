@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.settings.ui
+package io.redigit.skimbyte.ui.screens.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,14 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.settings.SettingsUiState
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.theme.ThemeMode
 
 @Composable
 fun SettingsScreen(
-    uiState: SettingsUiState,
-    onThemeModeSelected: (ThemeMode) -> Unit,
+    state: SettingsState,
+    onIntent: (SettingsIntent) -> Unit,
     onEditInterestsClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -54,15 +53,15 @@ fun SettingsScreen(
                     headlineContent = { Text(mode.displayLabel()) },
                     leadingContent = {
                         RadioButton(
-                            selected = mode == uiState.themeMode,
-                            onClick = { onThemeModeSelected(mode) },
+                            selected = mode == state.themeMode,
+                            onClick = { onIntent(SettingsIntent.ThemeModeSelected(mode)) },
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .selectable(
-                            selected = mode == uiState.themeMode,
-                            onClick = { onThemeModeSelected(mode) },
+                            selected = mode == state.themeMode,
+                            onClick = { onIntent(SettingsIntent.ThemeModeSelected(mode)) },
                         ),
                 )
             }
@@ -87,8 +86,8 @@ private fun ThemeMode.displayLabel(): String = when (this) {
 private fun SettingsScreenLightThemePreview() {
     SkimbyteTheme {
         SettingsScreen(
-            uiState = SettingsUiState(themeMode = ThemeMode.Light),
-            onThemeModeSelected = {},
+            state = SettingsState(themeMode = ThemeMode.Light),
+            onIntent = {},
             onEditInterestsClick = {},
             onBack = {},
         )
@@ -100,8 +99,8 @@ private fun SettingsScreenLightThemePreview() {
 private fun SettingsScreenLightThemeLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         SettingsScreen(
-            uiState = SettingsUiState(themeMode = ThemeMode.Light),
-            onThemeModeSelected = {},
+            state = SettingsState(themeMode = ThemeMode.Light),
+            onIntent = {},
             onEditInterestsClick = {},
             onBack = {},
         )
@@ -113,8 +112,8 @@ private fun SettingsScreenLightThemeLightPreview() {
 private fun SettingsScreenDarkThemePreview() {
     SkimbyteTheme {
         SettingsScreen(
-            uiState = SettingsUiState(themeMode = ThemeMode.Dark),
-            onThemeModeSelected = {},
+            state = SettingsState(themeMode = ThemeMode.Dark),
+            onIntent = {},
             onEditInterestsClick = {},
             onBack = {},
         )
@@ -126,8 +125,8 @@ private fun SettingsScreenDarkThemePreview() {
 private fun SettingsScreenDarkThemeLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         SettingsScreen(
-            uiState = SettingsUiState(themeMode = ThemeMode.Dark),
-            onThemeModeSelected = {},
+            state = SettingsState(themeMode = ThemeMode.Dark),
+            onIntent = {},
             onEditInterestsClick = {},
             onBack = {},
         )
@@ -139,8 +138,8 @@ private fun SettingsScreenDarkThemeLightPreview() {
 private fun SettingsScreenSystemThemePreview() {
     SkimbyteTheme {
         SettingsScreen(
-            uiState = SettingsUiState(themeMode = ThemeMode.System),
-            onThemeModeSelected = {},
+            state = SettingsState(themeMode = ThemeMode.System),
+            onIntent = {},
             onEditInterestsClick = {},
             onBack = {},
         )
@@ -152,8 +151,8 @@ private fun SettingsScreenSystemThemePreview() {
 private fun SettingsScreenSystemThemeLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         SettingsScreen(
-            uiState = SettingsUiState(themeMode = ThemeMode.System),
-            onThemeModeSelected = {},
+            state = SettingsState(themeMode = ThemeMode.System),
+            onIntent = {},
             onEditInterestsClick = {},
             onBack = {},
         )
