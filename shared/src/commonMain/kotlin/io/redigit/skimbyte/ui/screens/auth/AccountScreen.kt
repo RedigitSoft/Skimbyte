@@ -26,8 +26,11 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -129,6 +132,35 @@ fun AccountScreen(
                 }
                 if (state.followedTopics.isNotEmpty()) {
                     FollowedTopicsSection(topics = state.followedTopics)
+                }
+
+                EyebrowText("Feed & app config", modifier = Modifier.padding(start = 4.dp))
+                Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
+                    Column {
+                        AccountActionRow(
+                            icon = Icons.Outlined.Schedule,
+                            label = "Daily digest time",
+                            supporting = "Scheduled brief delivery",
+                            trailingValue = state.digestTime,
+                            onClick = { onIntent(AccountIntent.DigestTimeCycled) },
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                        AccountActionRow(
+                            icon = Icons.Filled.Notes,
+                            label = "Summary length",
+                            supporting = "Reading depth",
+                            trailingValue = state.summaryLength.label,
+                            onClick = { onIntent(AccountIntent.SummaryLengthCycled) },
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                        AccountActionRow(
+                            icon = Icons.Filled.Notifications,
+                            label = "Notifications",
+                            supporting = "Breaking releases & CVEs",
+                            trailingValue = if (state.notificationsEnabled) "On" else "Off",
+                            onClick = { onIntent(AccountIntent.NotificationsToggled(!state.notificationsEnabled)) },
+                        )
+                    }
                 }
 
                 EyebrowText("Account", modifier = Modifier.padding(start = 4.dp))
@@ -320,6 +352,7 @@ private fun AccountActionRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     supporting: String? = null,
+    trailingValue: String? = null,
     tint: Color = MaterialTheme.colorScheme.onSurface,
     iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
@@ -343,6 +376,13 @@ private fun AccountActionRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        }
+        if (trailingValue != null) {
+            Text(
+                trailingValue,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+            )
         }
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,

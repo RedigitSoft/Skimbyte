@@ -1,5 +1,7 @@
 package io.redigit.skimbyte.ui.screens.auth
 
+import io.redigit.skimbyte.data.local.AppConfigStore
+import io.redigit.skimbyte.data.local.SummaryLength
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.models.Profile
 import io.redigit.skimbyte.data.models.Topic
@@ -61,6 +63,16 @@ private class FakeProfileRepository(initial: Profile? = null) : ProfileRepositor
     }
 }
 
+private class FakeAppConfigStore : AppConfigStore {
+    override val digestTime = MutableStateFlow("08:30")
+    override val summaryLength = MutableStateFlow(SummaryLength.Medium)
+    override val notificationsEnabled = MutableStateFlow(true)
+    var cycleDigestCalls = 0
+    override fun cycleDigestTime() { cycleDigestCalls++ }
+    override fun cycleSummaryLength() {}
+    override fun setNotificationsEnabled(enabled: Boolean) { notificationsEnabled.value = enabled }
+}
+
 class AccountViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -76,12 +88,34 @@ class AccountViewModelTest {
         profile: ProfileRepository,
         followedTopics: Set<Topic> = emptySet(),
         bookmarkIds: Set<String> = emptySet(),
+        appConfig: AppConfigStore = FakeAppConfigStore(),
     ) = AccountViewModel(
         auth,
         profile,
         MutableStateFlow(followedTopics),
         MutableStateFlow(bookmarkIds),
+        appConfig,
     )
+
+    @Test
+    fun notificationsToggle_updatesState() = runTest {
+        val config = FakeAppConfigStore()
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), FakeProfileRepository(), appConfig = config)
+
+        vm.onIntent(AccountIntent.NotificationsToggled(false))
+
+        assertEquals(false, vm.state.value.notificationsEnabled)
+    }
+
+    @Test
+    fun digestTimeCycle_delegatesToStore() = runTest {
+        val config = FakeAppConfigStore()
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), FakeProfileRepository(), appConfig = config)
+
+        vm.onIntent(AccountIntent.DigestTimeCycled)
+
+        assertEquals(1, config.cycleDigestCalls)
+    }
 
     @Test
     fun initialState_reflectsSessionAndProfile() = runTest {

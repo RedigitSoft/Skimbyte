@@ -2,6 +2,7 @@ package io.redigit.skimbyte.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redigit.skimbyte.data.local.AppConfigStore
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.ProfileRepository
@@ -38,6 +39,7 @@ class AccountViewModel(
     private val profileRepository: ProfileRepository,
     followedTopics: StateFlow<Set<Topic>>,
     bookmarkIds: StateFlow<Set<String>>,
+    private val appConfigStore: AppConfigStore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AccountState())
@@ -95,6 +97,21 @@ class AccountViewModel(
                 )
             }
         }
+        viewModelScope.launch {
+            combine(
+                appConfigStore.digestTime,
+                appConfigStore.summaryLength,
+                appConfigStore.notificationsEnabled,
+            ) { digest, summary, notifications ->
+                Triple(digest, summary, notifications)
+            }.collect { (digest, summary, notifications) ->
+                _state.value = _state.value.copy(
+                    digestTime = digest,
+                    summaryLength = summary,
+                    notificationsEnabled = notifications,
+                )
+            }
+        }
     }
 
     fun onIntent(intent: AccountIntent) {
@@ -104,6 +121,9 @@ class AccountViewModel(
             is AccountIntent.BannerPicked -> onBannerPicked(intent.image)
             AccountIntent.AvatarRemoved -> viewModelScope.launch { profileRepository.removeAvatar() }
             AccountIntent.BannerRemoved -> viewModelScope.launch { profileRepository.removeBanner() }
+            AccountIntent.DigestTimeCycled -> appConfigStore.cycleDigestTime()
+            AccountIntent.SummaryLengthCycled -> appConfigStore.cycleSummaryLength()
+            is AccountIntent.NotificationsToggled -> appConfigStore.setNotificationsEnabled(intent.enabled)
         }
     }
 
