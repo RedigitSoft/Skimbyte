@@ -37,6 +37,13 @@ private val bookmarkedPost = shortPost.copy(id = "catalog-bookmarked", isBookmar
 
 private val imagePost = shortPost.copy(id = "catalog-image", imageUrl = "https://picsum.photos/seed/skimbyte/800/400")
 
+private val longReadPost = shortPost.copy(
+    id = "catalog-long-read",
+    title = "A deep dive that takes a few minutes to read",
+    summaryMarkdown = "A longer multi-paragraph summary that pushes the reading-time estimate past a single minute. " +
+        List(240) { "word" }.joinToString(" "),
+)
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PostCardCatalogContent() {
@@ -47,6 +54,7 @@ fun PostCardCatalogContent() {
         PostCard(post = shortPost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
         PostCard(post = bookmarkedPost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
         PostCard(post = longTitlePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
+        PostCard(post = longReadPost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
         PostCard(post = imagePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
     }
 }
