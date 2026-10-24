@@ -104,7 +104,6 @@ private fun MainShell() {
                         selected = selected,
                         onDestinationSelected = onDestinationSelected,
                         expanded = navBarExpanded,
-                        onExpandedChange = { navBarExpanded = it },
                     )
                 }
             },
