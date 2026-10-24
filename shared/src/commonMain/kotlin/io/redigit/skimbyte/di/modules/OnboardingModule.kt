@@ -1,7 +1,9 @@
 package io.redigit.skimbyte.di.modules
 
 import io.redigit.skimbyte.data.local.SettingsTopicPreferencesStore
+import io.redigit.skimbyte.data.local.SettingsTutorialStore
 import io.redigit.skimbyte.data.local.TopicPreferencesStore
+import io.redigit.skimbyte.data.local.TutorialStore
 import io.redigit.skimbyte.data.remote.KtorTopicsApi
 import io.redigit.skimbyte.data.remote.TopicsApi
 import io.redigit.skimbyte.data.repositories.TopicsRepository
@@ -15,6 +17,7 @@ import org.koin.dsl.module
 
 val onboardingModule = module {
     single<TopicPreferencesStore> { SettingsTopicPreferencesStore(get()) }
+    single<TutorialStore> { SettingsTutorialStore(get()) }
     single<TopicsApi> { KtorTopicsApi(get()) }
     single<TopicsRepository> { TopicsRepositoryImpl(get(), CoroutineScope(SupervisorJob() + Dispatchers.Default)) }
     viewModel { (isEditing: Boolean) -> TopicsViewModel(get(), get(), isEditing) }

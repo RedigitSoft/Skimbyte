@@ -19,6 +19,7 @@ import io.redigit.skimbyte.designsheet.components.StackedCardBrowserCatalogConte
 import io.redigit.skimbyte.designsheet.components.TextFieldsCatalogContent
 import io.redigit.skimbyte.designsheet.components.TopicFilterCatalogContent
 import io.redigit.skimbyte.designsheet.components.TopicsScreenCatalogContent
+import io.redigit.skimbyte.designsheet.components.TutorialOverlayCatalogContent
 import io.redigit.skimbyte.designsheet.tokens.ColorTokensContent
 import io.redigit.skimbyte.designsheet.tokens.ShapeTokensContent
 import io.redigit.skimbyte.designsheet.tokens.SpacingTokensContent
@@ -51,5 +52,6 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("profile-images", "Avatar & banner", "Account") { ProfileImagesCatalogContent() },
     CatalogItem("image-edit-sheet", "Image edit sheet", "Account") { ImageEditSheetCatalogContent() },
     CatalogItem("topics-screen", "Topics", "Onboarding") { TopicsScreenCatalogContent() },
+    CatalogItem("tutorial-overlay", "Tutorial overlay", "Onboarding") { TutorialOverlayCatalogContent() },
     CatalogItem("settings-screen", "Settings", "Account") { SettingsScreenCatalogContent() },
 )

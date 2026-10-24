@@ -39,10 +39,12 @@ import io.redigit.skimbyte.ui.navigation.TopLevelDestination
 import io.redigit.skimbyte.ui.navigation.SkimbyteBottomNavBar
 import io.redigit.skimbyte.ui.navigation.SkimbyteNavigationRail
 import io.redigit.skimbyte.data.local.TopicPreferencesStore
+import io.redigit.skimbyte.data.local.TutorialStore
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsViewModel
 import io.redigit.skimbyte.ui.screens.onboarding.SplashScreen
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsScreen
+import io.redigit.skimbyte.ui.screens.onboarding.TutorialOverlay
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.theme.ThemeModeStore
 import io.redigit.skimbyte.ui.screens.auth.AccountNavHost
@@ -88,7 +90,21 @@ fun App() {
                             onIntent = topicsViewModel::onIntent,
                         )
                     }
-                    AppStage.Main -> MainShell()
+                    AppStage.Main -> {
+                        val tutorialStore = koinInject<TutorialStore>()
+                        var showTutorial by remember { mutableStateOf(!tutorialStore.hasSeenTutorial()) }
+                        Box {
+                            MainShell()
+                            if (showTutorial) {
+                                TutorialOverlay(
+                                    onDismiss = {
+                                        tutorialStore.setTutorialSeen()
+                                        showTutorial = false
+                                    },
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
