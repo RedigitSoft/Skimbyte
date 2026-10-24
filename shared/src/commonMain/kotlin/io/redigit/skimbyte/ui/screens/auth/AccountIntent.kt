@@ -6,4 +6,6 @@ sealed interface AccountIntent {
     data object Logout : AccountIntent
     data class AvatarPicked(val image: PickedImage) : AccountIntent
     data class BannerPicked(val image: PickedImage) : AccountIntent
+    data object AvatarRemoved : AccountIntent
+    data object BannerRemoved : AccountIntent
 }

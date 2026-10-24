@@ -38,6 +38,8 @@ private class FakeProfileRepository(initial: Profile? = null) : ProfileRepositor
     var avatarUploadGate: CompletableDeferred<Unit>? = null
     var uploadAvatarCallCount = 0
     var uploadBannerCallCount = 0
+    var removeAvatarCallCount = 0
+    var removeBannerCallCount = 0
     override suspend fun uploadAvatar(image: PickedImage): Result<Unit> {
         uploadAvatarCallCount++
         avatarUploadGate?.await()
@@ -46,6 +48,16 @@ private class FakeProfileRepository(initial: Profile? = null) : ProfileRepositor
     override suspend fun uploadBanner(image: PickedImage): Result<Unit> {
         uploadBannerCallCount++
         return bannerResult
+    }
+    override suspend fun removeAvatar(): Result<Unit> {
+        removeAvatarCallCount++
+        _profile.value = _profile.value?.copy(avatarUrl = null)
+        return Result.success(Unit)
+    }
+    override suspend fun removeBanner(): Result<Unit> {
+        removeBannerCallCount++
+        _profile.value = _profile.value?.copy(bannerUrl = null)
+        return Result.success(Unit)
     }
 }
 
@@ -151,6 +163,17 @@ class AccountViewModelTest {
         gate.complete(Unit)
 
         assertEquals(1, repo.uploadAvatarCallCount)
+    }
+
+    @Test
+    fun onAvatarRemoved_clearsAvatarUrl() = runTest {
+        val repo = FakeProfileRepository(Profile("u1", avatarUrl = "https://cdn/a.jpg", bannerUrl = null))
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
+
+        vm.onIntent(AccountIntent.AvatarRemoved)
+
+        assertEquals(1, repo.removeAvatarCallCount)
+        assertNull(vm.state.value.avatarUrl)
     }
 
     @Test

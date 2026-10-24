@@ -16,6 +16,8 @@ interface ProfileRepository {
     val profile: StateFlow<Profile?>
     suspend fun uploadAvatar(image: PickedImage): Result<Unit>
     suspend fun uploadBanner(image: PickedImage): Result<Unit>
+    suspend fun removeAvatar(): Result<Unit>
+    suspend fun removeBanner(): Result<Unit>
 }
 
 class ProfileRepositoryImpl(
@@ -45,6 +47,16 @@ class ProfileRepositoryImpl(
 
     override suspend fun uploadAvatar(image: PickedImage): Result<Unit> = upload("avatar", image)
     override suspend fun uploadBanner(image: PickedImage): Result<Unit> = upload("banner", image)
+
+    // Optimistic/local only: there is no delete endpoint yet, so this clears the URL in-memory and
+    // does not persist across a reload. Point at DELETE /me/avatar|banner once it exists (SERVER_API.md).
+    override suspend fun removeAvatar(): Result<Unit> = runCatching {
+        _profile.value = _profile.value?.copy(avatarUrl = null)
+    }
+
+    override suspend fun removeBanner(): Result<Unit> = runCatching {
+        _profile.value = _profile.value?.copy(bannerUrl = null)
+    }
 
     private suspend fun upload(type: String, image: PickedImage): Result<Unit> {
         if (image.bytes.size > MAX_IMAGE_BYTES) return Result.failure(IllegalArgumentException("Image too large"))

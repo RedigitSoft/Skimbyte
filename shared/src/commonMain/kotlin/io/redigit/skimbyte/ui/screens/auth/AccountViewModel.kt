@@ -99,6 +99,8 @@ class AccountViewModel(
             AccountIntent.Logout -> authRepository.logout()
             is AccountIntent.AvatarPicked -> onAvatarPicked(intent.image)
             is AccountIntent.BannerPicked -> onBannerPicked(intent.image)
+            AccountIntent.AvatarRemoved -> viewModelScope.launch { profileRepository.removeAvatar() }
+            AccountIntent.BannerRemoved -> viewModelScope.launch { profileRepository.removeBanner() }
         }
     }
 

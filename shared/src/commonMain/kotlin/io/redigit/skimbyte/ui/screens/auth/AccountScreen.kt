@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -409,6 +410,7 @@ fun AccountRoute(
     val state by viewModel.state.collectAsState()
     val pickAvatar = rememberImagePickerLauncher { image -> image?.let { viewModel.onIntent(AccountIntent.AvatarPicked(it)) } }
     val pickBanner = rememberImagePickerLauncher { image -> image?.let { viewModel.onIntent(AccountIntent.BannerPicked(it)) } }
+    var editing by remember { mutableStateOf<ImageEditTarget?>(null) }
     if (!state.isLoggedIn) {
         LoginSheet(onDismiss = {}, onLoginSuccess = {})
     }
@@ -417,14 +419,43 @@ fun AccountRoute(
         onIntent = viewModel::onIntent,
         onSettingsClick = onSettingsClick,
         onAvatarClick = onAvatarClick,
-        onAvatarEditClick = pickAvatar,
+        onAvatarEditClick = { editing = ImageEditTarget.Avatar },
         onBannerClick = onBannerClick,
-        onBannerEditClick = pickBanner,
+        onBannerEditClick = { editing = ImageEditTarget.Banner },
         modifier = modifier,
         avatarSharedTransition = avatarSharedTransition,
         bannerSharedTransition = bannerSharedTransition,
     )
+    editing?.let { target ->
+        val hasImage = when (target) {
+            ImageEditTarget.Avatar -> state.avatarUrl != null
+            ImageEditTarget.Banner -> state.bannerUrl != null
+        }
+        val pick = when (target) {
+            ImageEditTarget.Avatar -> pickAvatar
+            ImageEditTarget.Banner -> pickBanner
+        }
+        ImageEditSheet(
+            onDismiss = { editing = null },
+            // Camera capture isn't available yet (the ImagePicker is gallery-only), so "Take photo"
+            // falls back to the gallery as a placeholder - see SERVER_API.md (#3).
+            onTakePhoto = { editing = null; pick() },
+            onChooseFromGallery = { editing = null; pick() },
+            onRemove = if (hasImage) {
+                {
+                    editing = null
+                    viewModel.onIntent(
+                        if (target == ImageEditTarget.Avatar) AccountIntent.AvatarRemoved else AccountIntent.BannerRemoved,
+                    )
+                }
+            } else {
+                null
+            },
+        )
+    }
 }
+
+private enum class ImageEditTarget { Avatar, Banner }
 
 private val richAccountState = AccountState(
     isLoggedIn = true,
