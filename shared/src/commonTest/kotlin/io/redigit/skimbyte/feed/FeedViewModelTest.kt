@@ -4,7 +4,7 @@ import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.Session
 import io.redigit.skimbyte.data.remote.Page
 import io.redigit.skimbyte.data.models.dto.PageDto
-import io.redigit.skimbyte.onboarding.TopicPreferencesStore
+import io.redigit.skimbyte.data.local.TopicPreferencesStore
 import io.redigit.skimbyte.data.repositories.BookmarkIdsStore
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.data.remote.PostsApi

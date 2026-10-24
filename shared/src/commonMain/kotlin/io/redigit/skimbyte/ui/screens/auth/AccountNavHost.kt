@@ -27,8 +27,9 @@ import io.redigit.skimbyte.ui.navigation.AvatarViewer
 import io.redigit.skimbyte.ui.navigation.BannerViewer
 import io.redigit.skimbyte.ui.navigation.Settings
 import io.redigit.skimbyte.ui.navigation.Topics
-import io.redigit.skimbyte.onboarding.TopicsViewModel
-import io.redigit.skimbyte.onboarding.ui.TopicsScreen
+import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
+import io.redigit.skimbyte.ui.screens.onboarding.TopicsViewModel
+import io.redigit.skimbyte.ui.screens.onboarding.TopicsScreen
 import io.redigit.skimbyte.ui.screens.settings.SettingsViewModel
 import io.redigit.skimbyte.ui.screens.settings.SettingsScreen
 import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
@@ -122,14 +123,13 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
                 }
                 entry<Topics>(metadata = ListDetailSceneStrategy.detailPane()) {
                     val viewModel = koinViewModel<TopicsViewModel> { parametersOf(true) }
-                    val topicsUiState by viewModel.uiState.collectAsState()
+                    val topicsState by viewModel.state.collectAsState()
+                    LaunchedEffect(viewModel) {
+                        viewModel.effects.collect { if (it is TopicsEffect.Confirmed) backStack.removeLastOrNull() }
+                    }
                     TopicsScreen(
-                        uiState = topicsUiState,
-                        onTopicToggled = viewModel::onTopicToggled,
-                        onConfirm = {
-                            viewModel.onConfirm()
-                            backStack.removeLastOrNull()
-                        },
+                        state = topicsState,
+                        onIntent = viewModel::onIntent,
                     )
                 }
             },

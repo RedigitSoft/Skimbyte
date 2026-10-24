@@ -6,7 +6,7 @@ import io.redigit.skimbyte.feed.feedModule
 import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.di.modules.networkModule
 import io.redigit.skimbyte.network.demoNetworkModule
-import io.redigit.skimbyte.onboarding.onboardingModule
+import io.redigit.skimbyte.di.modules.onboardingModule
 import io.redigit.skimbyte.di.modules.postsModule
 import io.redigit.skimbyte.di.modules.settingsModule
 import io.redigit.skimbyte.theme.themeModule

@@ -26,10 +26,11 @@ import io.redigit.skimbyte.feed.ui.SearchNavHost
 import io.redigit.skimbyte.ui.navigation.TopLevelDestination
 import io.redigit.skimbyte.ui.navigation.SkimbyteBottomNavBar
 import io.redigit.skimbyte.ui.navigation.SkimbyteNavigationRail
-import io.redigit.skimbyte.onboarding.TopicPreferencesStore
-import io.redigit.skimbyte.onboarding.TopicsViewModel
-import io.redigit.skimbyte.onboarding.ui.SplashScreen
-import io.redigit.skimbyte.onboarding.ui.TopicsScreen
+import io.redigit.skimbyte.data.local.TopicPreferencesStore
+import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
+import io.redigit.skimbyte.ui.screens.onboarding.TopicsViewModel
+import io.redigit.skimbyte.ui.screens.onboarding.SplashScreen
+import io.redigit.skimbyte.ui.screens.onboarding.TopicsScreen
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.theme.ThemeModeStore
 import io.redigit.skimbyte.ui.screens.auth.AccountNavHost
@@ -61,11 +62,13 @@ fun App() {
                 AppStage.Splash -> SplashScreen()
                 AppStage.Onboarding -> {
                     val topicsViewModel = koinViewModel<TopicsViewModel> { parametersOf(false) }
-                    val uiState by topicsViewModel.uiState.collectAsState()
+                    val uiState by topicsViewModel.state.collectAsState()
+                    LaunchedEffect(topicsViewModel) {
+                        topicsViewModel.effects.collect { if (it is TopicsEffect.Confirmed) stage = AppStage.Main }
+                    }
                     TopicsScreen(
-                        uiState = uiState,
-                        onTopicToggled = topicsViewModel::onTopicToggled,
-                        onConfirm = { topicsViewModel.onConfirm(); stage = AppStage.Main },
+                        state = uiState,
+                        onIntent = topicsViewModel::onIntent,
                     )
                 }
                 AppStage.Main -> MainShell()

@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.onboarding.ui
+package io.redigit.skimbyte.ui.screens.onboarding
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

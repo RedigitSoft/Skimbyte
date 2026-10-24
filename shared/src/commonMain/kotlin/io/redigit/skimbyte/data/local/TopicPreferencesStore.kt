@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.onboarding
+package io.redigit.skimbyte.data.local
 
 import com.russhwolf.settings.Settings
 import io.redigit.skimbyte.data.models.Topic

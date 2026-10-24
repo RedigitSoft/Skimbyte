@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.onboarding.ui
+package io.redigit.skimbyte.ui.screens.onboarding
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,15 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.onboarding.TopicsUiState
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 @Composable
 fun TopicsScreen(
-    uiState: TopicsUiState,
-    onTopicToggled: (Topic) -> Unit,
-    onConfirm: () -> Unit,
+    state: TopicsState,
+    onIntent: (TopicsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -30,7 +28,7 @@ fun TopicsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = if (uiState.isEditing) "Edit your topics" else "Pick your topics",
+            text = if (state.isEditing) "Edit your topics" else "Pick your topics",
             style = MaterialTheme.typography.headlineSmall,
         )
         Text(
@@ -38,23 +36,23 @@ fun TopicsScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        uiState.available.chunked(2).forEach { rowTopics ->
+        state.available.chunked(2).forEach { rowTopics ->
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 rowTopics.forEach { topic ->
                     TopicChip(
                         topic = topic,
-                        isSelected = topic in uiState.selected,
-                        onClick = { onTopicToggled(topic) },
+                        isSelected = topic in state.selected,
+                        onClick = { onIntent(TopicsIntent.TopicToggled(topic)) },
                     )
                 }
             }
         }
         Button(
-            onClick = onConfirm,
-            enabled = uiState.canConfirm,
+            onClick = { onIntent(TopicsIntent.Confirmed) },
+            enabled = state.canConfirm,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(if (uiState.isEditing) "Save" else "Get started")
+            Text(if (state.isEditing) "Save" else "Get started")
         }
     }
 }
@@ -95,9 +93,8 @@ private fun TopicChip(
 private fun TopicsScreenOnboardingPreview() {
     SkimbyteTheme {
         TopicsScreen(
-            uiState = TopicsUiState(selected = setOf(Topic.Kotlin, Topic.Android)),
-            onTopicToggled = {},
-            onConfirm = {},
+            state = TopicsState(selected = setOf(Topic.Kotlin, Topic.Android)),
+            onIntent = {},
         )
     }
 }
@@ -107,9 +104,8 @@ private fun TopicsScreenOnboardingPreview() {
 private fun TopicsScreenOnboardingLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         TopicsScreen(
-            uiState = TopicsUiState(selected = setOf(Topic.Kotlin, Topic.Android)),
-            onTopicToggled = {},
-            onConfirm = {},
+            state = TopicsState(selected = setOf(Topic.Kotlin, Topic.Android)),
+            onIntent = {},
         )
     }
 }
@@ -119,12 +115,11 @@ private fun TopicsScreenOnboardingLightPreview() {
 private fun TopicsScreenEditingPreview() {
     SkimbyteTheme {
         TopicsScreen(
-            uiState = TopicsUiState(
+            state = TopicsState(
                 selected = setOf(Topic.Kotlin, Topic.Android, Topic.Kmp),
                 isEditing = true,
             ),
-            onTopicToggled = {},
-            onConfirm = {},
+            onIntent = {},
         )
     }
 }
@@ -134,12 +129,11 @@ private fun TopicsScreenEditingPreview() {
 private fun TopicsScreenEditingLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         TopicsScreen(
-            uiState = TopicsUiState(
+            state = TopicsState(
                 selected = setOf(Topic.Kotlin, Topic.Android, Topic.Kmp),
                 isEditing = true,
             ),
-            onTopicToggled = {},
-            onConfirm = {},
+            onIntent = {},
         )
     }
 }

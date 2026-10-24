@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.onboarding
+package io.redigit.skimbyte.data.local
 
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.testing.FakeSettings

@@ -1,6 +1,15 @@
-package io.redigit.skimbyte.onboarding
+package io.redigit.skimbyte.ui.screens.onboarding
 
+import io.redigit.skimbyte.data.local.TopicPreferencesStore
 import io.redigit.skimbyte.data.models.Topic
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.test.Test
@@ -29,27 +38,32 @@ private class FakeTopicPreferencesStore : TopicPreferencesStore {
 }
 
 class TopicsViewModelTest {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @BeforeTest fun setupMain() = Dispatchers.setMain(UnconfinedTestDispatcher())
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @AfterTest fun tearDownMain() = Dispatchers.resetMain()
+
     @Test
     fun `confirm disabled below 3 selections`() {
         val vm = TopicsViewModel(FakeTopicPreferencesStore(), isEditing = false)
-        vm.onTopicToggled(Topic.Kotlin)
-        vm.onTopicToggled(Topic.Android)
-        assertFalse(vm.uiState.value.canConfirm)
+        vm.onIntent(TopicsIntent.TopicToggled(Topic.Kotlin))
+        vm.onIntent(TopicsIntent.TopicToggled(Topic.Android))
+        assertFalse(vm.state.value.canConfirm)
     }
 
     @Test
     fun `confirm enabled at exactly 3 selections`() {
         val vm = TopicsViewModel(FakeTopicPreferencesStore(), isEditing = false)
-        listOf(Topic.Kotlin, Topic.Android, Topic.Kmp).forEach(vm::onTopicToggled)
-        assertTrue(vm.uiState.value.canConfirm)
+        listOf(Topic.Kotlin, Topic.Android, Topic.Kmp).forEach { vm.onIntent(TopicsIntent.TopicToggled(it)) }
+        assertTrue(vm.state.value.canConfirm)
     }
 
     @Test
     fun `onConfirm persists selection and onboarding flag`() {
         val store = FakeTopicPreferencesStore()
         val vm = TopicsViewModel(store, isEditing = false)
-        listOf(Topic.Kotlin, Topic.Android, Topic.Kmp).forEach(vm::onTopicToggled)
-        vm.onConfirm()
+        listOf(Topic.Kotlin, Topic.Android, Topic.Kmp).forEach { vm.onIntent(TopicsIntent.TopicToggled(it)) }
+        vm.onIntent(TopicsIntent.Confirmed)
         assertEquals(setOf(Topic.Kotlin, Topic.Android, Topic.Kmp), store.selectedTopics())
         assertTrue(store.hasCompletedOnboarding())
     }
@@ -58,7 +72,7 @@ class TopicsViewModelTest {
     fun `editing mode pre-populates from the store`() {
         val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Tooling)) }
         val vm = TopicsViewModel(store, isEditing = true)
-        assertEquals(setOf(Topic.Tooling), vm.uiState.value.selected)
-        assertTrue(vm.uiState.value.isEditing)
+        assertEquals(setOf(Topic.Tooling), vm.state.value.selected)
+        assertTrue(vm.state.value.isEditing)
     }
 }
