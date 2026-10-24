@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.bookmarks
+package io.redigit.skimbyte.ui.screens.bookmarks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,28 +14,32 @@ class BookmarksViewModel(
     private val authRepository: AuthRepository,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(BookmarksUiState())
-    val uiState: StateFlow<BookmarksUiState> = _uiState.asStateFlow()
+    private val _state = MutableStateFlow(BookmarksState())
+    val state: StateFlow<BookmarksState> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
             authRepository.session.collect { session ->
                 if (session == null) {
-                    _uiState.value = BookmarksUiState(isLoggedOut = true)
+                    _state.value = BookmarksState(isLoggedOut = true)
                 } else {
-                    _uiState.value = _uiState.value.copy(isLoggedOut = false)
+                    _state.value = _state.value.copy(isLoggedOut = false)
                     loadInitial()
                 }
             }
         }
     }
 
-    fun onLoginSucceeded() {
-        loadInitial()
+    fun onIntent(intent: BookmarksIntent) {
+        when (intent) {
+            is BookmarksIntent.Unbookmark -> onUnbookmark(intent.postId)
+            BookmarksIntent.PostsNearEnd -> onPostsNearEnd()
+            BookmarksIntent.LoginSucceeded -> loadInitial()
+        }
     }
 
-    fun onUnbookmark(postId: String) {
-        _uiState.value = _uiState.value.copy(posts = _uiState.value.posts.filterNot { it.id == postId })
+    private fun onUnbookmark(postId: String) {
+        _state.value = _state.value.copy(posts = _state.value.posts.filterNot { it.id == postId })
         viewModelScope.launch {
             val result = postsRepository.setBookmarked(postId, bookmarked = false)
             // Reverting precisely (re-inserting at its original position) isn't worth the
@@ -44,45 +48,45 @@ class BookmarksViewModel(
         }
     }
 
-    fun onPostsNearEnd() {
-        val state = _uiState.value
+    private fun onPostsNearEnd() {
+        val state = _state.value
         if (state.nextCursor != null && !state.isLoadingMore) loadMore()
     }
 
     private fun loadInitial() {
-        _uiState.value = _uiState.value.copy(isLoadingInitial = true, error = null)
+        _state.value = _state.value.copy(isLoadingInitial = true, error = null)
         viewModelScope.launch {
             val result = postsRepository.fetchBookmarkedPosts(cursor = null)
             result.fold(
                 onSuccess = { page ->
-                    _uiState.value = _uiState.value.copy(
+                    _state.value = _state.value.copy(
                         posts = page.items,
                         nextCursor = page.nextCursor,
                         isLoadingInitial = false,
                     )
                 },
                 onFailure = {
-                    _uiState.value = _uiState.value.copy(isLoadingInitial = false, error = BookmarksError.Network)
+                    _state.value = _state.value.copy(isLoadingInitial = false, error = BookmarksError.Network)
                 },
             )
         }
     }
 
     private fun loadMore() {
-        val cursor = _uiState.value.nextCursor ?: return
-        _uiState.value = _uiState.value.copy(isLoadingMore = true)
+        val cursor = _state.value.nextCursor ?: return
+        _state.value = _state.value.copy(isLoadingMore = true)
         viewModelScope.launch {
             val result = postsRepository.fetchBookmarkedPosts(cursor)
             result.fold(
                 onSuccess = { page ->
-                    _uiState.value = _uiState.value.copy(
-                        posts = _uiState.value.posts + page.items,
+                    _state.value = _state.value.copy(
+                        posts = _state.value.posts + page.items,
                         nextCursor = page.nextCursor,
                         isLoadingMore = false,
                     )
                 },
                 onFailure = {
-                    _uiState.value = _uiState.value.copy(isLoadingMore = false, error = BookmarksError.Network)
+                    _state.value = _state.value.copy(isLoadingMore = false, error = BookmarksError.Network)
                 },
             )
         }

@@ -1,8 +1,8 @@
-package io.redigit.skimbyte.bookmarks
+package io.redigit.skimbyte.ui.screens.bookmarks
 
 import io.redigit.skimbyte.data.models.Post
 
-data class BookmarksUiState(
+data class BookmarksState(
     val posts: List<Post> = emptyList(),
     val isLoadingInitial: Boolean = false,
     val isLoadingMore: Boolean = false,

@@ -19,7 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.window.core.layout.WindowSizeClass
-import io.redigit.skimbyte.bookmarks.ui.BookmarksNavHost
+import io.redigit.skimbyte.ui.screens.bookmarks.BookmarksNavHost
 import io.redigit.skimbyte.di.appModule
 import io.redigit.skimbyte.feed.ui.FeedNavHost
 import io.redigit.skimbyte.feed.ui.SearchNavHost

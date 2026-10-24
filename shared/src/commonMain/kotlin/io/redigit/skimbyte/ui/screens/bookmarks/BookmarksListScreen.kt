@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.bookmarks.ui
+package io.redigit.skimbyte.ui.screens.bookmarks
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,7 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import io.redigit.skimbyte.bookmarks.BookmarksUiState
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.screens.auth.LoginSheet
@@ -29,9 +28,9 @@ import kotlin.time.Instant
 
 @Composable
 fun BookmarksListScreen(
-    uiState: BookmarksUiState,
+    state: BookmarksState,
     onPostClick: (Post) -> Unit,
-    onLoginSucceeded: () -> Unit,
+    onIntent: (BookmarksIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -39,14 +38,14 @@ fun BookmarksListScreen(
         topBar = { TopAppBar(title = { Text("Bookmarks") }) },
     ) { padding ->
         when {
-            uiState.isLoggedOut -> {
+            state.isLoggedOut -> {
                 var showLogin by remember { mutableStateOf(true) }
                 if (showLogin) {
                     LoginSheet(
                         onDismiss = { showLogin = false },
                         onLoginSuccess = {
                             showLogin = false
-                            onLoginSucceeded()
+                            onIntent(BookmarksIntent.LoginSucceeded)
                         },
                     )
                 }
@@ -54,20 +53,20 @@ fun BookmarksListScreen(
                     Text("Log in to see your bookmarks", style = MaterialTheme.typography.bodyLarge)
                 }
             }
-            uiState.isLoadingInitial -> Box(
+            state.isLoadingInitial -> Box(
                 modifier = Modifier.padding(padding).fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
             }
-            uiState.posts.isEmpty() -> Box(
+            state.posts.isEmpty() -> Box(
                 modifier = Modifier.padding(padding).fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
                 Text("No bookmarks yet.", style = MaterialTheme.typography.bodyLarge)
             }
             else -> LazyColumn(modifier = Modifier.padding(padding)) {
-                items(uiState.posts) { post ->
+                items(state.posts) { post ->
                     ListItem(
                         headlineContent = { Text(post.title) },
                         supportingContent = { Text("${post.topic} · ${post.sourceName}") },
@@ -98,9 +97,9 @@ private val previewPost = Post(
 private fun BookmarksListScreenPreview() {
     SkimbyteTheme {
         BookmarksListScreen(
-            uiState = BookmarksUiState(posts = listOf(previewPost)),
+            state = BookmarksState(posts = listOf(previewPost)),
             onPostClick = {},
-            onLoginSucceeded = {},
+            onIntent = {},
         )
     }
 }
@@ -110,9 +109,9 @@ private fun BookmarksListScreenPreview() {
 private fun BookmarksListScreenLoggedOutPreview() {
     SkimbyteTheme {
         BookmarksListScreen(
-            uiState = BookmarksUiState(isLoggedOut = true),
+            state = BookmarksState(isLoggedOut = true),
             onPostClick = {},
-            onLoginSucceeded = {},
+            onIntent = {},
         )
     }
 }
@@ -122,9 +121,9 @@ private fun BookmarksListScreenLoggedOutPreview() {
 private fun BookmarksListScreenEmptyPreview() {
     SkimbyteTheme {
         BookmarksListScreen(
-            uiState = BookmarksUiState(),
+            state = BookmarksState(),
             onPostClick = {},
-            onLoginSucceeded = {},
+            onIntent = {},
         )
     }
 }

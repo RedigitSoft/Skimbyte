@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.bookmarks
+package io.redigit.skimbyte.ui.screens.bookmarks
 
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.Session
@@ -77,7 +77,7 @@ class BookmarksViewModelTest {
         }
         val viewModel = BookmarksViewModel(repository, FakeAuthRepository(initialSession = null))
 
-        assertTrue(viewModel.uiState.value.isLoggedOut)
+        assertTrue(viewModel.state.value.isLoggedOut)
         assertEquals(0, fetchCount)
     }
 
@@ -87,8 +87,8 @@ class BookmarksViewModelTest {
         val repository = FakePostsRepository { Result.success(Page(posts, null)) }
         val viewModel = BookmarksViewModel(repository, FakeAuthRepository(initialSession = Session("t")))
 
-        assertFalse(viewModel.uiState.value.isLoggedOut)
-        assertEquals(posts, viewModel.uiState.value.posts)
+        assertFalse(viewModel.state.value.isLoggedOut)
+        assertEquals(posts, viewModel.state.value.posts)
     }
 
     @Test
@@ -97,9 +97,9 @@ class BookmarksViewModelTest {
         val repository = FakePostsRepository { Result.success(Page(posts, null)) }
         val viewModel = BookmarksViewModel(repository, FakeAuthRepository(initialSession = Session("t")))
 
-        viewModel.onUnbookmark("1")
+        viewModel.onIntent(BookmarksIntent.Unbookmark("1"))
 
-        assertEquals(listOf("2"), viewModel.uiState.value.posts.map { it.id })
+        assertEquals(listOf("2"), viewModel.state.value.posts.map { it.id })
         assertEquals(listOf("1"), repository.unbookmarkCalls)
     }
 
@@ -110,9 +110,9 @@ class BookmarksViewModelTest {
         repository.setBookmarkedResult = Result.failure(RuntimeException("boom"))
         val viewModel = BookmarksViewModel(repository, FakeAuthRepository(initialSession = Session("t")))
 
-        viewModel.onUnbookmark("1")
+        viewModel.onIntent(BookmarksIntent.Unbookmark("1"))
 
         // Reload restores the full list since the unbookmark failed server-side.
-        assertEquals(posts.map { it.id }, viewModel.uiState.value.posts.map { it.id })
+        assertEquals(posts.map { it.id }, viewModel.state.value.posts.map { it.id })
     }
 }
