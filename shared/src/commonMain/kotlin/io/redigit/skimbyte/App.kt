@@ -1,10 +1,13 @@
 package io.redigit.skimbyte
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -67,20 +70,26 @@ fun App() {
             LaunchedEffect(Unit) {
                 stage = if (topicPreferencesStore.hasCompletedOnboarding()) AppStage.Main else AppStage.Onboarding
             }
-            when (stage) {
-                AppStage.Splash -> SplashScreen()
-                AppStage.Onboarding -> {
-                    val topicsViewModel = koinViewModel<TopicsViewModel> { parametersOf(false) }
-                    val uiState by topicsViewModel.state.collectAsState()
-                    LaunchedEffect(topicsViewModel) {
-                        topicsViewModel.effects.collect { if (it is TopicsEffect.Confirmed) stage = AppStage.Main }
+            AnimatedContent(
+                targetState = stage,
+                transitionSpec = { fadeIn(tween(350)) togetherWith fadeOut(tween(350)) },
+                label = "appStage",
+            ) { current ->
+                when (current) {
+                    AppStage.Splash -> SplashScreen()
+                    AppStage.Onboarding -> {
+                        val topicsViewModel = koinViewModel<TopicsViewModel> { parametersOf(false) }
+                        val uiState by topicsViewModel.state.collectAsState()
+                        LaunchedEffect(topicsViewModel) {
+                            topicsViewModel.effects.collect { if (it is TopicsEffect.Confirmed) stage = AppStage.Main }
+                        }
+                        TopicsScreen(
+                            state = uiState,
+                            onIntent = topicsViewModel::onIntent,
+                        )
                     }
-                    TopicsScreen(
-                        state = uiState,
-                        onIntent = topicsViewModel::onIntent,
-                    )
+                    AppStage.Main -> MainShell()
                 }
-                AppStage.Main -> MainShell()
             }
         }
     }
