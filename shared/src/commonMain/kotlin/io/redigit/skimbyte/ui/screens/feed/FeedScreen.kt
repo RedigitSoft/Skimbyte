@@ -72,9 +72,10 @@ fun FeedScreen(
             onTopicSelected = { onIntent(FeedIntent.TopicSelected(it)) },
         )
         if (state.viewMode == FeedViewMode.Stack && state.posts.isNotEmpty()) {
+            val brief = dailyBrief(state.posts, state.currentIndex)
             DailyProgressBar(
-                read = (state.currentIndex + 1).coerceAtMost(state.posts.size),
-                total = state.posts.size,
+                read = brief.read,
+                total = brief.total,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
         }
