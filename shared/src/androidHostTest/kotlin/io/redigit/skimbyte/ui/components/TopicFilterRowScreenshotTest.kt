@@ -1,9 +1,10 @@
-package io.redigit.skimbyte.feed.ui
+package io.redigit.skimbyte.ui.components
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import org.junit.Rule
 import org.junit.Test
@@ -14,31 +15,23 @@ import org.robolectric.annotation.GraphicsMode
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [34])
-class BookmarkButtonScreenshotTest {
+class TopicFilterRowScreenshotTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
 
     @Test
-    fun idleState() {
+    fun allSelected() {
         composeTestRule.setContent {
-            SkimbyteTheme { BookmarkButton(isBookmarked = false, isLoading = false, onClick = {}) }
+            SkimbyteTheme { TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.All, onTopicSelected = {}) }
         }
         composeTestRule.onRoot().captureRoboImage()
     }
 
     @Test
-    fun bookmarkedState() {
+    fun oneTopicSelected() {
         composeTestRule.setContent {
-            SkimbyteTheme { BookmarkButton(isBookmarked = true, isLoading = false, onClick = {}) }
-        }
-        composeTestRule.onRoot().captureRoboImage()
-    }
-
-    @Test
-    fun loadingState() {
-        composeTestRule.setContent {
-            SkimbyteTheme { BookmarkButton(isBookmarked = false, isLoading = true, onClick = {}) }
+            SkimbyteTheme { TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.Kotlin, onTopicSelected = {}) }
         }
         composeTestRule.onRoot().captureRoboImage()
     }

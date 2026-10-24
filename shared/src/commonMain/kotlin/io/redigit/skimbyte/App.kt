@@ -21,8 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.window.core.layout.WindowSizeClass
 import io.redigit.skimbyte.ui.screens.bookmarks.BookmarksNavHost
 import io.redigit.skimbyte.di.appModule
-import io.redigit.skimbyte.feed.ui.FeedNavHost
-import io.redigit.skimbyte.feed.ui.SearchNavHost
+import io.redigit.skimbyte.ui.screens.feed.FeedNavHost
+import io.redigit.skimbyte.ui.screens.feed.SearchNavHost
 import io.redigit.skimbyte.ui.navigation.TopLevelDestination
 import io.redigit.skimbyte.ui.navigation.SkimbyteBottomNavBar
 import io.redigit.skimbyte.ui.navigation.SkimbyteNavigationRail

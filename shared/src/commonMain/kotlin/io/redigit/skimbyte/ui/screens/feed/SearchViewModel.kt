@@ -1,10 +1,10 @@
-package io.redigit.skimbyte.feed
+package io.redigit.skimbyte.ui.screens.feed
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redigit.skimbyte.data.models.Post
-import io.redigit.skimbyte.data.repositories.PostsRepository
 import io.redigit.skimbyte.data.models.Topic
+import io.redigit.skimbyte.data.repositories.PostsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,8 +18,8 @@ import kotlinx.coroutines.launch
  */
 class SearchViewModel(private val postsRepository: PostsRepository) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SearchUiState())
-    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
+    private val _state = MutableStateFlow(SearchState())
+    val state: StateFlow<SearchState> = _state.asStateFlow()
 
     private var loadedPosts: List<Post> = emptyList()
 
@@ -33,22 +33,29 @@ class SearchViewModel(private val postsRepository: PostsRepository) : ViewModel(
         }
     }
 
-    fun onQueryChanged(query: String) {
-        _uiState.value = _uiState.value.copy(query = query)
+    fun onIntent(intent: SearchIntent) {
+        when (intent) {
+            is SearchIntent.QueryChanged -> onQueryChanged(intent.query)
+            is SearchIntent.BookmarkClicked -> onBookmarkClick(intent.postId)
+        }
+    }
+
+    private fun onQueryChanged(query: String) {
+        _state.value = _state.value.copy(query = query)
         recomputeResults()
     }
 
-    fun onBookmarkClick(postId: String) {
+    private fun onBookmarkClick(postId: String) {
         val currentlyBookmarked = loadedPosts.firstOrNull { it.id == postId }?.isBookmarked ?: return
         val newValue = !currentlyBookmarked
         updatePostBookmarkState(postId, newValue)
-        _uiState.value = _uiState.value.copy(pendingBookmarkToggles = _uiState.value.pendingBookmarkToggles + postId)
+        _state.value = _state.value.copy(pendingBookmarkToggles = _state.value.pendingBookmarkToggles + postId)
         viewModelScope.launch {
             val result = postsRepository.setBookmarked(postId, newValue)
             if (result.isFailure) {
                 updatePostBookmarkState(postId, currentlyBookmarked)
             }
-            _uiState.value = _uiState.value.copy(pendingBookmarkToggles = _uiState.value.pendingBookmarkToggles - postId)
+            _state.value = _state.value.copy(pendingBookmarkToggles = _state.value.pendingBookmarkToggles - postId)
         }
     }
 
@@ -58,8 +65,8 @@ class SearchViewModel(private val postsRepository: PostsRepository) : ViewModel(
     }
 
     private fun recomputeResults() {
-        val query = _uiState.value.query
-        _uiState.value = _uiState.value.copy(
+        val query = _state.value.query
+        _state.value = _state.value.copy(
             results = if (query.isBlank()) emptyList() else loadedPosts.filter { it.title.contains(query, ignoreCase = true) },
         )
     }

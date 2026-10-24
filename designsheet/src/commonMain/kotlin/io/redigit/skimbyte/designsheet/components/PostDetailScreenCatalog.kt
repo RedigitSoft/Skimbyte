@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.feed.ui.PostDetailScreen
+import io.redigit.skimbyte.ui.components.PostDetailScreen
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import kotlin.time.Instant

@@ -24,7 +24,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import io.redigit.skimbyte.feed.ui.SharedElementContext
+import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 /** Fixed shared-element key: only ever one current-user banner on screen at a time. */

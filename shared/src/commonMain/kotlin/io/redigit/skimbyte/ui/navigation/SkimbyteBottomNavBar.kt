@@ -24,7 +24,7 @@ import io.redigit.skimbyte.theme.SkimbyteTheme
 /**
  * The compact-width bottom navigation chrome: a Material 3 Expressive vibrant floating toolbar
  * whose attached FAB expands/collapses it (per [FloatingToolbarDefaults]'s documented pattern),
- * rather than hosting a contextual action menu — [io.redigit.skimbyte.feed.ui.PostCard] and
+ * rather than hosting a contextual action menu — [io.redigit.skimbyte.ui.components.PostCard] and
  * `PostDetailScreen` already expose bookmark/share/source actions directly, so there's nothing
  * else for a FAB here to do. Pair with [Modifier] from
  * `FloatingToolbarDefaults.floatingToolbarVerticalNestedScroll` on the scrollable content above

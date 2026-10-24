@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.feed.ui
+package io.redigit.skimbyte.ui.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize

@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.feed.SearchUiState
-import io.redigit.skimbyte.feed.ui.SearchScreen
+import io.redigit.skimbyte.ui.screens.feed.SearchState
+import io.redigit.skimbyte.ui.screens.feed.SearchScreen
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import kotlin.time.Instant
@@ -31,9 +31,8 @@ private val catalogPosts = listOf(
 @Composable
 fun SearchScreenCatalogContent() {
     SearchScreen(
-        uiState = SearchUiState(query = "kotlin", results = catalogPosts),
-        onQueryChanged = {},
-        onBookmarkClick = {},
+        state = SearchState(query = "kotlin", results = catalogPosts),
+        onIntent = {},
         onCardClick = {},
         modifier = Modifier.height(600.dp),
     )

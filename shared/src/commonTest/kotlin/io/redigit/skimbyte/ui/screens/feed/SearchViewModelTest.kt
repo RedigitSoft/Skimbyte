@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.feed
+package io.redigit.skimbyte.ui.screens.feed
 
 import io.redigit.skimbyte.data.remote.Page
 import io.redigit.skimbyte.data.models.Post
@@ -68,15 +68,15 @@ class SearchViewModelTest {
     fun `empty query yields no results even after posts load`() = runTest {
         val vm = SearchViewModel(fakePostsRepositoryWith(listOf(postNamed("Kotlin 2.4"))))
         advanceUntilIdle()
-        assertEquals(emptyList(), vm.uiState.value.results)
+        assertEquals(emptyList(), vm.state.value.results)
     }
 
     @Test
     fun `query filters loaded posts by title substring`() = runTest {
         val vm = SearchViewModel(fakePostsRepositoryWith(listOf(postNamed("Kotlin 2.4"), postNamed("Android Studio"))))
         advanceUntilIdle()
-        vm.onQueryChanged("kotlin")
-        assertEquals(listOf("Kotlin 2.4"), vm.uiState.value.results.map { it.title })
+        vm.onIntent(SearchIntent.QueryChanged("kotlin"))
+        assertEquals(listOf("Kotlin 2.4"), vm.state.value.results.map { it.title })
     }
 
     @Test
@@ -85,12 +85,12 @@ class SearchViewModelTest {
         repository.setBookmarkedResult = Result.failure(RuntimeException("network error"))
         val vm = SearchViewModel(repository)
         advanceUntilIdle()
-        vm.onQueryChanged("kotlin")
+        vm.onIntent(SearchIntent.QueryChanged("kotlin"))
 
-        vm.onBookmarkClick("1")
+        vm.onIntent(SearchIntent.BookmarkClicked("1"))
 
         assertEquals(listOf("1" to true), repository.setBookmarkedCalls)
-        assertTrue(vm.uiState.value.pendingBookmarkToggles.isEmpty())
-        assertEquals(false, vm.uiState.value.results.first { it.id == "1" }.isBookmarked)
+        assertTrue(vm.state.value.pendingBookmarkToggles.isEmpty())
+        assertEquals(false, vm.state.value.results.first { it.id == "1" }.isBookmarked)
     }
 }

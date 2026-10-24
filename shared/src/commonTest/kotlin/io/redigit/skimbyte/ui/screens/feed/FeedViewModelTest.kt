@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.feed
+package io.redigit.skimbyte.ui.screens.feed
 
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.Session
@@ -120,9 +120,9 @@ class FeedViewModelTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, "cursor-2")) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
-        assertEquals(posts, viewModel.uiState.value.posts)
-        assertEquals("cursor-2", viewModel.uiState.value.nextCursor)
-        assertFalse(viewModel.uiState.value.isLoadingInitial)
+        assertEquals(posts, viewModel.state.value.posts)
+        assertEquals("cursor-2", viewModel.state.value.nextCursor)
+        assertFalse(viewModel.state.value.isLoadingInitial)
     }
 
     @Test
@@ -130,8 +130,8 @@ class FeedViewModelTest {
         val repository = FakePostsRepository { _, _ -> Result.failure(RuntimeException("boom")) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
-        assertEquals(FeedError.Network, viewModel.uiState.value.error)
-        assertTrue(viewModel.uiState.value.posts.isEmpty())
+        assertEquals(FeedError.Network, viewModel.state.value.error)
+        assertTrue(viewModel.state.value.posts.isEmpty())
     }
 
     @Test
@@ -143,11 +143,11 @@ class FeedViewModelTest {
         }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
-        viewModel.onTopicSelected(Topic.Android)
+        viewModel.onIntent(FeedIntent.TopicSelected(Topic.Android))
 
-        assertEquals(Topic.Android, viewModel.uiState.value.selectedTopic)
+        assertEquals(Topic.Android, viewModel.state.value.selectedTopic)
         assertEquals(Topic.Android, lastRequestedTopic)
-        assertEquals(0, viewModel.uiState.value.currentIndex)
+        assertEquals(0, viewModel.state.value.currentIndex)
     }
 
     @Test
@@ -160,7 +160,7 @@ class FeedViewModelTest {
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
         val countAfterInitialLoad = fetchCount
 
-        viewModel.onTopicSelected(Topic.All)
+        viewModel.onIntent(FeedIntent.TopicSelected(Topic.All))
 
         assertEquals(countAfterInitialLoad, fetchCount)
     }
@@ -179,11 +179,11 @@ class FeedViewModelTest {
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
         val callsAfterInitial = fetchCalls
 
-        viewModel.onPageChanged(3) // posts.size - 3 == index 2, so index 3 should trigger load-more (size=5)
+        viewModel.onIntent(FeedIntent.PageChanged(3)) // posts.size - 3 == index 2, so index 3 should trigger load-more (size=5)
 
         assertEquals(callsAfterInitial + 1, fetchCalls)
-        assertEquals(10, viewModel.uiState.value.posts.size)
-        assertNull(viewModel.uiState.value.nextCursor)
+        assertEquals(10, viewModel.state.value.posts.size)
+        assertNull(viewModel.state.value.nextCursor)
     }
 
     @Test
@@ -192,9 +192,9 @@ class FeedViewModelTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, null)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
-        viewModel.onBookmarkTapped("1")
+        viewModel.onIntent(FeedIntent.BookmarkTapped("1"))
 
-        assertEquals(PendingBookmarkAction("1"), viewModel.uiState.value.pendingBookmarkAction)
+        assertEquals(PendingBookmarkAction("1"), viewModel.state.value.pendingBookmarkAction)
         assertTrue(repository.setBookmarkedCalls.isEmpty())
     }
 
@@ -203,13 +203,13 @@ class FeedViewModelTest {
         val posts = listOf(fakePost("1", isBookmarked = false))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, null)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
-        viewModel.onBookmarkTapped("1")
+        viewModel.onIntent(FeedIntent.BookmarkTapped("1"))
 
-        viewModel.onLoginSucceeded()
+        viewModel.onIntent(FeedIntent.LoginSucceeded)
 
-        assertNull(viewModel.uiState.value.pendingBookmarkAction)
+        assertNull(viewModel.state.value.pendingBookmarkAction)
         assertEquals(listOf("1" to true), repository.setBookmarkedCalls)
-        assertTrue(viewModel.uiState.value.posts.first { it.id == "1" }.isBookmarked)
+        assertTrue(viewModel.state.value.posts.first { it.id == "1" }.isBookmarked)
     }
 
     @Test
@@ -217,11 +217,11 @@ class FeedViewModelTest {
         val posts = listOf(fakePost("1"))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, null)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
-        viewModel.onBookmarkTapped("1")
+        viewModel.onIntent(FeedIntent.BookmarkTapped("1"))
 
-        viewModel.onLoginDismissed()
+        viewModel.onIntent(FeedIntent.LoginDismissed)
 
-        assertNull(viewModel.uiState.value.pendingBookmarkAction)
+        assertNull(viewModel.state.value.pendingBookmarkAction)
         assertTrue(repository.setBookmarkedCalls.isEmpty())
     }
 
@@ -237,10 +237,10 @@ class FeedViewModelTest {
             FakeTopicPreferencesStore(),
         )
 
-        viewModel.onBookmarkTapped("1")
+        viewModel.onIntent(FeedIntent.BookmarkTapped("1"))
 
-        assertFalse(viewModel.uiState.value.posts.first { it.id == "1" }.isBookmarked)
-        assertTrue(viewModel.uiState.value.pendingBookmarkToggles.isEmpty())
+        assertFalse(viewModel.state.value.posts.first { it.id == "1" }.isBookmarked)
+        assertTrue(viewModel.state.value.pendingBookmarkToggles.isEmpty())
     }
 
     @Test
@@ -249,8 +249,8 @@ class FeedViewModelTest {
         val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Kotlin, Topic.Android)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
 
-        assertEquals(Topic.Kotlin, viewModel.uiState.value.selectedTopic)
-        assertEquals(listOf(Topic.Kotlin, Topic.Android), viewModel.uiState.value.availableTopics)
+        assertEquals(Topic.Kotlin, viewModel.state.value.selectedTopic)
+        assertEquals(listOf(Topic.Kotlin, Topic.Android), viewModel.state.value.availableTopics)
     }
 
     @Test
@@ -258,13 +258,12 @@ class FeedViewModelTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
         val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Android, Topic.Kotlin)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
-        viewModel.onTopicSelected(Topic.Android) // user is filtered on Android
+        viewModel.onIntent(FeedIntent.TopicSelected(Topic.Android)) // user is filtered on Android
         store.setSelectedTopics(setOf(Topic.Kotlin)) // edits interests, drops Android
 
-        viewModel.onTopicPreferencesChanged()
 
-        assertEquals(Topic.Kotlin, viewModel.uiState.value.selectedTopic)
-        assertEquals(listOf(Topic.Kotlin), viewModel.uiState.value.availableTopics)
+        assertEquals(Topic.Kotlin, viewModel.state.value.selectedTopic)
+        assertEquals(listOf(Topic.Kotlin), viewModel.state.value.availableTopics)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -274,13 +273,13 @@ class FeedViewModelTest {
         val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Android, Topic.Kotlin)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
 
-        assertEquals(Topic.Android, viewModel.uiState.value.selectedTopic)
+        assertEquals(Topic.Android, viewModel.state.value.selectedTopic)
 
         store.setSelectedTopics(setOf(Topic.Kotlin)) // simulates editing interests from Settings, without calling any method on vm directly
         advanceUntilIdle() // let the reactive collector process the change
 
-        assertEquals(Topic.Kotlin, viewModel.uiState.value.selectedTopic)
-        assertEquals(listOf(Topic.Kotlin), viewModel.uiState.value.availableTopics)
+        assertEquals(Topic.Kotlin, viewModel.state.value.selectedTopic)
+        assertEquals(listOf(Topic.Kotlin), viewModel.state.value.availableTopics)
     }
 
     @Test
@@ -288,10 +287,10 @@ class FeedViewModelTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
-        viewModel.onViewModeToggled()
-        assertEquals(FeedViewMode.List, viewModel.uiState.value.viewMode)
+        viewModel.onIntent(FeedIntent.ViewModeToggled)
+        assertEquals(FeedViewMode.List, viewModel.state.value.viewMode)
 
-        viewModel.onViewModeToggled()
-        assertEquals(FeedViewMode.Stack, viewModel.uiState.value.viewMode)
+        viewModel.onIntent(FeedIntent.ViewModeToggled)
+        assertEquals(FeedViewMode.Stack, viewModel.state.value.viewMode)
     }
 }

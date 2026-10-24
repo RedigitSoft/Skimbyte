@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.feed.ui
+package io.redigit.skimbyte.ui.screens.feed
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.clickable
@@ -26,32 +26,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.feed.FeedUiState
-import io.redigit.skimbyte.feed.FeedViewMode
 import io.redigit.skimbyte.data.models.Post
-import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.components.PostCard
+import io.redigit.skimbyte.ui.components.SharedElementContext
+import io.redigit.skimbyte.ui.components.StackedCardBrowser
+import io.redigit.skimbyte.ui.components.StackedCardOrientation
+import io.redigit.skimbyte.ui.components.TopicFilterRow
 import io.redigit.skimbyte.ui.screens.auth.LoginSheet
 import kotlin.time.Instant
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FeedScreen(
-    uiState: FeedUiState,
-    onTopicSelected: (Topic) -> Unit,
-    onPageChanged: (Int) -> Unit,
-    onBookmarkClick: (String) -> Unit,
+    state: FeedState,
+    onIntent: (FeedIntent) -> Unit,
     onReadSourceClick: (String) -> Unit,
     onCardClick: (String) -> Unit,
-    onViewModeToggled: () -> Unit,
-    onLoginSucceeded: () -> Unit,
-    onLoginDismissed: () -> Unit,
     modifier: Modifier = Modifier,
     sharedTransition: SharedElementContext? = null,
 ) {
-    if (uiState.pendingBookmarkAction != null) {
-        LoginSheet(onDismiss = onLoginDismissed, onLoginSuccess = onLoginSucceeded)
+    if (state.pendingBookmarkAction != null) {
+        LoginSheet(
+            onDismiss = { onIntent(FeedIntent.LoginDismissed) },
+            onLoginSuccess = { onIntent(FeedIntent.LoginSucceeded) },
+        )
     }
     Column(modifier = modifier.fillMaxSize()) {
         Row(
@@ -63,22 +63,22 @@ fun FeedScreen(
                 EyebrowText("Feed")
                 Text("For You", style = MaterialTheme.typography.headlineMedium)
             }
-            FeedViewModeToggle(viewMode = uiState.viewMode, onClick = onViewModeToggled)
+            FeedViewModeToggle(viewMode = state.viewMode, onClick = { onIntent(FeedIntent.ViewModeToggled) })
         }
         TopicFilterRow(
-            topics = uiState.availableTopics,
-            selectedTopic = uiState.selectedTopic,
-            onTopicSelected = onTopicSelected,
+            topics = state.availableTopics,
+            selectedTopic = state.selectedTopic,
+            onTopicSelected = { onIntent(FeedIntent.TopicSelected(it)) },
         )
         when {
-            uiState.isLoadingInitial -> LoadingState(modifier = Modifier.weight(1f))
-            uiState.error != null && uiState.posts.isEmpty() -> ErrorState(modifier = Modifier.weight(1f))
-            uiState.viewMode == FeedViewMode.List -> LazyColumn(modifier = Modifier.weight(1f)) {
-                items(uiState.posts, key = { it.id }) { post ->
+            state.isLoadingInitial -> LoadingState(modifier = Modifier.weight(1f))
+            state.error != null && state.posts.isEmpty() -> ErrorState(modifier = Modifier.weight(1f))
+            state.viewMode == FeedViewMode.List -> LazyColumn(modifier = Modifier.weight(1f)) {
+                items(state.posts, key = { it.id }) { post ->
                     PostCard(
                         post = post,
-                        isBookmarkLoading = post.id in uiState.pendingBookmarkToggles,
-                        onBookmarkClick = { onBookmarkClick(post.id) },
+                        isBookmarkLoading = post.id in state.pendingBookmarkToggles,
+                        onBookmarkClick = { onIntent(FeedIntent.BookmarkTapped(post.id)) },
                         onReadSourceClick = onReadSourceClick,
                         onCardClick = onCardClick,
                         modifier = Modifier.fillMaxWidth(),
@@ -87,17 +87,17 @@ fun FeedScreen(
                 }
             }
             else -> StackedCardBrowser(
-                items = uiState.posts,
-                onIndexChanged = onPageChanged,
+                items = state.posts,
+                onIndexChanged = { onIntent(FeedIntent.PageChanged(it)) },
                 orientation = StackedCardOrientation.Horizontal,
-                resetSignal = uiState.selectedTopic,
+                resetSignal = state.selectedTopic,
                 emptyContent = { EmptyState(modifier = Modifier.fillMaxSize()) },
                 modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
             ) { post ->
                 PostCard(
                     post = post,
-                    isBookmarkLoading = post.id in uiState.pendingBookmarkToggles,
-                    onBookmarkClick = { onBookmarkClick(post.id) },
+                    isBookmarkLoading = post.id in state.pendingBookmarkToggles,
+                    onBookmarkClick = { onIntent(FeedIntent.BookmarkTapped(post.id)) },
                     onReadSourceClick = onReadSourceClick,
                     onCardClick = onCardClick,
                     modifier = Modifier.fillMaxSize(),
@@ -167,17 +167,7 @@ private val previewPosts = listOf(
 @Composable
 private fun FeedScreenPreview() {
     SkimbyteTheme {
-        FeedScreen(
-            uiState = FeedUiState(posts = previewPosts),
-            onTopicSelected = {},
-            onPageChanged = {},
-            onBookmarkClick = {},
-            onReadSourceClick = {},
-            onCardClick = {},
-            onViewModeToggled = {},
-            onLoginSucceeded = {},
-            onLoginDismissed = {},
-        )
+        FeedScreen(state = FeedState(posts = previewPosts), onIntent = {}, onReadSourceClick = {}, onCardClick = {})
     }
 }
 
@@ -186,17 +176,7 @@ private fun FeedScreenPreview() {
 @Composable
 private fun FeedScreenLightPreview() {
     SkimbyteTheme(darkTheme = false) {
-        FeedScreen(
-            uiState = FeedUiState(posts = previewPosts),
-            onTopicSelected = {},
-            onPageChanged = {},
-            onBookmarkClick = {},
-            onReadSourceClick = {},
-            onCardClick = {},
-            onViewModeToggled = {},
-            onLoginSucceeded = {},
-            onLoginDismissed = {},
-        )
+        FeedScreen(state = FeedState(posts = previewPosts), onIntent = {}, onReadSourceClick = {}, onCardClick = {})
     }
 }
 
@@ -205,17 +185,7 @@ private fun FeedScreenLightPreview() {
 @Composable
 private fun FeedScreenLoadingPreview() {
     SkimbyteTheme {
-        FeedScreen(
-            uiState = FeedUiState(isLoadingInitial = true),
-            onTopicSelected = {},
-            onPageChanged = {},
-            onBookmarkClick = {},
-            onReadSourceClick = {},
-            onCardClick = {},
-            onViewModeToggled = {},
-            onLoginSucceeded = {},
-            onLoginDismissed = {},
-        )
+        FeedScreen(state = FeedState(isLoadingInitial = true), onIntent = {}, onReadSourceClick = {}, onCardClick = {})
     }
 }
 
@@ -224,16 +194,6 @@ private fun FeedScreenLoadingPreview() {
 @Composable
 private fun FeedScreenEmptyPreview() {
     SkimbyteTheme {
-        FeedScreen(
-            uiState = FeedUiState(posts = emptyList()),
-            onTopicSelected = {},
-            onPageChanged = {},
-            onBookmarkClick = {},
-            onReadSourceClick = {},
-            onCardClick = {},
-            onViewModeToggled = {},
-            onLoginSucceeded = {},
-            onLoginDismissed = {},
-        )
+        FeedScreen(state = FeedState(posts = emptyList()), onIntent = {}, onReadSourceClick = {}, onCardClick = {})
     }
 }

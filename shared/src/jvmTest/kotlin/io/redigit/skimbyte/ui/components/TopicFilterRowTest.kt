@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.feed.ui
+package io.redigit.skimbyte.ui.components
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText

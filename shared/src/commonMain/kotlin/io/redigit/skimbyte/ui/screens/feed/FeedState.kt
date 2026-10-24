@@ -1,9 +1,9 @@
-package io.redigit.skimbyte.feed
+package io.redigit.skimbyte.ui.screens.feed
 
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.data.models.Topic
 
-data class FeedUiState(
+data class FeedState(
     val selectedTopic: Topic = Topic.All,
     val viewMode: FeedViewMode = FeedViewMode.Stack,
     val availableTopics: List<Topic> = emptyList(),

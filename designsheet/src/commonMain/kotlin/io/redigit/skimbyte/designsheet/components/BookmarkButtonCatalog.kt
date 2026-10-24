@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.feed.ui.BookmarkButton
+import io.redigit.skimbyte.ui.components.BookmarkButton
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 private data class ButtonState(val label: String, val isBookmarked: Boolean, val isLoading: Boolean)

@@ -22,7 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import io.redigit.skimbyte.feed.ui.SharedElementContext
+import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
 

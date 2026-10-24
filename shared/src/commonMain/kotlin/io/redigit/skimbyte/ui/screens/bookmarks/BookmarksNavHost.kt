@@ -16,9 +16,9 @@ import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import io.redigit.skimbyte.ui.screens.bookmarks.BookmarksViewModel
-import io.redigit.skimbyte.feed.ui.PostDetailPlaceholder
-import io.redigit.skimbyte.feed.ui.PostDetailScreen
-import io.redigit.skimbyte.feed.ui.SharedElementContext
+import io.redigit.skimbyte.ui.components.PostDetailPlaceholder
+import io.redigit.skimbyte.ui.components.PostDetailScreen
+import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.navigation.BookmarksList
 import io.redigit.skimbyte.ui.navigation.PostDetail
 import io.redigit.skimbyte.util.openUrl

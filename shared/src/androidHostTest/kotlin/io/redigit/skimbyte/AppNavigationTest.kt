@@ -29,8 +29,8 @@ import org.robolectric.annotation.GraphicsMode
  * rather than driving `App()` end to end.
  *
  * An earlier version of this test drove the real app through onboarding, with a mocked network,
- * all the way to tapping a [io.redigit.skimbyte.feed.ui.PostCard] to open
- * [io.redigit.skimbyte.feed.ui.PostDetailScreen]. It reliably failed with Espresso's
+ * all the way to tapping a [io.redigit.skimbyte.ui.components.PostCard] to open
+ * [io.redigit.skimbyte.ui.components.PostDetailScreen]. It reliably failed with Espresso's
  * `AppNotIdleException`: some continuous animation (traced to the PostCard -> PostDetailScreen
  * shared-element transition at list-detail width) never reports idle under Robolectric, which has
  * no real vsync to settle it. Two agent sessions attempting to fix the real test both hit this

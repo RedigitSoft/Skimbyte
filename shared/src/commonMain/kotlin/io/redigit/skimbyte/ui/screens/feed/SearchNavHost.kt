@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.feed.ui
+package io.redigit.skimbyte.ui.screens.feed
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -15,7 +15,9 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import io.redigit.skimbyte.feed.SearchViewModel
+import io.redigit.skimbyte.ui.components.PostDetailPlaceholder
+import io.redigit.skimbyte.ui.components.PostDetailScreen
+import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.navigation.PostDetail
 import io.redigit.skimbyte.ui.navigation.SearchHome
 import io.redigit.skimbyte.util.openUrl
@@ -44,7 +46,7 @@ fun SearchNavHost(
     onRootChanged: (Boolean) -> Unit,
     viewModel: SearchViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val state by viewModel.state.collectAsState()
     val backStack = rememberNavBackStack(navConfig, SearchHome)
     val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
     LaunchedEffect(backStack.size) { onRootChanged(backStack.size == 1) }
@@ -63,9 +65,8 @@ fun SearchNavHost(
                 ) {
                     val sharedTransition = SharedElementContext(this@SharedTransitionLayout, LocalNavAnimatedContentScope.current)
                     SearchScreen(
-                        uiState = uiState,
-                        onQueryChanged = viewModel::onQueryChanged,
-                        onBookmarkClick = viewModel::onBookmarkClick,
+                        state = state,
+                        onIntent = viewModel::onIntent,
                         onCardClick = { backStack.add(PostDetail(it)) },
                         sharedTransition = sharedTransition,
                     )
@@ -73,13 +74,13 @@ fun SearchNavHost(
                 entry<PostDetail>(
                     metadata = ListDetailSceneStrategy.detailPane(),
                 ) { key ->
-                    val post = uiState.results.firstOrNull { it.id == key.postId }
+                    val post = state.results.firstOrNull { it.id == key.postId }
                     if (post != null) {
                         val sharedTransition = SharedElementContext(this@SharedTransitionLayout, LocalNavAnimatedContentScope.current)
                         PostDetailScreen(
                             post = post,
-                            isBookmarkLoading = post.id in uiState.pendingBookmarkToggles,
-                            onBookmarkClick = { viewModel.onBookmarkClick(post.id) },
+                            isBookmarkLoading = post.id in state.pendingBookmarkToggles,
+                            onBookmarkClick = { viewModel.onIntent(SearchIntent.BookmarkClicked(post.id)) },
                             onReadSourceClick = ::openUrl,
                             onBack = { backStack.removeLastOrNull() },
                             sharedTransition = sharedTransition,

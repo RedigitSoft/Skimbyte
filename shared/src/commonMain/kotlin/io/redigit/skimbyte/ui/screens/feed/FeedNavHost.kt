@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.feed.ui
+package io.redigit.skimbyte.ui.screens.feed
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -15,7 +15,9 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import io.redigit.skimbyte.feed.FeedViewModel
+import io.redigit.skimbyte.ui.components.PostDetailPlaceholder
+import io.redigit.skimbyte.ui.components.PostDetailScreen
+import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.navigation.FeedHome
 import io.redigit.skimbyte.ui.navigation.PostDetail
 import io.redigit.skimbyte.ui.screens.auth.LoginSheet
@@ -45,13 +47,16 @@ fun FeedNavHost(
     onRootChanged: (Boolean) -> Unit,
     viewModel: FeedViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val state by viewModel.state.collectAsState()
     val backStack = rememberNavBackStack(navConfig, FeedHome)
     val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
     LaunchedEffect(backStack.size) { onRootChanged(backStack.size == 1) }
 
-    if (uiState.pendingBookmarkAction != null) {
-        LoginSheet(onDismiss = viewModel::onLoginDismissed, onLoginSuccess = viewModel::onLoginSucceeded)
+    if (state.pendingBookmarkAction != null) {
+        LoginSheet(
+            onDismiss = { viewModel.onIntent(FeedIntent.LoginDismissed) },
+            onLoginSuccess = { viewModel.onIntent(FeedIntent.LoginSucceeded) },
+        )
     }
 
     SharedTransitionLayout {
@@ -68,28 +73,23 @@ fun FeedNavHost(
                 ) {
                     val sharedTransition = SharedElementContext(this@SharedTransitionLayout, LocalNavAnimatedContentScope.current)
                     FeedScreen(
-                        uiState = uiState,
-                        onTopicSelected = viewModel::onTopicSelected,
-                        onPageChanged = viewModel::onPageChanged,
-                        onBookmarkClick = viewModel::onBookmarkTapped,
+                        state = state,
+                        onIntent = viewModel::onIntent,
                         onReadSourceClick = ::openUrl,
                         onCardClick = { backStack.add(PostDetail(it)) },
-                        onViewModeToggled = viewModel::onViewModeToggled,
-                        onLoginSucceeded = viewModel::onLoginSucceeded,
-                        onLoginDismissed = viewModel::onLoginDismissed,
                         sharedTransition = sharedTransition,
                     )
                 }
                 entry<PostDetail>(
                     metadata = ListDetailSceneStrategy.detailPane(),
                 ) { key ->
-                    val post = uiState.posts.firstOrNull { it.id == key.postId }
+                    val post = state.posts.firstOrNull { it.id == key.postId }
                     if (post != null) {
                         val sharedTransition = SharedElementContext(this@SharedTransitionLayout, LocalNavAnimatedContentScope.current)
                         PostDetailScreen(
                             post = post,
-                            isBookmarkLoading = post.id in uiState.pendingBookmarkToggles,
-                            onBookmarkClick = { viewModel.onBookmarkTapped(key.postId) },
+                            isBookmarkLoading = post.id in state.pendingBookmarkToggles,
+                            onBookmarkClick = { viewModel.onIntent(FeedIntent.BookmarkTapped(key.postId)) },
                             onReadSourceClick = ::openUrl,
                             onBack = { backStack.removeLastOrNull() },
                             sharedTransition = sharedTransition,

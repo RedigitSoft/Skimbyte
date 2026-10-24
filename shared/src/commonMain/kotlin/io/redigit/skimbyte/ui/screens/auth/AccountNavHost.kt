@@ -21,7 +21,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import io.redigit.skimbyte.feed.ui.SharedElementContext
+import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.navigation.AccountHome
 import io.redigit.skimbyte.ui.navigation.AvatarViewer
 import io.redigit.skimbyte.ui.navigation.BannerViewer
