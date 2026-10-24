@@ -1,6 +1,6 @@
 package io.redigit.skimbyte.bookmarks
 
-import io.redigit.skimbyte.posts.Post
+import io.redigit.skimbyte.data.models.Post
 
 data class BookmarksUiState(
     val posts: List<Post> = emptyList(),

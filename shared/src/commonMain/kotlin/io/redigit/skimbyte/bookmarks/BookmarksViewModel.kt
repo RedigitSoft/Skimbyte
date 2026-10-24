@@ -3,7 +3,7 @@ package io.redigit.skimbyte.bookmarks
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redigit.skimbyte.data.repositories.AuthRepository
-import io.redigit.skimbyte.posts.PostsRepository
+import io.redigit.skimbyte.data.repositories.PostsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

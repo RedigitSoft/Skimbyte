@@ -1,6 +1,6 @@
 package io.redigit.skimbyte.onboarding
 
-import io.redigit.skimbyte.posts.Topic
+import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.testing.FakeSettings
 import kotlin.test.Test
 import kotlin.test.assertEquals

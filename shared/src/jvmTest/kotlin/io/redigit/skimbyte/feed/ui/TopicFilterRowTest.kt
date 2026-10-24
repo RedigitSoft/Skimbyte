@@ -4,7 +4,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
-import io.redigit.skimbyte.posts.Topic
+import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -1,4 +1,6 @@
-package io.redigit.skimbyte.posts
+package io.redigit.skimbyte.data.repositories
+
+import io.redigit.skimbyte.data.remote.PostsApi
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

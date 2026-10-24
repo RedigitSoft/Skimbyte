@@ -1,7 +1,7 @@
 package io.redigit.skimbyte.feed
 
-import io.redigit.skimbyte.posts.Post
-import io.redigit.skimbyte.posts.Topic
+import io.redigit.skimbyte.data.models.Post
+import io.redigit.skimbyte.data.models.Topic
 
 data class FeedUiState(
     val selectedTopic: Topic = Topic.All,

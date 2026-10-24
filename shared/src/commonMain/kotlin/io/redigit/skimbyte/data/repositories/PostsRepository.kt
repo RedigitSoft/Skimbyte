@@ -1,4 +1,7 @@
-package io.redigit.skimbyte.posts
+package io.redigit.skimbyte.data.repositories
+
+import io.redigit.skimbyte.data.models.Post
+import io.redigit.skimbyte.data.models.Topic
 
 import io.redigit.skimbyte.data.remote.Page
 

@@ -1,6 +1,6 @@
 package io.redigit.skimbyte.onboarding
 
-import io.redigit.skimbyte.posts.Topic
+import io.redigit.skimbyte.data.models.Topic
 
 data class TopicsUiState(
     val available: List<Topic> = Topic.entries.filter { it != Topic.All },

@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.posts
+package io.redigit.skimbyte.data.models
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

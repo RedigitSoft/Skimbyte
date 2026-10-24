@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.onboarding.TopicPreferencesStore
-import io.redigit.skimbyte.posts.BookmarkIdsStore
-import io.redigit.skimbyte.posts.PostsRepository
-import io.redigit.skimbyte.posts.Topic
+import io.redigit.skimbyte.data.repositories.BookmarkIdsStore
+import io.redigit.skimbyte.data.repositories.PostsRepository
+import io.redigit.skimbyte.data.models.Topic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

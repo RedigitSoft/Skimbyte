@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.posts
+package io.redigit.skimbyte.data.models
 
 // apiValue strings are a best-guess default pending a live API to confirm against.
 enum class Topic(val displayLabel: String, val apiValue: String?) {

@@ -1,6 +1,6 @@
 package io.redigit.skimbyte.onboarding
 
-import io.redigit.skimbyte.posts.Topic
+import io.redigit.skimbyte.data.models.Topic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.test.Test

@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.onboarding.TopicsUiState
-import io.redigit.skimbyte.posts.Topic
+import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 @Composable

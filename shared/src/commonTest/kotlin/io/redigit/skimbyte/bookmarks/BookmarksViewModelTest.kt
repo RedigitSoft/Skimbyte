@@ -3,9 +3,9 @@ package io.redigit.skimbyte.bookmarks
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.Session
 import io.redigit.skimbyte.data.remote.Page
-import io.redigit.skimbyte.posts.Post
-import io.redigit.skimbyte.posts.PostsRepository
-import io.redigit.skimbyte.posts.Topic
+import io.redigit.skimbyte.data.models.Post
+import io.redigit.skimbyte.data.repositories.PostsRepository
+import io.redigit.skimbyte.data.models.Topic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

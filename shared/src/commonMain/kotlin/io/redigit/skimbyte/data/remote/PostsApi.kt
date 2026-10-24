@@ -1,4 +1,6 @@
-package io.redigit.skimbyte.posts
+package io.redigit.skimbyte.data.remote
+
+import io.redigit.skimbyte.data.models.Topic
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -8,7 +10,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.data.models.dto.PageDto
-import io.redigit.skimbyte.posts.dto.PostDto
+import io.redigit.skimbyte.data.models.dto.PostDto
 
 // PLACEHOLDER-PENDING-BACKEND-CONFIRMATION
 interface PostsApi {

@@ -1,7 +1,7 @@
-package io.redigit.skimbyte.posts
+package io.redigit.skimbyte.data.models
 
 import io.redigit.skimbyte.data.remote.ApiConfig
-import io.redigit.skimbyte.posts.dto.PostDto
+import io.redigit.skimbyte.data.models.dto.PostDto
 import io.redigit.skimbyte.util.decodeHtmlEntities
 import kotlin.time.Instant
 

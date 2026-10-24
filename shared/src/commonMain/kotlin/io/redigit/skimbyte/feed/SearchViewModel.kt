@@ -2,9 +2,9 @@ package io.redigit.skimbyte.feed
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redigit.skimbyte.posts.Post
-import io.redigit.skimbyte.posts.PostsRepository
-import io.redigit.skimbyte.posts.Topic
+import io.redigit.skimbyte.data.models.Post
+import io.redigit.skimbyte.data.repositories.PostsRepository
+import io.redigit.skimbyte.data.models.Topic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

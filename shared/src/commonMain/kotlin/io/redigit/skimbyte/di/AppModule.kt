@@ -7,7 +7,7 @@ import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.di.modules.networkModule
 import io.redigit.skimbyte.network.demoNetworkModule
 import io.redigit.skimbyte.onboarding.onboardingModule
-import io.redigit.skimbyte.posts.postsModule
+import io.redigit.skimbyte.di.modules.postsModule
 import io.redigit.skimbyte.settings.settingsModule
 import io.redigit.skimbyte.theme.themeModule
 import org.koin.dsl.module

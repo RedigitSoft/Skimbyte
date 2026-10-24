@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mikepenz.markdown.m3.Markdown
-import io.redigit.skimbyte.posts.Post
+import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.util.toDisplayDate
