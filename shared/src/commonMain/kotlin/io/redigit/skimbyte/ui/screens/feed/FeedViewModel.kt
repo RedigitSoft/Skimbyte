@@ -24,14 +24,12 @@ class FeedViewModel(
     val state: StateFlow<FeedState> = _state.asStateFlow()
 
     init {
-        val storedTopics = topicPreferencesStore.selectedTopics()
-        if (storedTopics.isNotEmpty()) {
-            val availableTopics = storedTopics.toList()
-            _state.value = _state.value.copy(
-                availableTopics = availableTopics,
-                selectedTopic = availableTopics.first(),
-            )
-        }
+        // "All" is always the first filter, followed by the user's chosen interests, and is the
+        // default selection so the feed opens showing everything.
+        _state.value = _state.value.copy(
+            availableTopics = listOf(Topic.All) + topicPreferencesStore.selectedTopics(),
+            selectedTopic = Topic.All,
+        )
         if (authRepository.session.value != null) {
             viewModelScope.launch { bookmarkIdsStore.refresh() }
         }
@@ -59,10 +57,10 @@ class FeedViewModel(
 
     private fun onTopicPreferencesChanged() {
         val storedTopics = topicPreferencesStore.selectedTopics().toList()
-        _state.value = _state.value.copy(availableTopics = storedTopics)
+        _state.value = _state.value.copy(availableTopics = listOf(Topic.All) + storedTopics)
         val currentTopic = _state.value.selectedTopic
-        if (storedTopics.isNotEmpty() && currentTopic !in storedTopics) {
-            onTopicSelected(storedTopics.first())
+        if (currentTopic != Topic.All && currentTopic !in storedTopics) {
+            onTopicSelected(Topic.All)
         }
     }
 

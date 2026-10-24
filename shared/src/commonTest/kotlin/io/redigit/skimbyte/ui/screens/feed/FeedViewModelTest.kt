@@ -244,26 +244,25 @@ class FeedViewModelTest {
     }
 
     @Test
-    fun `initial selected topic comes from stored interests, not Topic All`() = runTest {
+    fun `initial filter is All, followed by stored interests`() = runTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
         val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Kotlin, Topic.Android)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
 
-        assertEquals(Topic.Kotlin, viewModel.state.value.selectedTopic)
-        assertEquals(listOf(Topic.Kotlin, Topic.Android), viewModel.state.value.availableTopics)
+        assertEquals(Topic.All, viewModel.state.value.selectedTopic)
+        assertEquals(listOf(Topic.All, Topic.Kotlin, Topic.Android), viewModel.state.value.availableTopics)
     }
 
     @Test
-    fun `editing interests away from the active filter falls back to a remaining topic`() = runTest {
+    fun `editing interests away from the active filter falls back to All`() = runTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
         val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Android, Topic.Kotlin)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
         viewModel.onIntent(FeedIntent.TopicSelected(Topic.Android)) // user is filtered on Android
         store.setSelectedTopics(setOf(Topic.Kotlin)) // edits interests, drops Android
 
-
-        assertEquals(Topic.Kotlin, viewModel.state.value.selectedTopic)
-        assertEquals(listOf(Topic.Kotlin), viewModel.state.value.availableTopics)
+        assertEquals(Topic.All, viewModel.state.value.selectedTopic)
+        assertEquals(listOf(Topic.All, Topic.Kotlin), viewModel.state.value.availableTopics)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -273,13 +272,14 @@ class FeedViewModelTest {
         val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Android, Topic.Kotlin)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
 
-        assertEquals(Topic.Android, viewModel.state.value.selectedTopic)
+        assertEquals(Topic.All, viewModel.state.value.selectedTopic)
+        assertEquals(listOf(Topic.All, Topic.Android, Topic.Kotlin), viewModel.state.value.availableTopics)
 
         store.setSelectedTopics(setOf(Topic.Kotlin)) // simulates editing interests from Settings, without calling any method on vm directly
         advanceUntilIdle() // let the reactive collector process the change
 
-        assertEquals(Topic.Kotlin, viewModel.state.value.selectedTopic)
-        assertEquals(listOf(Topic.Kotlin), viewModel.state.value.availableTopics)
+        assertEquals(Topic.All, viewModel.state.value.selectedTopic) // All stays valid, so the filter is kept
+        assertEquals(listOf(Topic.All, Topic.Kotlin), viewModel.state.value.availableTopics)
     }
 
     @Test
