@@ -5,7 +5,10 @@ import androidx.lifecycle.viewModelScope
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.ProfileRepository
+import io.redigit.skimbyte.util.AVATAR_ASPECT
+import io.redigit.skimbyte.util.BANNER_ASPECT
 import io.redigit.skimbyte.util.PickedImage
+import io.redigit.skimbyte.util.cropToAspect
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -108,7 +111,8 @@ class AccountViewModel(
         if (_state.value.avatarUploadInProgress) return
         _state.value = _state.value.copy(avatarUploadInProgress = true, avatarError = null)
         viewModelScope.launch {
-            val result = profileRepository.uploadAvatar(image)
+            // Crop to a square on-device before uploading so avatars are consistently framed.
+            val result = profileRepository.uploadAvatar(cropToAspect(image, AVATAR_ASPECT))
             _state.value = _state.value.copy(
                 avatarUploadInProgress = false,
                 avatarError = result.exceptionOrNull()?.let { "Could not update avatar" },
@@ -120,7 +124,8 @@ class AccountViewModel(
         if (_state.value.bannerUploadInProgress) return
         _state.value = _state.value.copy(bannerUploadInProgress = true, bannerError = null)
         viewModelScope.launch {
-            val result = profileRepository.uploadBanner(image)
+            // Crop to a wide banner aspect on-device before uploading.
+            val result = profileRepository.uploadBanner(cropToAspect(image, BANNER_ASPECT))
             _state.value = _state.value.copy(
                 bannerUploadInProgress = false,
                 bannerError = result.exceptionOrNull()?.let { "Could not update banner" },
