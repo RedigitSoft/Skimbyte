@@ -2,6 +2,7 @@ package io.redigit.skimbyte.ui.screens.auth
 
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.models.Profile
+import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.data.repositories.ProfileRepository
 import io.redigit.skimbyte.data.repositories.Session
 import io.redigit.skimbyte.util.PickedImage
@@ -58,18 +59,66 @@ class AccountViewModelTest {
     @AfterTest
     fun tearDownMainDispatcher() = Dispatchers.resetMain()
 
+    private fun accountVm(
+        auth: AuthRepository,
+        profile: ProfileRepository,
+        followedTopics: Set<Topic> = emptySet(),
+        bookmarkIds: Set<String> = emptySet(),
+    ) = AccountViewModel(
+        auth,
+        profile,
+        MutableStateFlow(followedTopics),
+        MutableStateFlow(bookmarkIds),
+    )
+
     @Test
     fun initialState_reflectsSessionAndProfile() = runTest {
         val repo = FakeProfileRepository(Profile("u1", avatarUrl = "https://cdn/a.jpg", bannerUrl = null))
-        val vm = AccountViewModel(FakeAuthRepositoryForAccount(loggedIn = true), repo)
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
-        assertEquals(AccountState(isLoggedIn = true, avatarUrl = "https://cdn/a.jpg", bannerUrl = null), vm.state.value)
+        val state = vm.state.value
+        assertEquals(true, state.isLoggedIn)
+        assertEquals("https://cdn/a.jpg", state.avatarUrl)
+        assertEquals("@u1", state.handle) // derived from userId when the server doesn't supply one
+    }
+
+    @Test
+    fun loggedInState_derivesSavedCountAndFollowedTopicsFromRealData() = runTest {
+        val repo = FakeProfileRepository(Profile("user1234567", avatarUrl = null, bannerUrl = null))
+        val vm = accountVm(
+            FakeAuthRepositoryForAccount(loggedIn = true),
+            repo,
+            followedTopics = setOf(Topic.Kotlin, Topic.Android),
+            bookmarkIds = setOf("a", "b", "c"),
+        )
+
+        val state = vm.state.value
+        assertEquals(3, state.savedCount)
+        assertEquals(setOf(Topic.Kotlin, Topic.Android), state.followedTopics.toSet())
+        assertEquals("@user1234", state.handle) // first 8 chars of the userId
+    }
+
+    @Test
+    fun loggedOutState_clearsDerivedProfileFields() = runTest {
+        val repo = FakeProfileRepository()
+        val vm = accountVm(
+            FakeAuthRepositoryForAccount(loggedIn = false),
+            repo,
+            followedTopics = setOf(Topic.Kotlin),
+            bookmarkIds = setOf("a"),
+        )
+
+        val state = vm.state.value
+        assertEquals(false, state.isLoggedIn)
+        assertNull(state.displayName)
+        assertNull(state.savedCount)
+        assertEquals(emptyList(), state.followedTopics)
     }
 
     @Test
     fun onAvatarPicked_success_clearsInProgressAndError() = runTest {
         val repo = FakeProfileRepository()
-        val vm = AccountViewModel(FakeAuthRepositoryForAccount(loggedIn = true), repo)
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
         vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
 
@@ -82,7 +131,7 @@ class AccountViewModelTest {
     fun onAvatarPicked_failure_setsErrorAndClearsInProgress() = runTest {
         val repo = FakeProfileRepository()
         repo.avatarResult = Result.failure(RuntimeException("boom"))
-        val vm = AccountViewModel(FakeAuthRepositoryForAccount(loggedIn = true), repo)
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
         vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
 
@@ -95,7 +144,7 @@ class AccountViewModelTest {
         val gate = CompletableDeferred<Unit>()
         val repo = FakeProfileRepository()
         repo.avatarUploadGate = gate
-        val vm = AccountViewModel(FakeAuthRepositoryForAccount(loggedIn = true), repo)
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
         vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png"))) // suspends on the gate
         vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png"))) // should be ignored: still in progress
@@ -107,7 +156,7 @@ class AccountViewModelTest {
     @Test
     fun onBannerPicked_success_clearsInProgressAndError() = runTest {
         val repo = FakeProfileRepository()
-        val vm = AccountViewModel(FakeAuthRepositoryForAccount(loggedIn = true), repo)
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
         vm.onIntent(AccountIntent.BannerPicked(PickedImage(ByteArray(10), "image/png")))
 

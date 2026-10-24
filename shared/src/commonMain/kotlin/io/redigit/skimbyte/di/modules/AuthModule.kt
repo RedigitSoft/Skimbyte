@@ -2,6 +2,8 @@ package io.redigit.skimbyte.di.modules
 
 import com.russhwolf.settings.Settings
 import io.redigit.skimbyte.data.local.SessionStorage
+import io.redigit.skimbyte.data.local.TopicPreferencesStore
+import io.redigit.skimbyte.data.repositories.BookmarkIdsStore
 import io.redigit.skimbyte.data.local.SettingsSessionStorage
 import io.redigit.skimbyte.data.remote.AuthApi
 import io.redigit.skimbyte.data.remote.KtorAuthApi
@@ -38,5 +40,12 @@ val authModule = module {
         ProfileRepositoryImpl(get(), get<AuthRepository>().session, CoroutineScope(SupervisorJob() + Dispatchers.Default))
     }
     viewModel { LoginSheetViewModel(get()) }
-    viewModel { AccountViewModel(get(), get()) }
+    viewModel {
+        AccountViewModel(
+            get(),
+            get(),
+            get<TopicPreferencesStore>().selectedTopicsFlow,
+            get<BookmarkIdsStore>().ids,
+        )
+    }
 }
