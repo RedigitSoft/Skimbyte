@@ -1,6 +1,10 @@
 package io.redigit.skimbyte.ui.navigation
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Home
@@ -11,13 +15,16 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.ui.navigation.TopLevelDestination
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
@@ -41,31 +48,66 @@ fun SkimbyteBottomNavBar(
     HorizontalFloatingToolbar(
         expanded = expanded,
         floatingActionButton = {
-            FloatingToolbarDefaults.VibrantFloatingActionButton(onClick = { onExpandedChange(!expanded) }) {
+            FloatingToolbarDefaults.StandardFloatingActionButton(onClick = { onExpandedChange(!expanded) }) {
                 Icon(
                     if (expanded) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowUp,
                     contentDescription = if (expanded) "Collapse navigation" else "Expand navigation",
                 )
             }
         },
-        colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+        colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
         modifier = modifier,
     ) {
         TopLevelDestination.entries.forEach { destination ->
-            val isSelected = destination == selected
-            IconButton(
+            NavDestinationItem(
+                destination = destination,
+                selected = destination == selected,
                 onClick = { onDestinationSelected(destination) },
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = if (isSelected) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                ),
-            ) {
-                Icon(destination.icon(), contentDescription = destination.name)
-            }
+            )
         }
+    }
+}
+
+/**
+ * A single nav destination: icon above a label, with a pill indicator behind the icon when
+ * [selected] (accented with the primary color), mirroring the Skimbyte floating-dock design.
+ */
+@Composable
+private fun NavDestinationItem(
+    destination: TopLevelDestination,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val contentColor = if (selected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    Column(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.large)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 4.dp, vertical = 2.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Surface(
+            shape = CircleShape,
+            color = if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.16f) else Color.Transparent,
+        ) {
+            Icon(
+                destination.icon(),
+                contentDescription = destination.name,
+                tint = contentColor,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            )
+        }
+        Text(
+            text = destination.name,
+            style = MaterialTheme.typography.labelSmall,
+            color = contentColor,
+        )
     }
 }
 
