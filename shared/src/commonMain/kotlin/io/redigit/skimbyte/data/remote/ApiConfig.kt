@@ -14,6 +14,12 @@ object ApiConfig {
     // register/login call so the auth server knows which app the auth event is for.
     const val PRODUCT_ID = BackendConfig.PRODUCT_ID
 
+    // GitHub OAuth start endpoint (/auth/oauth/github/start) isn't live on the auth server yet. The
+    // client flow is fully scaffolded (start URL + shared redirect handling, see GoogleAuthCallback
+    // which bridges any provider's token redirect); flip this to true once the endpoint exists and
+    // the GitHub button will begin the real flow instead of showing "coming soon". See SERVER_API.md.
+    const val GITHUB_SIGN_IN_ENABLED = false
+
     // Falls back to the mock network module automatically when no real API URL is configured,
     // so a fresh clone without local.properties still runs end to end on fake data.
     val DEMO_MODE = BASE_URL.isBlank()

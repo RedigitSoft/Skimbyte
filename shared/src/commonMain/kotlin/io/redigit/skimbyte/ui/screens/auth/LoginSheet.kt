@@ -37,8 +37,15 @@ import org.koin.compose.viewmodel.koinViewModel
 // URIs (auth.oauth.allowedMobileRedirectUris) and forwarded back with the issued tokens — captured
 // on Android via the matching intent-filter in AndroidManifest.xml (also sourced from
 // local.properties, via androidApp's manifestPlaceholders).
-private fun googleSignInStartUrl(): String =
-    URLBuilder("${ApiConfig.AUTH_BASE_URL}/auth/oauth/google/start").apply {
+private fun googleSignInStartUrl(): String = oauthStartUrl("google")
+
+// GitHub OAuth uses the same server-side shape as Google (a provider-specific /start that redirects
+// back to the shared mobile redirect URI with tokens), so the start URLs differ only by provider
+// and the redirect is handled by the one GoogleAuthCallback path. Gated by ApiConfig.GITHUB_SIGN_IN_ENABLED.
+private fun githubSignInStartUrl(): String = oauthStartUrl("github")
+
+private fun oauthStartUrl(provider: String): String =
+    URLBuilder("${ApiConfig.AUTH_BASE_URL}/auth/oauth/$provider/start").apply {
         parameters.append("redirect_uri", BackendConfig.GOOGLE_REDIRECT_URI)
         parameters.append("product_id", ApiConfig.PRODUCT_ID)
     }.buildString()
@@ -71,7 +78,10 @@ fun LoginSheet(
     ) {
         LoginSheetContent(
             state = state,
-            onGithubSignInClick = { viewModel.onIntent(LoginSheetIntent.GithubSignInStarted) },
+            onGithubSignInClick = {
+                viewModel.onIntent(LoginSheetIntent.GithubSignInStarted)
+                if (ApiConfig.GITHUB_SIGN_IN_ENABLED) openUrl(githubSignInStartUrl())
+            },
             onGoogleSignInClick = {
                 viewModel.onIntent(LoginSheetIntent.GoogleSignInStarted)
                 openUrl(googleSignInStartUrl())

@@ -2,6 +2,7 @@ package io.redigit.skimbyte.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,11 +22,18 @@ class LoginSheetViewModel(private val authRepository: AuthRepository) : ViewMode
 
     fun onIntent(intent: LoginSheetIntent) {
         when (intent) {
-            // GitHub OAuth is not wired yet (needs server support); surface an honest message until
-            // the dedicated GitHub task lands.
+            // The GitHub flow is scaffolded but gated on the server endpoint: when enabled it starts
+            // like Google (the sheet opens the GitHub /start URL; the shared redirect completes it);
+            // otherwise it surfaces an honest "coming soon" message. See ApiConfig.GITHUB_SIGN_IN_ENABLED.
             LoginSheetIntent.GithubSignInStarted ->
-                _state.value = _state.value.copy(error = "GitHub sign-in is coming soon")
+                _state.value = if (ApiConfig.GITHUB_SIGN_IN_ENABLED) {
+                    _state.value.copy(isSubmitting = true, error = null)
+                } else {
+                    _state.value.copy(error = "GitHub sign-in is coming soon")
+                }
             LoginSheetIntent.GoogleSignInStarted -> _state.value = _state.value.copy(isSubmitting = true, error = null)
+            // Shared by both providers: the auth server redirects back to the same mobile deep link
+            // with tokens regardless of which OAuth provider was used.
             is LoginSheetIntent.GoogleRedirect -> googleRedirect(intent.redirectUri)
             LoginSheetIntent.Dismissed -> _state.value = LoginSheetState()
         }
