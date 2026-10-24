@@ -8,6 +8,7 @@ import io.redigit.skimbyte.designsheet.components.LoginSheetCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostCardCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostDetailScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.ProfileImagesCatalogContent
+import io.redigit.skimbyte.designsheet.components.SavedPostRowCatalogContent
 import io.redigit.skimbyte.designsheet.components.SearchScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SelectionControlsCatalogContent
 import io.redigit.skimbyte.designsheet.components.SettingsScreenCatalogContent
@@ -43,6 +44,7 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("search-screen", "Search", "Feed") { SearchScreenCatalogContent() },
     CatalogItem("bottom-nav-bar", "Bottom nav bar", "Navigation") { SkimbyteBottomNavBarCatalogContent() },
     CatalogItem("navigation-rail", "Navigation rail", "Navigation") { SkimbyteNavigationRailCatalogContent() },
+    CatalogItem("saved-post-row", "Saved post row", "Bookmarks") { SavedPostRowCatalogContent() },
     CatalogItem("login-sheet", "Login sheet", "Bookmarks") { LoginSheetCatalogContent() },
     CatalogItem("account-screen", "Account", "Bookmarks") { AccountScreenCatalogContent() },
     CatalogItem("profile-images", "Avatar & banner", "Account") { ProfileImagesCatalogContent() },

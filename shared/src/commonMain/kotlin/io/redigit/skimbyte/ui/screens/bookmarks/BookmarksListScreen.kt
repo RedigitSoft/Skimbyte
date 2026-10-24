@@ -1,14 +1,14 @@
 package io.redigit.skimbyte.ui.screens.bookmarks
 
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,17 +21,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.components.SavedPostRow
+import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.screens.auth.LoginSheet
 import kotlin.time.Instant
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BookmarksListScreen(
     state: BookmarksState,
     onPostClick: (Post) -> Unit,
     onIntent: (BookmarksIntent) -> Unit,
     modifier: Modifier = Modifier,
+    sharedTransition: SharedElementContext? = null,
 ) {
     Scaffold(
         modifier = modifier,
@@ -65,14 +70,18 @@ fun BookmarksListScreen(
             ) {
                 Text("No bookmarks yet.", style = MaterialTheme.typography.bodyLarge)
             }
-            else -> LazyColumn(modifier = Modifier.padding(padding)) {
-                items(state.posts) { post ->
-                    ListItem(
-                        headlineContent = { Text(post.title) },
-                        supportingContent = { Text("${post.topic} · ${post.sourceName}") },
-                        modifier = Modifier.clickable { onPostClick(post) },
+            else -> LazyColumn(
+                modifier = Modifier.padding(padding).fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(state.posts, key = { it.id }) { post ->
+                    SavedPostRow(
+                        post = post,
+                        onClick = onPostClick,
+                        onRemoveClick = { onIntent(BookmarksIntent.Unbookmark(post.id)) },
+                        sharedTransition = sharedTransition,
                     )
-                    HorizontalDivider()
                 }
             }
         }
@@ -92,6 +101,7 @@ private val previewPost = Post(
     isBookmarked = true,
 )
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun BookmarksListScreenPreview() {
@@ -104,6 +114,7 @@ private fun BookmarksListScreenPreview() {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun BookmarksListScreenLoggedOutPreview() {
@@ -116,6 +127,7 @@ private fun BookmarksListScreenLoggedOutPreview() {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun BookmarksListScreenEmptyPreview() {

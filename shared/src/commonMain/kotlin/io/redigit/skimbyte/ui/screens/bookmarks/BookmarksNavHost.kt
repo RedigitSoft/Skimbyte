@@ -64,10 +64,12 @@ fun BookmarksNavHost(
                         detailPlaceholder = { PostDetailPlaceholder() },
                     ),
                 ) {
+                    val sharedTransition = SharedElementContext(this@SharedTransitionLayout, LocalNavAnimatedContentScope.current)
                     BookmarksListScreen(
                         state = state,
                         onPostClick = { post -> backStack.add(PostDetail(post.id)) },
                         onIntent = viewModel::onIntent,
+                        sharedTransition = sharedTransition,
                     )
                 }
                 entry<PostDetail>(
