@@ -18,11 +18,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -42,6 +44,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.ui.components.SharedElementContext
+import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.AvatarWithEditBadge
 import io.redigit.skimbyte.ui.components.BannerImage
@@ -97,14 +100,23 @@ fun AccountScreen(
             state.bannerError?.let { AccountErrorBanner(message = it) }
 
             if (state.isLoggedIn) {
+                EyebrowText("Account", modifier = Modifier.padding(start = 4.dp, top = 4.dp))
                 Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
                     Column {
-                        AccountActionRow(icon = Icons.Filled.Settings, label = "Settings", onClick = onSettingsClick)
+                        AccountActionRow(
+                            icon = Icons.Filled.Settings,
+                            label = "Settings",
+                            supporting = "Theme, display & preferences",
+                            onClick = onSettingsClick,
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                         AccountActionRow(
                             icon = Icons.AutoMirrored.Filled.Logout,
                             label = "Log out",
+                            supporting = "Sign out of your account",
                             onClick = { showLogoutConfirm = true },
                             tint = MaterialTheme.colorScheme.error,
+                            iconTint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.testTag("logoutRow"),
                         )
                     }
@@ -143,18 +155,36 @@ private fun AccountActionRow(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    supporting: String? = null,
     tint: Color = MaterialTheme.colorScheme.onSurface,
+    iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Icon(icon, contentDescription = null, tint = tint)
-        Text(label, style = MaterialTheme.typography.bodyLarge, color = tint)
+        Surface(shape = RoundedCornerShape(12.dp), color = iconTint.copy(alpha = 0.14f)) {
+            Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.padding(8.dp))
+        }
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(label, style = MaterialTheme.typography.bodyLarge, color = tint)
+            if (supporting != null) {
+                Text(
+                    supporting,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
