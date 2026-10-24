@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -19,30 +18,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mikepenz.markdown.m3.Markdown
 import io.redigit.skimbyte.data.models.Post
-import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteTheme
-import io.redigit.skimbyte.util.toDisplayDate
+import io.redigit.skimbyte.util.estimateReadingMinutes
 import kotlin.time.Instant
 
 /**
- * Full-page view of a single [Post]. Unlike [PostCard], its markdown body is not height-capped -
- * the whole point of a dedicated detail page is that content isn't truncated.
+ * Full-page view of a single [Post], sharing the story-card visual language of [PostCard] (topic
+ * pill, reading-time, attributed source, action bar) so navigating between them feels continuous.
+ * Unlike [PostCard], its markdown body is not height-capped - the whole point of a dedicated detail
+ * page is that content isn't truncated. When [sharedTransition] is supplied, the hero image and the
+ * headline animate in from their counterparts on the originating card.
  *
  * Deliberately does not reuse [PostCard] internally: embedding a tappable card inside the screen
  * it navigates *to* would make the card clickable into itself.
@@ -96,56 +93,47 @@ fun PostDetailScreen(
                 } else {
                     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant))
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
-                            ),
-                        ),
-                )
-                Column(
-                    modifier = Modifier.align(Alignment.BottomStart).padding(16.dp),
-                ) {
-                    EyebrowText("${post.topic} · ${post.publishedAt.toDisplayDate()}")
-                    Text(
-                        text = post.sourceName,
-                        color = Color.White,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-                Surface(
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f),
-                    modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).clip(CircleShape),
-                ) {
-                    BookmarkButton(
-                        isBookmarked = post.isBookmarked,
-                        isLoading = isBookmarkLoading,
-                        onClick = onBookmarkClick,
-                    )
-                }
             }
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TopicPill(post.topic)
+                    ReadingTimeLabel(minutes = estimateReadingMinutes(post.summaryMarkdown))
+                }
+                val titleModifier = if (sharedTransition != null) {
+                    with(sharedTransition.scope) {
+                        Modifier.sharedBounds(
+                            rememberSharedContentState(key = "post-title-${post.id}"),
+                            sharedTransition.animatedVisibilityScope,
+                        )
+                    }
+                } else {
+                    Modifier
+                }
                 Text(
                     text = post.title,
                     style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(bottom = 12.dp),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = titleModifier,
                 )
+                SourceAttribution(sourceName = post.sourceName, publishedAt = post.publishedAt)
                 // Unlike PostCard's heightIn(max = 240.dp), the detail page lets the markdown body
                 // grow to its full height - the Column it's in owns the screen's only scroll, so
                 // there's no risk of the renderer's internal layout collapsing sibling content.
                 Markdown(content = post.summaryMarkdown)
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    TextButton(onClick = { onReadSourceClick(post.sourceUrl) }) {
-                        Text("View source")
-                    }
-                }
+                StoryActionBar(
+                    isBookmarked = post.isBookmarked,
+                    isBookmarkLoading = isBookmarkLoading,
+                    onBookmarkClick = onBookmarkClick,
+                    onReadSourceClick = { onReadSourceClick(post.sourceUrl) },
+                    readSourceLabel = "View source",
+                )
             }
         }
     }
