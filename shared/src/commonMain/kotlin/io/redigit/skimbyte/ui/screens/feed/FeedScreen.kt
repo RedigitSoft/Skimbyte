@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.components.DailyProgressBar
 import io.redigit.skimbyte.ui.components.PostCard
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.components.StackedCardBrowser
@@ -70,6 +71,13 @@ fun FeedScreen(
             selectedTopic = state.selectedTopic,
             onTopicSelected = { onIntent(FeedIntent.TopicSelected(it)) },
         )
+        if (state.viewMode == FeedViewMode.Stack && state.posts.isNotEmpty()) {
+            DailyProgressBar(
+                read = (state.currentIndex + 1).coerceAtMost(state.posts.size),
+                total = state.posts.size,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+        }
         when {
             state.isLoadingInitial -> LoadingState(modifier = Modifier.weight(1f))
             state.error != null && state.posts.isEmpty() -> ErrorState(modifier = Modifier.weight(1f))

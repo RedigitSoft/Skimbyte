@@ -3,6 +3,7 @@ package io.redigit.skimbyte.designsheet.catalog
 import io.redigit.skimbyte.designsheet.components.AccountScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.BookmarkButtonCatalogContent
 import io.redigit.skimbyte.designsheet.components.ButtonsCatalogContent
+import io.redigit.skimbyte.designsheet.components.DailyProgressBarCatalogContent
 import io.redigit.skimbyte.designsheet.components.LoginSheetCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostCardCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostDetailScreenCatalogContent
@@ -37,6 +38,7 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("topic-filter", "Topic filter", "Feed") { TopicFilterCatalogContent() },
     CatalogItem("bookmark-button", "Bookmark button", "Feed") { BookmarkButtonCatalogContent() },
     CatalogItem("stacked-card-browser", "Stacked card browser", "Feed") { StackedCardBrowserCatalogContent() },
+    CatalogItem("daily-progress-bar", "Daily progress bar", "Feed") { DailyProgressBarCatalogContent() },
     CatalogItem("post-detail", "Post detail", "Feed") { PostDetailScreenCatalogContent() },
     CatalogItem("search-screen", "Search", "Feed") { SearchScreenCatalogContent() },
     CatalogItem("bottom-nav-bar", "Bottom nav bar", "Navigation") { SkimbyteBottomNavBarCatalogContent() },
