@@ -24,8 +24,8 @@ class FeedViewModel(
     val state: StateFlow<FeedState> = _state.asStateFlow()
 
     init {
-        // "All" is always the first filter, followed by the user's chosen interests, and is the
-        // default selection so the feed opens showing everything.
+        // "All" is always the first page, followed by the user's chosen interests, and is selected
+        // first so the feed opens showing everything.
         _state.value = _state.value.copy(
             availableTopics = listOf(Topic.All) + topicPreferencesStore.selectedTopics(),
             selectedTopic = Topic.All,
@@ -33,7 +33,7 @@ class FeedViewModel(
         if (authRepository.session.value != null) {
             viewModelScope.launch { bookmarkIdsStore.refresh() }
         }
-        loadInitial()
+        loadInitial(Topic.All)
         viewModelScope.launch {
             authRepository.session.collect { session ->
                 if (session != null) bookmarkIdsStore.refresh() else bookmarkIdsStore.clear()
@@ -47,7 +47,6 @@ class FeedViewModel(
     fun onIntent(intent: FeedIntent) {
         when (intent) {
             is FeedIntent.TopicSelected -> onTopicSelected(intent.topic)
-            FeedIntent.ViewModeToggled -> onViewModeToggled()
             is FeedIntent.PageChanged -> onPageChanged(intent.index)
             is FeedIntent.BookmarkTapped -> onBookmarkTapped(intent.postId)
             FeedIntent.LoginSucceeded -> onLoginSucceeded()
@@ -66,25 +65,19 @@ class FeedViewModel(
 
     private fun onTopicSelected(topic: Topic) {
         if (topic == _state.value.selectedTopic) return
-        _state.value = _state.value.copy(
-            selectedTopic = topic,
-            posts = emptyList(),
-            currentIndex = 0,
-            nextCursor = null,
-        )
-        loadInitial()
-    }
-
-    private fun onViewModeToggled() {
-        val newMode = if (_state.value.viewMode == FeedViewMode.Stack) FeedViewMode.List else FeedViewMode.Stack
-        _state.value = _state.value.copy(viewMode = newMode)
+        _state.value = _state.value.copy(selectedTopic = topic)
+        val feed = _state.value.feeds[topic]
+        if (feed == null || (feed.posts.isEmpty() && !feed.isLoadingInitial)) {
+            loadInitial(topic)
+        }
     }
 
     private fun onPageChanged(index: Int) {
-        _state.value = _state.value.copy(currentIndex = index)
-        val state = _state.value
-        if (index >= state.posts.size - PREFETCH_THRESHOLD && state.nextCursor != null && !state.isLoadingMore) {
-            loadMore()
+        val topic = _state.value.selectedTopic
+        updateFeed(topic) { it.copy(currentIndex = index) }
+        val feed = _state.value.feeds[topic] ?: return
+        if (index >= feed.posts.size - PREFETCH_THRESHOLD && feed.nextCursor != null && !feed.isLoadingMore) {
+            loadMore(topic)
         }
     }
 
@@ -107,62 +100,65 @@ class FeedViewModel(
     }
 
     private fun toggleBookmark(postId: String) {
-        val currentlyBookmarked = _state.value.posts.firstOrNull { it.id == postId }?.isBookmarked ?: return
-        val newValue = !currentlyBookmarked
-        updatePostBookmarkState(postId, newValue)
+        val current = _state.value.feeds.values.firstNotNullOfOrNull { feed ->
+            feed.posts.firstOrNull { it.id == postId }
+        } ?: return
+        val newValue = !current.isBookmarked
+        setBookmarkInAllFeeds(postId, newValue)
         _state.value = _state.value.copy(pendingBookmarkToggles = _state.value.pendingBookmarkToggles + postId)
         viewModelScope.launch {
             val result = postsRepository.setBookmarked(postId, newValue)
             if (result.isFailure) {
-                updatePostBookmarkState(postId, currentlyBookmarked)
+                setBookmarkInAllFeeds(postId, current.isBookmarked)
             }
             _state.value = _state.value.copy(pendingBookmarkToggles = _state.value.pendingBookmarkToggles - postId)
         }
     }
 
-    private fun updatePostBookmarkState(postId: String, bookmarked: Boolean) {
+    // A post can appear in both "All" and its topic feed, so bookmark state is kept in sync across
+    // every loaded feed that contains it.
+    private fun setBookmarkInAllFeeds(postId: String, bookmarked: Boolean) {
         _state.value = _state.value.copy(
-            posts = _state.value.posts.map { if (it.id == postId) it.copy(isBookmarked = bookmarked) else it },
+            feeds = _state.value.feeds.mapValues { (_, feed) ->
+                feed.copy(posts = feed.posts.map { if (it.id == postId) it.copy(isBookmarked = bookmarked) else it })
+            },
         )
     }
 
-    private fun loadInitial() {
-        _state.value = _state.value.copy(isLoadingInitial = true, error = null)
+    private fun loadInitial(topic: Topic) {
+        updateFeed(topic) { it.copy(isLoadingInitial = true, error = null) }
         viewModelScope.launch {
-            val result = postsRepository.fetchPosts(_state.value.selectedTopic, cursor = null)
+            val result = postsRepository.fetchPosts(topic, cursor = null)
             result.fold(
                 onSuccess = { page ->
-                    _state.value = _state.value.copy(
-                        posts = page.items,
-                        nextCursor = page.nextCursor,
-                        isLoadingInitial = false,
-                    )
+                    updateFeed(topic) {
+                        it.copy(posts = page.items, nextCursor = page.nextCursor, isLoadingInitial = false)
+                    }
                 },
-                onFailure = {
-                    _state.value = _state.value.copy(isLoadingInitial = false, error = FeedError.Network)
-                },
+                onFailure = { updateFeed(topic) { it.copy(isLoadingInitial = false, error = FeedError.Network) } },
             )
         }
     }
 
-    private fun loadMore() {
-        val cursor = _state.value.nextCursor ?: return
-        _state.value = _state.value.copy(isLoadingMore = true)
+    private fun loadMore(topic: Topic) {
+        val cursor = _state.value.feeds[topic]?.nextCursor ?: return
+        updateFeed(topic) { it.copy(isLoadingMore = true) }
         viewModelScope.launch {
-            val result = postsRepository.fetchPosts(_state.value.selectedTopic, cursor)
+            val result = postsRepository.fetchPosts(topic, cursor)
             result.fold(
                 onSuccess = { page ->
-                    _state.value = _state.value.copy(
-                        posts = _state.value.posts + page.items,
-                        nextCursor = page.nextCursor,
-                        isLoadingMore = false,
-                    )
+                    updateFeed(topic) {
+                        it.copy(posts = it.posts + page.items, nextCursor = page.nextCursor, isLoadingMore = false)
+                    }
                 },
-                onFailure = {
-                    _state.value = _state.value.copy(isLoadingMore = false, error = FeedError.Network)
-                },
+                onFailure = { updateFeed(topic) { it.copy(isLoadingMore = false, error = FeedError.Network) } },
             )
         }
+    }
+
+    private fun updateFeed(topic: Topic, transform: (TopicFeed) -> TopicFeed) {
+        val current = _state.value.feeds[topic] ?: TopicFeed()
+        _state.value = _state.value.copy(feeds = _state.value.feeds + (topic to transform(current)))
     }
 
     private companion object {

@@ -83,7 +83,9 @@ fun FeedNavHost(
                 entry<PostDetail>(
                     metadata = ListDetailSceneStrategy.detailPane(),
                 ) { key ->
-                    val post = state.posts.firstOrNull { it.id == key.postId }
+                    val post = state.feeds.values.firstNotNullOfOrNull { feed ->
+                        feed.posts.firstOrNull { it.id == key.postId }
+                    }
                     if (post != null) {
                         val sharedTransition = SharedElementContext(this@SharedTransitionLayout, LocalNavAnimatedContentScope.current)
                         PostDetailScreen(

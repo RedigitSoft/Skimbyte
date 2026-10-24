@@ -120,9 +120,9 @@ class FeedViewModelTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, "cursor-2")) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
-        assertEquals(posts, viewModel.state.value.posts)
-        assertEquals("cursor-2", viewModel.state.value.nextCursor)
-        assertFalse(viewModel.state.value.isLoadingInitial)
+        assertEquals(posts, viewModel.state.value.currentFeed.posts)
+        assertEquals("cursor-2", viewModel.state.value.currentFeed.nextCursor)
+        assertFalse(viewModel.state.value.currentFeed.isLoadingInitial)
     }
 
     @Test
@@ -130,8 +130,8 @@ class FeedViewModelTest {
         val repository = FakePostsRepository { _, _ -> Result.failure(RuntimeException("boom")) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
 
-        assertEquals(FeedError.Network, viewModel.state.value.error)
-        assertTrue(viewModel.state.value.posts.isEmpty())
+        assertEquals(FeedError.Network, viewModel.state.value.currentFeed.error)
+        assertTrue(viewModel.state.value.currentFeed.posts.isEmpty())
     }
 
     @Test
@@ -147,7 +147,7 @@ class FeedViewModelTest {
 
         assertEquals(Topic.Android, viewModel.state.value.selectedTopic)
         assertEquals(Topic.Android, lastRequestedTopic)
-        assertEquals(0, viewModel.state.value.currentIndex)
+        assertEquals(0, viewModel.state.value.currentFeed.currentIndex)
     }
 
     @Test
@@ -182,8 +182,8 @@ class FeedViewModelTest {
         viewModel.onIntent(FeedIntent.PageChanged(3)) // posts.size - 3 == index 2, so index 3 should trigger load-more (size=5)
 
         assertEquals(callsAfterInitial + 1, fetchCalls)
-        assertEquals(10, viewModel.state.value.posts.size)
-        assertNull(viewModel.state.value.nextCursor)
+        assertEquals(10, viewModel.state.value.currentFeed.posts.size)
+        assertNull(viewModel.state.value.currentFeed.nextCursor)
     }
 
     @Test
@@ -209,7 +209,7 @@ class FeedViewModelTest {
 
         assertNull(viewModel.state.value.pendingBookmarkAction)
         assertEquals(listOf("1" to true), repository.setBookmarkedCalls)
-        assertTrue(viewModel.state.value.posts.first { it.id == "1" }.isBookmarked)
+        assertTrue(viewModel.state.value.currentFeed.posts.first { it.id == "1" }.isBookmarked)
     }
 
     @Test
@@ -239,7 +239,7 @@ class FeedViewModelTest {
 
         viewModel.onIntent(FeedIntent.BookmarkTapped("1"))
 
-        assertFalse(viewModel.state.value.posts.first { it.id == "1" }.isBookmarked)
+        assertFalse(viewModel.state.value.currentFeed.posts.first { it.id == "1" }.isBookmarked)
         assertTrue(viewModel.state.value.pendingBookmarkToggles.isEmpty())
     }
 
@@ -283,14 +283,16 @@ class FeedViewModelTest {
     }
 
     @Test
-    fun `onViewModeToggled flips between Stack and List`() = runTest {
-        val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+    fun `each topic keeps its own feed`() = runTest {
+        val repository = FakePostsRepository { topic, _ ->
+            Result.success(Page(listOf(fakePost("${topic.id}-1", topic = topic)), nextCursor = null))
+        }
+        val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Kotlin)) }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
 
-        viewModel.onIntent(FeedIntent.ViewModeToggled)
-        assertEquals(FeedViewMode.List, viewModel.state.value.viewMode)
+        viewModel.onIntent(FeedIntent.TopicSelected(Topic.Kotlin))
 
-        viewModel.onIntent(FeedIntent.ViewModeToggled)
-        assertEquals(FeedViewMode.Stack, viewModel.state.value.viewMode)
+        assertEquals("all-1", viewModel.state.value.feeds[Topic.All]?.posts?.single()?.id)
+        assertEquals("kotlin-1", viewModel.state.value.feeds[Topic.Kotlin]?.posts?.single()?.id)
     }
 }
