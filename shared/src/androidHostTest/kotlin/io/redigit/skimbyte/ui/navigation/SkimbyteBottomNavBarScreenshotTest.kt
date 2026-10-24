@@ -29,7 +29,6 @@ class SkimbyteBottomNavBarScreenshotTest {
                 SkimbyteBottomNavBar(
                     selected = TopLevelDestination.Feed,
                     onDestinationSelected = {},
-                    expanded = true,
                     modifier = Modifier.padding(16.dp),
                 )
             }
@@ -44,7 +43,6 @@ class SkimbyteBottomNavBarScreenshotTest {
                 SkimbyteBottomNavBar(
                     selected = TopLevelDestination.Bookmarks,
                     onDestinationSelected = {},
-                    expanded = true,
                     modifier = Modifier.padding(16.dp),
                 )
             }

@@ -20,7 +20,6 @@ fun SkimbyteBottomNavBarCatalogContent() {
             SkimbyteBottomNavBar(
                 selected = destination,
                 onDestinationSelected = {},
-                expanded = true,
             )
         }
     }

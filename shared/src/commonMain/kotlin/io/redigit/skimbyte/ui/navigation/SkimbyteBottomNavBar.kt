@@ -1,9 +1,7 @@
 package io.redigit.skimbyte.ui.navigation
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -15,34 +13,33 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.ui.navigation.TopLevelDestination
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 /**
- * The compact-width bottom navigation chrome: a Material 3 floating pill dock. The selected
- * destination expands into an accent-outlined pill showing its icon and label inline, while the
- * others stay icon-over-label and muted. [expanded] drives the toolbar's collapse-on-scroll (wired
- * in `MainShell` via `FloatingToolbarDefaults.floatingToolbarVerticalNestedScroll`).
+ * The compact-width bottom navigation chrome: a Material 3 floating pill dock, always expanded. The
+ * selected destination shows an accent-outlined pill with its icon and label inline, while the
+ * others are icon-only and muted. The label is single-line so the dock keeps a constant height
+ * regardless of which (variable-length) destination is selected.
  */
 @Composable
 fun SkimbyteBottomNavBar(
     selected: TopLevelDestination,
     onDestinationSelected: (TopLevelDestination) -> Unit,
-    expanded: Boolean,
     modifier: Modifier = Modifier,
 ) {
     HorizontalFloatingToolbar(
-        expanded = expanded,
+        expanded = true,
         colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
         modifier = modifier,
     ) {
@@ -57,8 +54,8 @@ fun SkimbyteBottomNavBar(
 }
 
 /**
- * Selected: an accent pill with the icon and label side by side. Unselected: the icon above its
- * label, in the muted on-surface-variant color.
+ * Selected: an accent-outlined pill with the icon and (single-line) label side by side. Unselected:
+ * an icon-only button in the muted on-surface-variant color.
  */
 @Composable
 private fun NavDestinationItem(
@@ -81,28 +78,23 @@ private fun NavDestinationItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Icon(destination.icon(), contentDescription = destination.name)
+                Icon(destination.icon(), contentDescription = destination.label)
                 Text(
-                    destination.name.uppercase(),
+                    text = destination.label,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    softWrap = false,
                 )
             }
         }
     } else {
-        Column(
-            modifier = modifier
-                .clip(CircleShape)
-                .clickable(onClick = onClick)
-                .padding(horizontal = 12.dp, vertical = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+        IconButton(
+            onClick = onClick,
+            colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.onSurfaceVariant),
+            modifier = modifier,
         ) {
-            Icon(
-                destination.icon(),
-                contentDescription = destination.name,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Icon(destination.icon(), contentDescription = destination.label)
         }
     }
 }
@@ -114,11 +106,15 @@ internal fun TopLevelDestination.icon() = when (this) {
     TopLevelDestination.Account -> Icons.Filled.Person
 }
 
+/** Human-readable Camel Case label for the destination (enum names already read this way). */
+internal val TopLevelDestination.label: String
+    get() = name
+
 @Preview
 @Composable
 private fun SkimbyteBottomNavBarFeedPreview() {
     SkimbyteTheme {
-        SkimbyteBottomNavBar(selected = TopLevelDestination.Feed, onDestinationSelected = {}, expanded = true)
+        SkimbyteBottomNavBar(selected = TopLevelDestination.Feed, onDestinationSelected = {})
     }
 }
 
@@ -126,7 +122,7 @@ private fun SkimbyteBottomNavBarFeedPreview() {
 @Composable
 private fun SkimbyteBottomNavBarFeedLightPreview() {
     SkimbyteTheme(darkTheme = false) {
-        SkimbyteBottomNavBar(selected = TopLevelDestination.Feed, onDestinationSelected = {}, expanded = true)
+        SkimbyteBottomNavBar(selected = TopLevelDestination.Feed, onDestinationSelected = {})
     }
 }
 
@@ -134,7 +130,7 @@ private fun SkimbyteBottomNavBarFeedLightPreview() {
 @Composable
 private fun SkimbyteBottomNavBarBookmarksPreview() {
     SkimbyteTheme {
-        SkimbyteBottomNavBar(selected = TopLevelDestination.Bookmarks, onDestinationSelected = {}, expanded = true)
+        SkimbyteBottomNavBar(selected = TopLevelDestination.Bookmarks, onDestinationSelected = {})
     }
 }
 
@@ -142,14 +138,6 @@ private fun SkimbyteBottomNavBarBookmarksPreview() {
 @Composable
 private fun SkimbyteBottomNavBarAccountPreview() {
     SkimbyteTheme {
-        SkimbyteBottomNavBar(selected = TopLevelDestination.Account, onDestinationSelected = {}, expanded = true)
-    }
-}
-
-@Preview
-@Composable
-private fun SkimbyteBottomNavBarCollapsedPreview() {
-    SkimbyteTheme {
-        SkimbyteBottomNavBar(selected = TopLevelDestination.Feed, onDestinationSelected = {}, expanded = false)
+        SkimbyteBottomNavBar(selected = TopLevelDestination.Account, onDestinationSelected = {})
     }
 }

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingToolbarDefaults.floatingToolbarVerticalNestedScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
@@ -80,13 +79,7 @@ fun App() {
 @Composable
 private fun MainShell() {
     var selected by remember { mutableStateOf(TopLevelDestination.Feed) }
-    // Whether the CURRENTLY SHOWN tab is at its own backstack root - reported by whichever
-    // NavHost is composed below, so the shared bottom bar hides while any tab shows a pushed
-    // detail screen. Only one NavHost is ever composed at a time (SaveableStateProvider swaps
-    // the single mounted child on tab switch), and it reports its own root-ness immediately on
-    // (re)composition, so this one flag always reflects the visible tab, not a stale one.
     var isShowingRoot by remember { mutableStateOf(true) }
-    var navBarExpanded by rememberSaveable { mutableStateOf(true) }
     val saveableStateHolder = rememberSaveableStateHolder()
     val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
     val isCompact = !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
@@ -103,20 +96,14 @@ private fun MainShell() {
                     SkimbyteBottomNavBar(
                         selected = selected,
                         onDestinationSelected = onDestinationSelected,
-                        expanded = navBarExpanded,
                     )
                 }
             },
-            floatingActionButtonPosition = FabPosition.End,
+            floatingActionButtonPosition = FabPosition.Center,
         ) { padding ->
             Box(
                 modifier = Modifier
                     .padding(padding)
-                    .floatingToolbarVerticalNestedScroll(
-                        expanded = navBarExpanded,
-                        onExpand = { navBarExpanded = true },
-                        onCollapse = { navBarExpanded = false },
-                    ),
             ) {
                 saveableStateHolder.SaveableStateProvider(selected) {
                     when (selected) {
