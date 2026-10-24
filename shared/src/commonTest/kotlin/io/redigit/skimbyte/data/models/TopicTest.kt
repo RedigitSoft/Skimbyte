@@ -8,8 +8,8 @@ class TopicTest {
 
     @Test
     fun entries_containsAllFiveTopics_withNoNulls() {
-        assertEquals(5, Topic.entries.size)
-        Topic.entries.forEach { assertNotNull(it) }
-        assertEquals(listOf("All", "Kotlin", "Android", "KMP", "Tooling"), Topic.entries.map { it.displayLabel })
+        assertEquals(5, Topic.defaults.size)
+        Topic.defaults.forEach { assertNotNull(it) }
+        assertEquals(listOf("All", "Kotlin", "Android", "KMP", "Tooling"), Topic.defaults.map { it.displayLabel })
     }
 }

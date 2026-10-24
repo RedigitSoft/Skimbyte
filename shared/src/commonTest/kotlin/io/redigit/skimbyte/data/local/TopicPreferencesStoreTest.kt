@@ -30,8 +30,8 @@ class TopicPreferencesStoreTest {
     }
 
     @Test
-    fun `unknown stored topic name is ignored, not thrown`() {
-        val settings = FakeSettings(mapOf("selected_topics" to "Kotlin,NotARealTopic"))
+    fun `unknown stored topic id is ignored, not thrown`() {
+        val settings = FakeSettings(mapOf("selected_topics" to "kotlin,not-a-real-topic"))
         val store = SettingsTopicPreferencesStore(settings)
         assertEquals(setOf(Topic.Kotlin), store.selectedTopics())
     }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redigit.skimbyte.data.local.TopicPreferencesStore
 import io.redigit.skimbyte.data.models.Topic
+import io.redigit.skimbyte.data.repositories.TopicsRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -14,13 +15,26 @@ import kotlinx.coroutines.launch
 
 class TopicsViewModel(
     private val store: TopicPreferencesStore,
+    topicsRepository: TopicsRepository,
     isEditing: Boolean,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        TopicsState(selected = if (isEditing) store.selectedTopics() else emptySet(), isEditing = isEditing),
+        TopicsState(
+            available = topicsRepository.topics.value,
+            selected = if (isEditing) store.selectedTopics() else emptySet(),
+            isEditing = isEditing,
+        ),
     )
     val state: StateFlow<TopicsState> = _state.asStateFlow()
+
+    init {
+        // Keep the selectable topics in sync with the repository (served by the backend once the
+        // topics API is live; the seeded defaults until then).
+        viewModelScope.launch {
+            topicsRepository.topics.collect { topics -> _state.value = _state.value.copy(available = topics) }
+        }
+    }
 
     private val _effects = MutableSharedFlow<TopicsEffect>()
     val effects: SharedFlow<TopicsEffect> = _effects.asSharedFlow()

@@ -61,7 +61,7 @@ fun TopicFilterRow(
 @Composable
 private fun TopicFilterRowPreview() {
     SkimbyteTheme {
-        TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.Kotlin, onTopicSelected = {})
+        TopicFilterRow(topics = Topic.defaults, selectedTopic = Topic.Kotlin, onTopicSelected = {})
     }
 }
 
@@ -69,7 +69,7 @@ private fun TopicFilterRowPreview() {
 @Composable
 private fun TopicFilterRowLightPreview() {
     SkimbyteTheme(darkTheme = false) {
-        TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.Kotlin, onTopicSelected = {})
+        TopicFilterRow(topics = Topic.defaults, selectedTopic = Topic.Kotlin, onTopicSelected = {})
     }
 }
 
@@ -77,6 +77,6 @@ private fun TopicFilterRowLightPreview() {
 @Composable
 private fun TopicFilterRowAllSelectedPreview() {
     SkimbyteTheme {
-        TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.All, onTopicSelected = {})
+        TopicFilterRow(topics = Topic.defaults, selectedTopic = Topic.All, onTopicSelected = {})
     }
 }

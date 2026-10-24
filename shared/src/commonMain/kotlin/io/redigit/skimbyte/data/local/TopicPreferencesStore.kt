@@ -26,14 +26,16 @@ class SettingsTopicPreferencesStore(private val settings: Settings) : TopicPrefe
 
     override fun selectedTopics(): Set<Topic> {
         val stored = settings.getStringOrNull(KEY_SELECTED_TOPICS) ?: return emptySet()
-        val topicsByName = Topic.entries.associateBy { it.name }
+        // Resolve stored ids against the known topic set. Uses Topic.defaults as the placeholder
+        // catalogue until the topics API is live; once it is, resolve against the fetched list.
+        val topicsById = Topic.defaults.associateBy { it.id }
         return stored.split(",")
-            .mapNotNull { topicsByName[it] }
+            .mapNotNull { topicsById[it] }
             .toSet()
     }
 
     override fun setSelectedTopics(topics: Set<Topic>) {
-        val encoded = topics.map { it.name }.joinToString(",")
+        val encoded = topics.map { it.id }.joinToString(",")
         settings.putString(KEY_SELECTED_TOPICS, encoded)
         _selectedTopicsFlow.value = topics
     }

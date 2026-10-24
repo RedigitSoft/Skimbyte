@@ -23,7 +23,7 @@ class TopicFilterRowScreenshotTest {
     @Test
     fun allSelected() {
         composeTestRule.setContent {
-            SkimbyteTheme { TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.All, onTopicSelected = {}) }
+            SkimbyteTheme { TopicFilterRow(topics = Topic.defaults, selectedTopic = Topic.All, onTopicSelected = {}) }
         }
         composeTestRule.onRoot().captureRoboImage()
     }
@@ -31,7 +31,7 @@ class TopicFilterRowScreenshotTest {
     @Test
     fun oneTopicSelected() {
         composeTestRule.setContent {
-            SkimbyteTheme { TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.Kotlin, onTopicSelected = {}) }
+            SkimbyteTheme { TopicFilterRow(topics = Topic.defaults, selectedTopic = Topic.Kotlin, onTopicSelected = {}) }
         }
         composeTestRule.onRoot().captureRoboImage()
     }

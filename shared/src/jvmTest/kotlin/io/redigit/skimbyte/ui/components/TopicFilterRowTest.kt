@@ -17,7 +17,7 @@ class TopicFilterRowTest {
         var selected: Topic? = null
         setContent {
             SkimbyteTheme {
-                TopicFilterRow(topics = Topic.entries, selectedTopic = Topic.All, onTopicSelected = { selected = it })
+                TopicFilterRow(topics = Topic.defaults, selectedTopic = Topic.All, onTopicSelected = { selected = it })
             }
         }
         onNodeWithText("Kotlin").performClick()

@@ -28,7 +28,7 @@ fun AccountScreenCatalogContent() {
                 savedCount = 18,
                 streakDays = 14,
                 weeklyReads = listOf(8, 12, 6, 14, 20, 9, 11),
-                followedTopics = Topic.entries.filter { it != Topic.All }.take(5),
+                followedTopics = Topic.selectable.take(5),
             ),
             onIntent = {},
             onSettingsClick = {},
