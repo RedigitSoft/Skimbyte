@@ -19,8 +19,8 @@ import io.redigit.skimbyte.bookmarks.BookmarksViewModel
 import io.redigit.skimbyte.feed.ui.PostDetailPlaceholder
 import io.redigit.skimbyte.feed.ui.PostDetailScreen
 import io.redigit.skimbyte.feed.ui.SharedElementContext
-import io.redigit.skimbyte.nav.BookmarksList
-import io.redigit.skimbyte.nav.PostDetail
+import io.redigit.skimbyte.ui.navigation.BookmarksList
+import io.redigit.skimbyte.ui.navigation.PostDetail
 import io.redigit.skimbyte.util.openUrl
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic

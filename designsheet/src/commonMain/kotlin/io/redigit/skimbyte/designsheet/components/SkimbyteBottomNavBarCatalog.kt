@@ -11,8 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.nav.TopLevelDestination
-import io.redigit.skimbyte.nav.ui.SkimbyteBottomNavBar
+import io.redigit.skimbyte.ui.navigation.TopLevelDestination
+import io.redigit.skimbyte.ui.navigation.SkimbyteBottomNavBar
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 @Composable

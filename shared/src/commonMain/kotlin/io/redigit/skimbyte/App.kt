@@ -23,9 +23,9 @@ import io.redigit.skimbyte.bookmarks.ui.BookmarksNavHost
 import io.redigit.skimbyte.di.appModule
 import io.redigit.skimbyte.feed.ui.FeedNavHost
 import io.redigit.skimbyte.feed.ui.SearchNavHost
-import io.redigit.skimbyte.nav.TopLevelDestination
-import io.redigit.skimbyte.nav.ui.SkimbyteBottomNavBar
-import io.redigit.skimbyte.nav.ui.SkimbyteNavigationRail
+import io.redigit.skimbyte.ui.navigation.TopLevelDestination
+import io.redigit.skimbyte.ui.navigation.SkimbyteBottomNavBar
+import io.redigit.skimbyte.ui.navigation.SkimbyteNavigationRail
 import io.redigit.skimbyte.onboarding.TopicPreferencesStore
 import io.redigit.skimbyte.onboarding.TopicsViewModel
 import io.redigit.skimbyte.onboarding.ui.SplashScreen

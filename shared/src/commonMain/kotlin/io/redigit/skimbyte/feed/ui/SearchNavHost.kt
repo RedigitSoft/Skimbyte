@@ -16,8 +16,8 @@ import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import io.redigit.skimbyte.feed.SearchViewModel
-import io.redigit.skimbyte.nav.PostDetail
-import io.redigit.skimbyte.nav.SearchHome
+import io.redigit.skimbyte.ui.navigation.PostDetail
+import io.redigit.skimbyte.ui.navigation.SearchHome
 import io.redigit.skimbyte.util.openUrl
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic

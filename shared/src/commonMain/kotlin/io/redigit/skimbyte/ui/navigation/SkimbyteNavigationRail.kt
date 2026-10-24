@@ -1,4 +1,4 @@
-package io.redigit.skimbyte.nav.ui
+package io.redigit.skimbyte.ui.navigation
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationRail
@@ -6,7 +6,7 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import io.redigit.skimbyte.nav.TopLevelDestination
+import io.redigit.skimbyte.ui.navigation.TopLevelDestination
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 @Composable

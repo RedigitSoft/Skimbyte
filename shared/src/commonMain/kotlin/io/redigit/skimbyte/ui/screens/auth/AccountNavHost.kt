@@ -22,11 +22,11 @@ import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import io.redigit.skimbyte.feed.ui.SharedElementContext
-import io.redigit.skimbyte.nav.AccountHome
-import io.redigit.skimbyte.nav.AvatarViewer
-import io.redigit.skimbyte.nav.BannerViewer
-import io.redigit.skimbyte.nav.Settings
-import io.redigit.skimbyte.nav.Topics
+import io.redigit.skimbyte.ui.navigation.AccountHome
+import io.redigit.skimbyte.ui.navigation.AvatarViewer
+import io.redigit.skimbyte.ui.navigation.BannerViewer
+import io.redigit.skimbyte.ui.navigation.Settings
+import io.redigit.skimbyte.ui.navigation.Topics
 import io.redigit.skimbyte.onboarding.TopicsViewModel
 import io.redigit.skimbyte.onboarding.ui.TopicsScreen
 import io.redigit.skimbyte.settings.SettingsViewModel
