@@ -35,6 +35,29 @@ class BookmarksViewModel(
             is BookmarksIntent.Unbookmark -> onUnbookmark(intent.postId)
             BookmarksIntent.PostsNearEnd -> onPostsNearEnd()
             BookmarksIntent.LoginSucceeded -> loadInitial()
+            BookmarksIntent.Refresh -> onRefresh()
+        }
+    }
+
+    // Unlike loadInitial(), this keeps the existing list on screen (no full-screen spinner) and
+    // surfaces progress through the pull-to-refresh indicator via isRefreshing.
+    private fun onRefresh() {
+        if (_state.value.isRefreshing) return
+        _state.value = _state.value.copy(isRefreshing = true, error = null)
+        viewModelScope.launch {
+            val result = postsRepository.fetchBookmarkedPosts(cursor = null)
+            result.fold(
+                onSuccess = { page ->
+                    _state.value = _state.value.copy(
+                        posts = page.items,
+                        nextCursor = page.nextCursor,
+                        isRefreshing = false,
+                    )
+                },
+                onFailure = {
+                    _state.value = _state.value.copy(isRefreshing = false, error = BookmarksError.Network)
+                },
+            )
         }
     }
 

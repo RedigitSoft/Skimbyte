@@ -4,4 +4,5 @@ sealed interface BookmarksIntent {
     data class Unbookmark(val postId: String) : BookmarksIntent
     data object PostsNearEnd : BookmarksIntent
     data object LoginSucceeded : BookmarksIntent
+    data object Refresh : BookmarksIntent
 }

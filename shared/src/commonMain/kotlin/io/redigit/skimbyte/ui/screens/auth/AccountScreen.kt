@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +40,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -64,7 +66,7 @@ import io.redigit.skimbyte.ui.components.BannerImage
 import io.redigit.skimbyte.util.rememberImagePickerLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(
     state: AccountState,
@@ -80,8 +82,13 @@ fun AccountScreen(
 ) {
     var showLogoutConfirm by rememberSaveable { mutableStateOf(false) }
 
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = { onIntent(AccountIntent.Refresh) },
+        modifier = modifier.fillMaxSize(),
+    ) {
     Column(
-        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -189,6 +196,7 @@ fun AccountScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
     }
 
     if (showLogoutConfirm) {
@@ -451,8 +459,12 @@ fun AccountRoute(
     val pickAvatar = rememberImagePickerLauncher { image -> image?.let { viewModel.onIntent(AccountIntent.AvatarPicked(it)) } }
     val pickBanner = rememberImagePickerLauncher { image -> image?.let { viewModel.onIntent(AccountIntent.BannerPicked(it)) } }
     var editing by remember { mutableStateOf<ImageEditTarget?>(null) }
-    if (!state.isLoggedIn) {
-        LoginSheet(onDismiss = {}, onLoginSuccess = {})
+    // Gate the sheet on dismissal (mirrors FeedScreen's pendingBookmarkAction gating) — with a
+    // no-op onDismiss the sheet stays composed and "Not now" can't close it. rememberSaveable so
+    // one dismissal holds across tab switches (MainShell keeps tabs in a SaveableStateProvider).
+    var loginSheetDismissed by rememberSaveable { mutableStateOf(false) }
+    if (!state.isLoggedIn && !loginSheetDismissed) {
+        LoginSheet(onDismiss = { loginSheetDismissed = true }, onLoginSuccess = {})
     }
     AccountScreen(
         state = state,

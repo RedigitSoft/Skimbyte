@@ -51,6 +51,28 @@ class FeedViewModel(
             is FeedIntent.BookmarkTapped -> onBookmarkTapped(intent.postId)
             FeedIntent.LoginSucceeded -> onLoginSucceeded()
             FeedIntent.LoginDismissed -> onLoginDismissed()
+            FeedIntent.Refresh -> onRefresh()
+        }
+    }
+
+    private fun onRefresh() {
+        if (_state.value.isRefreshing) return
+        val topic = _state.value.selectedTopic
+        _state.value = _state.value.copy(isRefreshing = true)
+        if (authRepository.session.value != null) {
+            viewModelScope.launch { bookmarkIdsStore.refresh() }
+        }
+        viewModelScope.launch {
+            val result = postsRepository.fetchPosts(topic, cursor = null)
+            result.fold(
+                onSuccess = { page ->
+                    updateFeed(topic) {
+                        it.copy(posts = page.items, nextCursor = page.nextCursor, currentIndex = 0, error = null)
+                    }
+                },
+                onFailure = { updateFeed(topic) { it.copy(error = FeedError.Network) } },
+            )
+            _state.value = _state.value.copy(isRefreshing = false)
         }
     }
 

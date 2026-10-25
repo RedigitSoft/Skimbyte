@@ -14,6 +14,8 @@ data class FeedState(
     val feeds: Map<Topic, TopicFeed> = emptyMap(),
     val pendingBookmarkAction: PendingBookmarkAction? = null,
     val pendingBookmarkToggles: Set<String> = emptySet(),
+    /** Whether a pull-to-refresh of the selected topic is in flight. */
+    val isRefreshing: Boolean = false,
 ) {
     /** The feed for the currently selected topic (empty if not yet loaded). */
     val currentFeed: TopicFeed get() = feeds[selectedTopic] ?: TopicFeed()

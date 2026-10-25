@@ -11,4 +11,7 @@ sealed interface FeedIntent {
     data class BookmarkTapped(val postId: String) : FeedIntent
     data object LoginSucceeded : FeedIntent
     data object LoginDismissed : FeedIntent
+
+    /** Pull-to-refresh on the current topic: reloads its first page from scratch. */
+    data object Refresh : FeedIntent
 }

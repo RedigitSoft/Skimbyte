@@ -115,4 +115,20 @@ class BookmarksViewModelTest {
         // Reload restores the full list since the unbookmark failed server-side.
         assertEquals(posts.map { it.id }, viewModel.state.value.posts.map { it.id })
     }
+
+    @Test
+    fun refresh_reloadsFromFirstPage_andClearsRefreshing() = runTest {
+        var lastCursor: String? = "unset"
+        val repository = FakePostsRepository { cursor ->
+            lastCursor = cursor
+            Result.success(Page(listOf(fakePost("fresh")), nextCursor = null))
+        }
+        val viewModel = BookmarksViewModel(repository, FakeAuthRepository(initialSession = Session("t")))
+
+        viewModel.onIntent(BookmarksIntent.Refresh)
+
+        assertEquals(listOf("fresh"), viewModel.state.value.posts.map { it.id })
+        assertFalse(viewModel.state.value.isRefreshing)
+        assertEquals(null, lastCursor) // refresh always fetches the first page
+    }
 }

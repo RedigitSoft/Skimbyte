@@ -11,8 +11,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -30,7 +32,7 @@ import io.redigit.skimbyte.ui.components.TopicFilterRow
 import io.redigit.skimbyte.ui.screens.auth.LoginSheet
 import kotlin.time.Instant
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun FeedScreen(
     state: FeedState,
@@ -47,9 +49,9 @@ fun FeedScreen(
         )
     }
     Column(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
             EyebrowText("Feed")
-            Text("For You", style = MaterialTheme.typography.headlineMedium)
+            Text("For You", style = MaterialTheme.typography.titleLarge)
         }
         TopicFilterRow(
             topics = state.availableTopics,
@@ -65,14 +67,20 @@ fun FeedScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
         }
-        TopicFeedPager(
-            state = state,
-            onIntent = onIntent,
-            onReadSourceClick = onReadSourceClick,
-            onCardClick = onCardClick,
-            sharedTransition = sharedTransition,
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = { onIntent(FeedIntent.Refresh) },
             modifier = Modifier.weight(1f),
-        )
+        ) {
+            TopicFeedPager(
+                state = state,
+                onIntent = onIntent,
+                onReadSourceClick = onReadSourceClick,
+                onCardClick = onCardClick,
+                sharedTransition = sharedTransition,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
 }
 

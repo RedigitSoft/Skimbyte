@@ -65,6 +65,7 @@ fun PostDetailScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
+                expandedHeight = 48.dp,
             )
         },
     ) { padding ->

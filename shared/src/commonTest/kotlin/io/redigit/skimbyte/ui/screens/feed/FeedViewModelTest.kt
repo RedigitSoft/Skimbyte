@@ -295,4 +295,21 @@ class FeedViewModelTest {
         assertEquals("all-1", viewModel.state.value.feeds[Topic.All]?.posts?.single()?.id)
         assertEquals("kotlin-1", viewModel.state.value.feeds[Topic.Kotlin]?.posts?.single()?.id)
     }
+
+    @Test
+    fun refresh_reloadsCurrentTopicFromFirstPage_andClearsRefreshing() = runTest {
+        var callCount = 0
+        val repository = FakePostsRepository { _, cursor ->
+            callCount++
+            // First call is the initial load; the refresh re-fetches with a null cursor.
+            Result.success(Page(listOf(fakePost("load-$callCount-cursor-$cursor")), nextCursor = null))
+        }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+
+        viewModel.onIntent(FeedIntent.Refresh)
+
+        assertEquals("load-2-cursor-null", viewModel.state.value.currentFeed.posts.single().id)
+        assertEquals(0, viewModel.state.value.currentFeed.currentIndex)
+        assertFalse(viewModel.state.value.isRefreshing)
+    }
 }

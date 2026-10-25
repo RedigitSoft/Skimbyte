@@ -6,6 +6,7 @@ data class BookmarksState(
     val posts: List<Post> = emptyList(),
     val isLoadingInitial: Boolean = false,
     val isLoadingMore: Boolean = false,
+    val isRefreshing: Boolean = false,
     val nextCursor: String? = null,
     val error: BookmarksError? = null,
     val isLoggedOut: Boolean = false,
