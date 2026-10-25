@@ -9,5 +9,4 @@ data class TopicDto(
     val label: String,
     val apiValue: String? = null,
 )
-
 fun TopicDto.toDomain(): Topic = Topic(id = id, displayLabel = label, apiValue = apiValue)

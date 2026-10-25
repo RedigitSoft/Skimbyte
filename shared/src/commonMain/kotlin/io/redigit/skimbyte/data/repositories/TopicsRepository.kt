@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 /**
  * The catalogue of selectable topics (the [Topic.All] pseudo-topic is excluded - callers add it
  * where a "show everything" option is wanted). Seeded with [Topic.selectable] so the UI always has
- * something to show, and refreshed from the backend once `GET /topics` is live (today the fetch is a
- * tolerated no-op, see [TopicsApi]).
+ * something to show, then refreshed from `GET /v1/topics` (see [TopicsApi]) — a failed fetch is
+ * tolerated and just keeps the seeded defaults.
  */
 interface TopicsRepository {
     val topics: StateFlow<List<Topic>>

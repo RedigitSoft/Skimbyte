@@ -39,8 +39,12 @@ private class FakeTopicPreferencesStore : TopicPreferencesStore {
 }
 
 private class FakeTopicsRepository(topics: List<Topic> = Topic.selectable) : TopicsRepository {
-    override val topics: StateFlow<List<Topic>> = MutableStateFlow(topics)
+    private val _topics = MutableStateFlow(topics)
+    override val topics: StateFlow<List<Topic>> = _topics
     override suspend fun refresh() {}
+    fun setTopics(topics: List<Topic>) {
+        _topics.value = topics
+    }
 }
 
 class TopicsViewModelTest {
@@ -102,5 +106,17 @@ class TopicsViewModelTest {
         val repoTopics = listOf(Topic.Kotlin, Topic.Android)
         val model = vm(topics = FakeTopicsRepository(repoTopics))
         assertEquals(repoTopics, model.state.value.available)
+    }
+
+    @Test
+    fun `a topic added server-side after the screen opens appears in available`() = runTest {
+        val repository = FakeTopicsRepository(listOf(Topic.Kotlin))
+        val model = vm(topics = repository)
+        assertEquals(listOf(Topic.Kotlin), model.state.value.available)
+
+        val ai = Topic(id = "ai", displayLabel = "AI", apiValue = "AI")
+        repository.setTopics(listOf(Topic.Kotlin, ai)) // the API fetch lands after construction
+
+        assertEquals(listOf(Topic.Kotlin, ai), model.state.value.available)
     }
 }

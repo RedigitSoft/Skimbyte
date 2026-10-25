@@ -2,9 +2,12 @@ package io.redigit.skimbyte.data.local
 
 import com.russhwolf.settings.Settings
 import io.redigit.skimbyte.data.models.Topic
+import io.redigit.skimbyte.data.models.dto.TopicDto
+import io.redigit.skimbyte.data.models.dto.toDomain
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.json.Json
 
 interface TopicPreferencesStore {
     val selectedTopicsFlow: StateFlow<Set<Topic>>
@@ -26,16 +29,27 @@ class SettingsTopicPreferencesStore(private val settings: Settings) : TopicPrefe
 
     override fun selectedTopics(): Set<Topic> {
         val stored = settings.getStringOrNull(KEY_SELECTED_TOPICS) ?: return emptySet()
-        // Resolve stored ids against the known topic set. Uses Topic.defaults as the placeholder
-        // catalogue until the topics API is live; once it is, resolve against the fetched list.
-        val topicsById = Topic.defaults.associateBy { it.id }
+        // Current format: a JSON list of {id, label, apiValue}, self-contained so a topic served
+        // only by the backend survives a restart without needing a matching built-in constant.
+        return runCatching { json.decodeFromString<List<TopicDto>>(stored).map { it.toDomain() }.toSet() }
+            .getOrElse { decodeLegacyIds(stored) }
+    }
+
+    // Pre-JSON installs stored bare comma-separated ids, resolvable only against the built-in
+    // defaults; "kmp"/"tooling" are those ids' spellings from before they were aligned with the
+    // server's slugs.
+    private fun decodeLegacyIds(stored: String): Set<Topic> {
+        val topicsById = Topic.defaults.associateBy { it.id } +
+            mapOf("kmp" to Topic.Kmp, "tooling" to Topic.Tooling)
         return stored.split(",")
             .mapNotNull { topicsById[it] }
             .toSet()
     }
 
     override fun setSelectedTopics(topics: Set<Topic>) {
-        val encoded = topics.map { it.id }.joinToString(",")
+        val encoded = json.encodeToString(
+            topics.map { TopicDto(id = it.id, label = it.displayLabel, apiValue = it.apiValue) },
+        )
         settings.putString(KEY_SELECTED_TOPICS, encoded)
         _selectedTopicsFlow.value = topics
     }
@@ -51,5 +65,6 @@ class SettingsTopicPreferencesStore(private val settings: Settings) : TopicPrefe
     private companion object {
         const val KEY_SELECTED_TOPICS = "selected_topics"
         const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
+        val json = Json { ignoreUnknownKeys = true }
     }
 }

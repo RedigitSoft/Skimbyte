@@ -5,9 +5,9 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.redigit.skimbyte.data.models.dto.TopicDto
 
-// PLACEHOLDER-PENDING-BACKEND-CONFIRMATION: GET /v1/topics is not live yet. `TopicsRepository` seeds
-// with Topic.selectable and tolerates a failed fetch, so until the endpoint exists this is a no-op
-// and the app shows the built-in default topics.
+// GET /v1/topics is live (skimbyte-server returns {id, label, apiValue} per topic, ordered by
+// sort_order). `TopicsRepository` still tolerates a failed fetch and seeds with Topic.selectable,
+// so a network blip just keeps the built-in defaults rather than failing.
 interface TopicsApi {
     suspend fun fetchTopics(): List<TopicDto>
 }

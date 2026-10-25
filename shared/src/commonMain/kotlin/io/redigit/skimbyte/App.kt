@@ -40,6 +40,7 @@ import io.redigit.skimbyte.ui.navigation.SkimbyteBottomNavBar
 import io.redigit.skimbyte.ui.navigation.SkimbyteNavigationRail
 import io.redigit.skimbyte.data.local.TopicPreferencesStore
 import io.redigit.skimbyte.data.local.TutorialStore
+import io.redigit.skimbyte.data.repositories.TopicsRepository
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsViewModel
 import io.redigit.skimbyte.ui.screens.onboarding.SplashScreen
@@ -53,6 +54,7 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.koinConfiguration
+import kotlin.time.Duration.Companion.milliseconds
 
 sealed interface AppStage {
     data object Splash : AppStage
@@ -64,6 +66,9 @@ sealed interface AppStage {
 @Preview
 fun App() {
     KoinApplication(configuration = koinConfiguration { modules(appModule) }) {
+        // Eagerly create the topics repository: its init fetches GET /v1/topics, so the catalogue
+        // refreshes at app start instead of only when the interests screen first opens.
+        koinInject<TopicsRepository>()
         val themeModeStore = koinInject<ThemeModeStore>()
         val themeMode by themeModeStore.themeModeFlow.collectAsState()
         SkimbyteTheme(themeMode = themeMode) {
@@ -137,7 +142,7 @@ private fun MainShell() {
     }
     LaunchedEffect(scrollTick) {
         if (!navVisible) {
-            delay(1500)
+            delay(1000.milliseconds)
             navVisible = true
         }
     }

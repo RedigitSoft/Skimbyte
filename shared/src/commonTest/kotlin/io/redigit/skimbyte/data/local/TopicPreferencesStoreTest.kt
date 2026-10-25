@@ -30,9 +30,26 @@ class TopicPreferencesStoreTest {
     }
 
     @Test
-    fun `unknown stored topic id is ignored, not thrown`() {
+    fun `a topic that exists only server-side survives the round-trip`() {
+        val settings = FakeSettings()
+        val ai = Topic(id = "ai", displayLabel = "AI", apiValue = "AI")
+        SettingsTopicPreferencesStore(settings).setSelectedTopics(setOf(Topic.Kotlin, ai))
+
+        // A fresh store (new app launch) must retrieve it without a matching built-in constant.
+        assertEquals(setOf(Topic.Kotlin, ai), SettingsTopicPreferencesStore(settings).selectedTopics())
+    }
+
+    @Test
+    fun `legacy comma-separated ids still resolve, unknown ids ignored`() {
         val settings = FakeSettings(mapOf("selected_topics" to "kotlin,not-a-real-topic"))
         val store = SettingsTopicPreferencesStore(settings)
         assertEquals(setOf(Topic.Kotlin), store.selectedTopics())
+    }
+
+    @Test
+    fun `legacy pre-slug ids map to the renamed built-in topics`() {
+        val settings = FakeSettings(mapOf("selected_topics" to "kmp,tooling,android"))
+        val store = SettingsTopicPreferencesStore(settings)
+        assertEquals(setOf(Topic.Kmp, Topic.Tooling, Topic.Android), store.selectedTopics())
     }
 }
