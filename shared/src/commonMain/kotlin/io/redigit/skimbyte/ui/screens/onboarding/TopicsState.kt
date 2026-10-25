@@ -7,5 +7,7 @@ data class TopicsState(
     val selected: Set<Topic> = emptySet(),
     val isEditing: Boolean = false,
 ) {
-    val canConfirm: Boolean get() = selected.size in 3..4
+    // At least 3 so the feed has enough to work with; no upper bound - users can follow as many
+    // topics as they like, and every followed topic shows up as a feed filter and on the profile.
+    val canConfirm: Boolean get() = selected.size >= 3
 }

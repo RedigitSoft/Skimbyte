@@ -45,7 +45,7 @@ fun TopicsScreen(
             style = MaterialTheme.typography.headlineSmall,
         )
         Text(
-            text = "Choose 3 or 4 topics to personalize your feed.",
+            text = "Choose at least 3 topics to personalize your feed - follow as many as you like.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

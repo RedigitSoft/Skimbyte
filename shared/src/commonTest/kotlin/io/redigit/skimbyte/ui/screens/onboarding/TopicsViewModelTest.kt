@@ -64,6 +64,15 @@ class TopicsViewModelTest {
     }
 
     @Test
+    fun `confirm stays enabled beyond four selections`() {
+        val many = (1..6).map { Topic(id = "t$it", displayLabel = "T$it", apiValue = "T$it") }
+        val model = vm(topics = FakeTopicsRepository(many))
+        many.forEach { model.onIntent(TopicsIntent.TopicToggled(it)) }
+        assertEquals(6, model.state.value.selected.size)
+        assertTrue(model.state.value.canConfirm) // no upper cap
+    }
+
+    @Test
     fun `confirm enabled at exactly 3 selections`() {
         val model = vm()
         listOf(Topic.Kotlin, Topic.Android, Topic.Kmp).forEach { model.onIntent(TopicsIntent.TopicToggled(it)) }
