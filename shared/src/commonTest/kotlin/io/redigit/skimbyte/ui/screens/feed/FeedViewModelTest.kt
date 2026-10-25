@@ -27,7 +27,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
+import kotlin.time.TestTimeSource
 
 private fun fakePost(id: String, topic: Topic = Topic.Kotlin, isBookmarked: Boolean = false) = Post(
     id = id,
@@ -294,6 +296,72 @@ class FeedViewModelTest {
 
         assertEquals("all-1", viewModel.state.value.feeds[Topic.All]?.posts?.single()?.id)
         assertEquals("kotlin-1", viewModel.state.value.feeds[Topic.Kotlin]?.posts?.single()?.id)
+    }
+
+    @Test
+    fun feedResumed_stalePage_silentlyRefetchesFirstPage() = runTest {
+        val timeSource = TestTimeSource()
+        var servedId = "old"
+        val repository = FakePostsRepository { _, _ -> Result.success(Page(listOf(fakePost(servedId)), null)) }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore(), timeSource)
+        servedId = "new"
+        timeSource += 2.minutes
+
+        viewModel.onIntent(FeedIntent.FeedResumed)
+
+        assertEquals("new", viewModel.state.value.currentFeed.posts.single().id)
+        assertFalse(viewModel.state.value.isRefreshing) // silent: never shows the refresh spinner
+    }
+
+    @Test
+    fun feedResumed_freshPage_doesNotRefetch() = runTest {
+        val timeSource = TestTimeSource()
+        var fetchCount = 0
+        val repository = FakePostsRepository { _, _ ->
+            fetchCount++
+            Result.success(Page(listOf(fakePost("1")), null))
+        }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore(), timeSource)
+        val callsAfterInitial = fetchCount
+
+        viewModel.onIntent(FeedIntent.FeedResumed) // e.g. a quick tab flip right after loading
+
+        assertEquals(callsAfterInitial, fetchCount)
+    }
+
+    @Test
+    fun feedResumed_readerMidFeed_doesNotRefetch() = runTest {
+        val timeSource = TestTimeSource()
+        var fetchCount = 0
+        val repository = FakePostsRepository { _, _ ->
+            fetchCount++
+            Result.success(Page(listOf(fakePost("1"), fakePost("2")), nextCursor = null))
+        }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore(), timeSource)
+        viewModel.onIntent(FeedIntent.PageChanged(1))
+        timeSource += 2.minutes
+        val callsBeforeResume = fetchCount
+
+        viewModel.onIntent(FeedIntent.FeedResumed)
+
+        assertEquals(callsBeforeResume, fetchCount) // don't swap the list under the reader
+    }
+
+    @Test
+    fun feedResumed_failure_keepsCurrentPosts_withoutError() = runTest {
+        val timeSource = TestTimeSource()
+        var fail = false
+        val repository = FakePostsRepository { _, _ ->
+            if (fail) Result.failure(RuntimeException("offline")) else Result.success(Page(listOf(fakePost("1")), null))
+        }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore(), timeSource)
+        fail = true
+        timeSource += 2.minutes
+
+        viewModel.onIntent(FeedIntent.FeedResumed)
+
+        assertEquals(listOf("1"), viewModel.state.value.currentFeed.posts.map { it.id })
+        assertNull(viewModel.state.value.currentFeed.error) // silent: a failed refetch surfaces nothing
     }
 
     @Test

@@ -2,6 +2,7 @@ package io.redigit.skimbyte.ui.screens.feed
 
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.data.models.Topic
+import kotlin.time.TimeMark
 
 /**
  * The feed is a 2D pager: horizontal across [availableTopics], vertical (one card at a time) through
@@ -28,6 +29,8 @@ data class TopicFeed(
     val isLoadingInitial: Boolean = false,
     val isLoadingMore: Boolean = false,
     val error: FeedError? = null,
+    /** When this feed's first page was last fetched; gates the silent refresh on resume. */
+    val fetchedAt: TimeMark? = null,
 )
 
 data class PendingBookmarkAction(val postId: String)

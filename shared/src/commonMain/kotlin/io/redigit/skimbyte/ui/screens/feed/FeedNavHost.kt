@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -51,6 +52,12 @@ fun FeedNavHost(
     val backStack = rememberNavBackStack(navConfig, FeedHome)
     val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
     LaunchedEffect(backStack.size) { onRootChanged(backStack.size == 1) }
+    // Fires on re-entering the Feed tab (this host re-composes) and on app foregrounding: a silent
+    // refetch so a session that outlives a daily ingestion doesn't keep showing stale posts.
+    LifecycleResumeEffect(Unit) {
+        viewModel.onIntent(FeedIntent.FeedResumed)
+        onPauseOrDispose { }
+    }
 
     if (state.pendingBookmarkAction != null) {
         LoginSheet(

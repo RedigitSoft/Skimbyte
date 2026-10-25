@@ -14,4 +14,10 @@ sealed interface FeedIntent {
 
     /** Pull-to-refresh on the current topic: reloads its first page from scratch. */
     data object Refresh : FeedIntent
+
+    /**
+     * The feed came back on screen (tab re-selected, app foregrounded). Triggers a silent refetch
+     * of the current topic's first page so a long-lived session doesn't show stale posts.
+     */
+    data object FeedResumed : FeedIntent
 }

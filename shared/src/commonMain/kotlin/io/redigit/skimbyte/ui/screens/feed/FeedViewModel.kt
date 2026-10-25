@@ -12,12 +12,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.TimeSource
 
 class FeedViewModel(
     private val postsRepository: PostsRepository,
     private val authRepository: AuthRepository,
     private val bookmarkIdsStore: BookmarkIdsStore,
     private val topicPreferencesStore: TopicPreferencesStore,
+    private val timeSource: TimeSource = TimeSource.Monotonic,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FeedState())
@@ -52,6 +55,30 @@ class FeedViewModel(
             FeedIntent.LoginSucceeded -> onLoginSucceeded()
             FeedIntent.LoginDismissed -> onLoginDismissed()
             FeedIntent.Refresh -> onRefresh()
+            FeedIntent.FeedResumed -> onFeedResumed()
+        }
+    }
+
+    /**
+     * Silently refetch the current topic's first page when the feed comes back on screen, so a
+     * long-lived session picks up newly ingested posts. No spinner, and a failure keeps the
+     * current content rather than surfacing an error. Skipped while a load is already in flight,
+     * when the reader is mid-feed (swapping the list under them would yank their position), and
+     * when the shown page is fresh enough that a tab flip shouldn't refetch.
+     */
+    private fun onFeedResumed() {
+        val topic = _state.value.selectedTopic
+        val feed = _state.value.feeds[topic] ?: return
+        if (feed.isLoadingInitial || _state.value.isRefreshing) return
+        if (feed.currentIndex != 0) return
+        val age = feed.fetchedAt?.elapsedNow()
+        if (age != null && age < SILENT_REFRESH_MIN_AGE) return
+        viewModelScope.launch {
+            postsRepository.fetchPosts(topic, cursor = null).onSuccess { page ->
+                updateFeed(topic) {
+                    it.copy(posts = page.items, nextCursor = page.nextCursor, error = null, fetchedAt = timeSource.markNow())
+                }
+            }
         }
     }
 
@@ -67,7 +94,7 @@ class FeedViewModel(
             result.fold(
                 onSuccess = { page ->
                     updateFeed(topic) {
-                        it.copy(posts = page.items, nextCursor = page.nextCursor, currentIndex = 0, error = null)
+                        it.copy(posts = page.items, nextCursor = page.nextCursor, currentIndex = 0, error = null, fetchedAt = timeSource.markNow())
                     }
                 },
                 onFailure = { updateFeed(topic) { it.copy(error = FeedError.Network) } },
@@ -154,7 +181,7 @@ class FeedViewModel(
             result.fold(
                 onSuccess = { page ->
                     updateFeed(topic) {
-                        it.copy(posts = page.items, nextCursor = page.nextCursor, isLoadingInitial = false)
+                        it.copy(posts = page.items, nextCursor = page.nextCursor, isLoadingInitial = false, fetchedAt = timeSource.markNow())
                     }
                 },
                 onFailure = { updateFeed(topic) { it.copy(isLoadingInitial = false, error = FeedError.Network) } },
@@ -185,5 +212,8 @@ class FeedViewModel(
 
     private companion object {
         const val PREFETCH_THRESHOLD = 3
+
+        /** A page younger than this is considered fresh - resuming the feed won't refetch it. */
+        val SILENT_REFRESH_MIN_AGE = 1.minutes
     }
 }
