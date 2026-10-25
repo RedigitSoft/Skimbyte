@@ -42,6 +42,7 @@ private class FakeProfileRepository(initial: Profile? = null) : ProfileRepositor
     var uploadBannerCallCount = 0
     var removeAvatarCallCount = 0
     var removeBannerCallCount = 0
+    var refreshCallCount = 0
     override suspend fun uploadAvatar(image: PickedImage): Result<Unit> {
         uploadAvatarCallCount++
         avatarUploadGate?.await()
@@ -59,6 +60,10 @@ private class FakeProfileRepository(initial: Profile? = null) : ProfileRepositor
     override suspend fun removeBanner(): Result<Unit> {
         removeBannerCallCount++
         _profile.value = _profile.value?.copy(bannerUrl = null)
+        return Result.success(Unit)
+    }
+    override suspend fun refresh(): Result<Unit> {
+        refreshCallCount++
         return Result.success(Unit)
     }
 }
@@ -162,41 +167,80 @@ class AccountViewModelTest {
     }
 
     @Test
-    fun onAvatarPicked_success_clearsInProgressAndError() = runTest {
+    fun onAvatarPicked_stagesPendingCropWithoutUploading() = runTest {
         val repo = FakeProfileRepository()
         val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
         vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
 
+        assertEquals(ImageTarget.Avatar, vm.state.value.pendingCrop?.target)
+        assertEquals(0, repo.uploadAvatarCallCount) // upload is deferred until the crop is confirmed
+    }
+
+    @Test
+    fun onCropCancelled_clearsPendingCropWithoutUploading() = runTest {
+        val repo = FakeProfileRepository()
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
+
+        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
+        vm.onIntent(AccountIntent.CropCancelled)
+
+        assertNull(vm.state.value.pendingCrop)
+        assertEquals(0, repo.uploadAvatarCallCount)
+    }
+
+    @Test
+    fun onCropConfirmed_avatar_success_clearsInProgressAndError() = runTest {
+        val repo = FakeProfileRepository()
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
+
+        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
+        vm.onIntent(AccountIntent.CropConfirmed(PickedImage(ByteArray(8), "image/png")))
+
+        assertNull(vm.state.value.pendingCrop)
         assertEquals(false, vm.state.value.avatarUploadInProgress)
         assertNull(vm.state.value.avatarError)
         assertEquals(1, repo.uploadAvatarCallCount)
     }
 
     @Test
-    fun onAvatarPicked_failure_setsErrorAndClearsInProgress() = runTest {
+    fun onCropConfirmed_avatar_failure_setsErrorAndClearsInProgress() = runTest {
         val repo = FakeProfileRepository()
         repo.avatarResult = Result.failure(RuntimeException("boom"))
         val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
         vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
+        vm.onIntent(AccountIntent.CropConfirmed(PickedImage(ByteArray(8), "image/png")))
 
         assertEquals(false, vm.state.value.avatarUploadInProgress)
         assertEquals("Could not update avatar", vm.state.value.avatarError)
     }
 
     @Test
-    fun onAvatarPicked_whileAlreadyUploading_isIgnored() = runTest {
+    fun onCropConfirmed_whileAlreadyUploading_isIgnored() = runTest {
         val gate = CompletableDeferred<Unit>()
         val repo = FakeProfileRepository()
         repo.avatarUploadGate = gate
         val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
-        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png"))) // suspends on the gate
-        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png"))) // should be ignored: still in progress
+        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
+        vm.onIntent(AccountIntent.CropConfirmed(PickedImage(ByteArray(8), "image/png"))) // suspends on the gate
+        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
+        vm.onIntent(AccountIntent.CropConfirmed(PickedImage(ByteArray(8), "image/png"))) // ignored: still in progress
         gate.complete(Unit)
 
         assertEquals(1, repo.uploadAvatarCallCount)
+    }
+
+    @Test
+    fun onRefresh_delegatesToProfileRepository() = runTest {
+        val repo = FakeProfileRepository()
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
+
+        vm.onIntent(AccountIntent.Refresh)
+
+        assertEquals(1, repo.refreshCallCount)
+        assertEquals(false, vm.state.value.isRefreshing)
     }
 
     @Test
@@ -211,12 +255,15 @@ class AccountViewModelTest {
     }
 
     @Test
-    fun onBannerPicked_success_clearsInProgressAndError() = runTest {
+    fun onCropConfirmed_banner_success_clearsInProgressAndError() = runTest {
         val repo = FakeProfileRepository()
         val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
 
         vm.onIntent(AccountIntent.BannerPicked(PickedImage(ByteArray(10), "image/png")))
+        assertEquals(ImageTarget.Banner, vm.state.value.pendingCrop?.target)
+        vm.onIntent(AccountIntent.CropConfirmed(PickedImage(ByteArray(8), "image/png")))
 
+        assertNull(vm.state.value.pendingCrop)
         assertEquals(false, vm.state.value.bannerUploadInProgress)
         assertNull(vm.state.value.bannerError)
         assertEquals(1, repo.uploadBannerCallCount)

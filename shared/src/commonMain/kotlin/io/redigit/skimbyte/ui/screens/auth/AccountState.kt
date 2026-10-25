@@ -2,6 +2,13 @@ package io.redigit.skimbyte.ui.screens.auth
 
 import io.redigit.skimbyte.data.local.SummaryLength
 import io.redigit.skimbyte.data.models.Topic
+import io.redigit.skimbyte.util.PickedImage
+
+/** Which profile image an in-progress pick/crop targets. */
+enum class ImageTarget { Avatar, Banner }
+
+/** A just-picked image awaiting the interactive crop step before it's uploaded. */
+data class PendingCrop(val target: ImageTarget, val image: PickedImage)
 
 data class AccountState(
     val isLoggedIn: Boolean = false,
@@ -9,6 +16,8 @@ data class AccountState(
     val bannerUrl: String? = null,
     val avatarUploadInProgress: Boolean = false,
     val bannerUploadInProgress: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val pendingCrop: PendingCrop? = null,
     val avatarError: String? = null,
     val bannerError: String? = null,
     // Identity + reading stats shown on the profile screen. Populated by AccountViewModel from the

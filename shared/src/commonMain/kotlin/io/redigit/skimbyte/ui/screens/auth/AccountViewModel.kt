@@ -6,10 +6,7 @@ import io.redigit.skimbyte.data.local.AppConfigStore
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.ProfileRepository
-import io.redigit.skimbyte.util.AVATAR_ASPECT
-import io.redigit.skimbyte.util.BANNER_ASPECT
 import io.redigit.skimbyte.util.PickedImage
-import io.redigit.skimbyte.util.cropToAspect
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -117,22 +114,46 @@ class AccountViewModel(
     fun onIntent(intent: AccountIntent) {
         when (intent) {
             AccountIntent.Logout -> authRepository.logout()
-            is AccountIntent.AvatarPicked -> onAvatarPicked(intent.image)
-            is AccountIntent.BannerPicked -> onBannerPicked(intent.image)
+            is AccountIntent.AvatarPicked ->
+                _state.value = _state.value.copy(pendingCrop = PendingCrop(ImageTarget.Avatar, intent.image))
+            is AccountIntent.BannerPicked ->
+                _state.value = _state.value.copy(pendingCrop = PendingCrop(ImageTarget.Banner, intent.image))
+            is AccountIntent.CropConfirmed -> onCropConfirmed(intent.image)
+            AccountIntent.CropCancelled -> _state.value = _state.value.copy(pendingCrop = null)
             AccountIntent.AvatarRemoved -> viewModelScope.launch { profileRepository.removeAvatar() }
             AccountIntent.BannerRemoved -> viewModelScope.launch { profileRepository.removeBanner() }
             AccountIntent.DigestTimeCycled -> appConfigStore.cycleDigestTime()
             AccountIntent.SummaryLengthCycled -> appConfigStore.cycleSummaryLength()
             is AccountIntent.NotificationsToggled -> appConfigStore.setNotificationsEnabled(intent.enabled)
+            AccountIntent.Refresh -> onRefresh()
         }
     }
 
-    private fun onAvatarPicked(image: PickedImage) {
+    private fun onRefresh() {
+        if (_state.value.isRefreshing) return
+        _state.value = _state.value.copy(isRefreshing = true)
+        viewModelScope.launch {
+            profileRepository.refresh()
+            _state.value = _state.value.copy(isRefreshing = false)
+        }
+    }
+
+    // The image arrives already cropped to the right aspect from the interactive cropper, so it's
+    // uploaded as-is here.
+    private fun onCropConfirmed(image: PickedImage) {
+        val target = _state.value.pendingCrop?.target ?: return
+        _state.value = _state.value.copy(pendingCrop = null)
+        when (target) {
+            ImageTarget.Avatar -> uploadAvatar(image)
+            ImageTarget.Banner -> uploadBanner(image)
+        }
+    }
+
+    private fun uploadAvatar(image: PickedImage) {
         if (_state.value.avatarUploadInProgress) return
         _state.value = _state.value.copy(avatarUploadInProgress = true, avatarError = null)
         viewModelScope.launch {
-            // Crop to a square on-device before uploading so avatars are consistently framed.
-            val result = profileRepository.uploadAvatar(cropToAspect(image, AVATAR_ASPECT))
+            val result = profileRepository.uploadAvatar(image)
             _state.value = _state.value.copy(
                 avatarUploadInProgress = false,
                 avatarError = result.exceptionOrNull()?.let { "Could not update avatar" },
@@ -140,12 +161,11 @@ class AccountViewModel(
         }
     }
 
-    private fun onBannerPicked(image: PickedImage) {
+    private fun uploadBanner(image: PickedImage) {
         if (_state.value.bannerUploadInProgress) return
         _state.value = _state.value.copy(bannerUploadInProgress = true, bannerError = null)
         viewModelScope.launch {
-            // Crop to a wide banner aspect on-device before uploading.
-            val result = profileRepository.uploadBanner(cropToAspect(image, BANNER_ASPECT))
+            val result = profileRepository.uploadBanner(image)
             _state.value = _state.value.copy(
                 bannerUploadInProgress = false,
                 bannerError = result.exceptionOrNull()?.let { "Could not update banner" },

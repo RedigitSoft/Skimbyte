@@ -197,4 +197,33 @@ class ProfileRepositoryImplTest {
         assertTrue(result.isFailure)
         assertEquals(profileBeforeUpload, repo.profile.value)
     }
+
+    @Test
+    fun uploadAvatar_success_cacheBustsTheAvatarUrl() = runTest(UnconfinedTestDispatcher()) {
+        val api = FakeAuthApiForProfile(Result.success(MeResponseDto("u1", avatarUrl = "avatars/u1/new.jpg")))
+        val sessionFlow = MutableStateFlow(Session("token"))
+        val repo = ProfileRepositoryImpl(api, sessionFlow, backgroundScope)
+        advanceUntilIdle()
+        // Before any upload the URL carries no version query.
+        assertTrue(repo.profile.value?.avatarUrl?.contains("v=") == false)
+
+        repo.uploadAvatar(PickedImage(ByteArray(10), "image/png"))
+        advanceUntilIdle()
+
+        // After upload the same server URL gets a cache-busting version so Coil reloads it.
+        assertTrue(repo.profile.value?.avatarUrl?.contains("v=") == true)
+    }
+
+    @Test
+    fun refresh_refetchesProfile() = runTest(UnconfinedTestDispatcher()) {
+        val api = FakeAuthApiForProfile(Result.success(MeResponseDto("u1")))
+        val sessionFlow = MutableStateFlow(Session("token"))
+        val repo = ProfileRepositoryImpl(api, sessionFlow, backgroundScope)
+        advanceUntilIdle()
+
+        val result = repo.refresh()
+
+        assertTrue(result.isSuccess)
+        assertEquals("u1", repo.profile.value?.userId)
+    }
 }

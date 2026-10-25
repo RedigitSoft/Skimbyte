@@ -34,6 +34,8 @@ import io.redigit.skimbyte.ui.screens.settings.SettingsViewModel
 import io.redigit.skimbyte.ui.screens.settings.SettingsScreen
 import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
 import io.redigit.skimbyte.ui.components.BANNER_SHARED_ELEMENT_KEY
+import io.redigit.skimbyte.util.AVATAR_ASPECT
+import io.redigit.skimbyte.util.BANNER_ASPECT
 import io.redigit.skimbyte.util.rememberImagePickerLauncher
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -67,6 +69,7 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
     val accountViewModel = koinViewModel<AccountViewModel>()
     val uiState by accountViewModel.state.collectAsState()
 
+    Box(modifier = Modifier.fillMaxSize()) {
     SharedTransitionLayout {
         NavDisplay(
             backStack = backStack,
@@ -134,6 +137,18 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
                 }
             },
         )
+    }
+    // Full-screen crop overlay driven by shared VM state, so it appears over whichever pane picked
+    // the image (list or detail) and over both avatar and banner flows.
+    uiState.pendingCrop?.let { pending ->
+        ImageCropScreen(
+            image = pending.image,
+            aspect = if (pending.target == ImageTarget.Avatar) AVATAR_ASPECT else BANNER_ASPECT,
+            circularMask = pending.target == ImageTarget.Avatar,
+            onCancel = { accountViewModel.onIntent(AccountIntent.CropCancelled) },
+            onConfirm = { accountViewModel.onIntent(AccountIntent.CropConfirmed(it)) },
+        )
+    }
     }
 }
 

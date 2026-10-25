@@ -18,6 +18,8 @@ interface ProfileRepository {
     suspend fun uploadBanner(image: PickedImage): Result<Unit>
     suspend fun removeAvatar(): Result<Unit>
     suspend fun removeBanner(): Result<Unit>
+    /** Re-fetches the profile from `/me`, e.g. on pull-to-refresh. */
+    suspend fun refresh(): Result<Unit>
 }
 
 class ProfileRepositoryImpl(
@@ -28,16 +30,25 @@ class ProfileRepositoryImpl(
     private val _profile = MutableStateFlow<Profile?>(null)
     override val profile: StateFlow<Profile?> = _profile.asStateFlow()
 
+    // The server reuses the same image URL after a re-upload, so without a changing query the UI
+    // keeps the old string (no recomposition) and Coil serves the cached bytes. A per-image version
+    // stamped on upload busts both. It's kept here (not just applied once) so a later /me refresh -
+    // e.g. from a session change - re-stamps the URL rather than reverting to the stale cached one.
+    private var avatarVersion: Long? = null
+    private var bannerVersion: Long? = null
+
     init {
         scope.launch {
             session.collectLatest { current ->
                 if (current == null) {
+                    avatarVersion = null
+                    bannerVersion = null
                     _profile.value = null
                 } else {
                     // Rethrow cancellation rather than swallowing it: collectLatest cancels this
                     // block on the next session change, and a caught CancellationException must
                     // not be treated as an ordinary fetch failure.
-                    _profile.value = runCatching { authApi.me().toDomain() }
+                    _profile.value = runCatching { authApi.me().toDomain().withVersions() }
                         .onFailure { if (it is CancellationException) throw it }
                         .getOrNull()
                 }
@@ -45,28 +56,50 @@ class ProfileRepositoryImpl(
         }
     }
 
-    override suspend fun uploadAvatar(image: PickedImage): Result<Unit> = upload("avatar", image)
-    override suspend fun uploadBanner(image: PickedImage): Result<Unit> = upload("banner", image)
+    override suspend fun uploadAvatar(image: PickedImage): Result<Unit> = upload(TYPE_AVATAR, image)
+    override suspend fun uploadBanner(image: PickedImage): Result<Unit> = upload(TYPE_BANNER, image)
 
     // Optimistic/local only: there is no delete endpoint yet, so this clears the URL in-memory and
     // does not persist across a reload. Point at DELETE /me/avatar|banner once it exists (SERVER_API.md).
     override suspend fun removeAvatar(): Result<Unit> = runCatching {
+        avatarVersion = null
         _profile.value = _profile.value?.copy(avatarUrl = null)
     }
 
     override suspend fun removeBanner(): Result<Unit> = runCatching {
+        bannerVersion = null
         _profile.value = _profile.value?.copy(bannerUrl = null)
+    }
+
+    override suspend fun refresh(): Result<Unit> = runCatching {
+        _profile.value = authApi.me().toDomain().withVersions()
     }
 
     private suspend fun upload(type: String, image: PickedImage): Result<Unit> {
         if (image.bytes.size > MAX_IMAGE_BYTES) return Result.failure(IllegalArgumentException("Image too large"))
         return runCatching {
             authApi.uploadImage(type, image)
-            _profile.value = runCatching { authApi.me().toDomain() }.getOrNull() ?: _profile.value
+            val version = kotlin.time.Clock.System.now().epochSeconds
+            when (type) {
+                TYPE_AVATAR -> avatarVersion = version
+                TYPE_BANNER -> bannerVersion = version
+            }
+            _profile.value = runCatching { authApi.me().toDomain().withVersions() }.getOrNull() ?: _profile.value
         }
+    }
+
+    private fun Profile.withVersions(): Profile =
+        copy(avatarUrl = avatarUrl.withVersion(avatarVersion), bannerUrl = bannerUrl.withVersion(bannerVersion))
+
+    private fun String?.withVersion(version: Long?): String? = when {
+        this == null || version == null -> this
+        contains('?') -> "$this&v=$version"
+        else -> "$this?v=$version"
     }
 
     companion object {
         const val MAX_IMAGE_BYTES = 3 * 1024 * 1024
+        private const val TYPE_AVATAR = "avatar"
+        private const val TYPE_BANNER = "banner"
     }
 }

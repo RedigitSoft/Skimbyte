@@ -5,6 +5,7 @@ import io.redigit.skimbyte.designsheet.components.BookmarkButtonCatalogContent
 import io.redigit.skimbyte.designsheet.components.ButtonsCatalogContent
 import io.redigit.skimbyte.designsheet.components.DailyProgressBarCatalogContent
 import io.redigit.skimbyte.designsheet.components.ImageEditSheetCatalogContent
+import io.redigit.skimbyte.designsheet.components.ImageCropScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.LoginSheetCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostCardCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostDetailScreenCatalogContent
@@ -50,6 +51,7 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("login-sheet", "Login sheet", "Bookmarks") { LoginSheetCatalogContent() },
     CatalogItem("account-screen", "Account", "Bookmarks") { AccountScreenCatalogContent() },
     CatalogItem("profile-images", "Avatar & banner", "Account") { ProfileImagesCatalogContent() },
+    CatalogItem("image-cropper", "Image cropper", "Account") { ImageCropScreenCatalogContent() },
     CatalogItem("image-edit-sheet", "Image edit sheet", "Account") { ImageEditSheetCatalogContent() },
     CatalogItem("topics-screen", "Topics", "Onboarding") { TopicsScreenCatalogContent() },
     CatalogItem("tutorial-overlay", "Tutorial overlay", "Onboarding") { TutorialOverlayCatalogContent() },
