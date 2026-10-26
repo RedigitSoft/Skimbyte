@@ -162,15 +162,19 @@ private fun TopicPostsPager(
                 modifier = modifier.fillMaxSize(),
             ) { page ->
                 val post = feed.posts[page]
-                PostCard(
-                    post = post,
-                    isBookmarkLoading = post.id in pendingBookmarkToggles,
-                    onBookmarkClick = { onBookmarkClick(post.id) },
-                    onReadSourceClick = onReadSourceClick,
-                    onCardClick = onCardClick,
-                    modifier = Modifier.fillMaxSize(),
-                    sharedTransition = sharedTransition,
-                )
+                // The card wraps its content instead of filling the page: forcing full height left
+                // an empty slab of card surface below the action bar on anything but tiny screens.
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                    PostCard(
+                        post = post,
+                        isBookmarkLoading = post.id in pendingBookmarkToggles,
+                        onBookmarkClick = { onBookmarkClick(post.id) },
+                        onReadSourceClick = onReadSourceClick,
+                        onCardClick = onCardClick,
+                        modifier = Modifier.fillMaxWidth(),
+                        sharedTransition = sharedTransition,
+                    )
+                }
             }
         }
     }

@@ -68,7 +68,7 @@ In `local.properties.example`, add a commented line near the other backend keys:
 ```
 # DigitalOcean Spaces CDN domain for avatar/banner images — defaults to the real domain below;
 # override only if pointing at a different CDN (e.g. staging).
-#spacesCdnBaseUrl=https://cdn.example.com
+#spacesCdnBaseUrl=""
 ```
 In `shared/build.gradle.kts`'s `generateAuthConfig` task, add `val spacesCdnBaseUrl = props.getProperty("spacesCdnBaseUrl", "https://cdn.example.com")` and add `const val SPACES_CDN_BASE_URL = "$spacesCdnBaseUrl"` to the generated `BackendConfig` object, alongside `API_BASE_URL`.
 
