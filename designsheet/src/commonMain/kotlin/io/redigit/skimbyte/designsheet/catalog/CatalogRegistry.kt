@@ -7,6 +7,7 @@ import io.redigit.skimbyte.designsheet.components.DailyProgressBarCatalogContent
 import io.redigit.skimbyte.designsheet.components.ImageEditSheetCatalogContent
 import io.redigit.skimbyte.designsheet.components.ImageCropScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.LoginSheetCatalogContent
+import io.redigit.skimbyte.designsheet.components.NewTopicsDialogCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostCardCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostDetailScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.ProfileImagesCatalogContent
@@ -54,6 +55,7 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("image-cropper", "Image cropper", "Account") { ImageCropScreenCatalogContent() },
     CatalogItem("image-edit-sheet", "Image edit sheet", "Account") { ImageEditSheetCatalogContent() },
     CatalogItem("topics-screen", "Topics", "Onboarding") { TopicsScreenCatalogContent() },
+    CatalogItem("new-topics-dialog", "New topics dialog", "Onboarding") { NewTopicsDialogCatalogContent() },
     CatalogItem("tutorial-overlay", "Tutorial overlay", "Onboarding") { TutorialOverlayCatalogContent() },
     CatalogItem("settings-screen", "Settings", "Account") { SettingsScreenCatalogContent() },
 )

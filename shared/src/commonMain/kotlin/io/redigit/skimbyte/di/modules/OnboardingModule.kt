@@ -19,6 +19,6 @@ val onboardingModule = module {
     single<TopicPreferencesStore> { SettingsTopicPreferencesStore(get()) }
     single<TutorialStore> { SettingsTutorialStore(get()) }
     single<TopicsApi> { KtorTopicsApi(get()) }
-    single<TopicsRepository> { TopicsRepositoryImpl(get(), CoroutineScope(SupervisorJob() + Dispatchers.Default)) }
+    single<TopicsRepository> { TopicsRepositoryImpl(get(), get(), CoroutineScope(SupervisorJob() + Dispatchers.Default)) }
     viewModel { (isEditing: Boolean) -> TopicsViewModel(get(), get(), isEditing) }
 }

@@ -23,3 +23,6 @@ data class Topic(val id: String, val displayLabel: String, val apiValue: String?
         val selectable: List<Topic> = defaults.filter { it != All }
     }
 }
+
+/** A catalogue entry: a known topic plus whether the user currently follows it. */
+data class SelectableTopic(val topic: Topic, val isSelected: Boolean)

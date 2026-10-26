@@ -4,7 +4,9 @@ import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.Session
 import io.redigit.skimbyte.data.remote.Page
 import io.redigit.skimbyte.data.models.dto.PageDto
+import io.redigit.skimbyte.data.local.SettingsTopicPreferencesStore
 import io.redigit.skimbyte.data.local.TopicPreferencesStore
+import io.redigit.skimbyte.testing.FakeSettings
 import io.redigit.skimbyte.data.repositories.BookmarkIdsStore
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.data.remote.PostsApi
@@ -79,25 +81,9 @@ private fun fakeBookmarkIdsStore() = BookmarkIdsStore(object : PostsApi {
     override suspend fun unbookmark(postId: String) = Unit
 })
 
-private class FakeTopicPreferencesStore : TopicPreferencesStore {
-    private var topics: Set<Topic> = emptySet()
-    private var onboardingCompleted: Boolean = false
-    private val _selectedTopicsFlow = MutableStateFlow(topics)
-    override val selectedTopicsFlow: StateFlow<Set<Topic>> = _selectedTopicsFlow
-
-    override fun selectedTopics(): Set<Topic> = topics
-
-    override fun setSelectedTopics(topics: Set<Topic>) {
-        this.topics = topics
-        _selectedTopicsFlow.value = topics
-    }
-
-    override fun hasCompletedOnboarding(): Boolean = onboardingCompleted
-
-    override fun setOnboardingCompleted() {
-        onboardingCompleted = true
-    }
-}
+// The real settings-backed store on an in-memory FakeSettings: it's pure in-memory logic, so
+// faking it would just duplicate the implementation under test elsewhere.
+private fun fakeTopicPreferencesStore(): TopicPreferencesStore = SettingsTopicPreferencesStore(FakeSettings())
 
 class FeedViewModelTest {
 
@@ -120,7 +106,7 @@ class FeedViewModelTest {
     fun initialLoad_populatesPosts_andNextCursor() = runTest {
         val posts = listOf(fakePost("1"), fakePost("2"))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, "cursor-2")) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), fakeTopicPreferencesStore())
 
         assertEquals(posts, viewModel.state.value.currentFeed.posts)
         assertEquals("cursor-2", viewModel.state.value.currentFeed.nextCursor)
@@ -130,7 +116,7 @@ class FeedViewModelTest {
     @Test
     fun initialLoad_failure_setsNetworkError() = runTest {
         val repository = FakePostsRepository { _, _ -> Result.failure(RuntimeException("boom")) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), fakeTopicPreferencesStore())
 
         assertEquals(FeedError.Network, viewModel.state.value.currentFeed.error)
         assertTrue(viewModel.state.value.currentFeed.posts.isEmpty())
@@ -143,7 +129,7 @@ class FeedViewModelTest {
             lastRequestedTopic = topic
             Result.success(Page(listOf(fakePost("1", topic = topic)), nextCursor = null))
         }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), fakeTopicPreferencesStore())
 
         viewModel.onIntent(FeedIntent.TopicSelected(Topic.Android))
 
@@ -159,7 +145,7 @@ class FeedViewModelTest {
             fetchCount++
             Result.success(Page(emptyList(), null))
         }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), fakeTopicPreferencesStore())
         val countAfterInitialLoad = fetchCount
 
         viewModel.onIntent(FeedIntent.TopicSelected(Topic.All))
@@ -178,7 +164,7 @@ class FeedViewModelTest {
                 Result.success(Page(List(5) { fakePost("page2-$it") }, nextCursor = null))
             }
         }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), fakeTopicPreferencesStore())
         val callsAfterInitial = fetchCalls
 
         viewModel.onIntent(FeedIntent.PageChanged(3)) // posts.size - 3 == index 2, so index 3 should trigger load-more (size=5)
@@ -192,7 +178,7 @@ class FeedViewModelTest {
     fun onBookmarkTapped_loggedOut_setsPendingAction_withoutCallingRepository() = runTest {
         val posts = listOf(fakePost("1"))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, null)) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), fakeTopicPreferencesStore())
 
         viewModel.onIntent(FeedIntent.BookmarkTapped("1"))
 
@@ -204,7 +190,7 @@ class FeedViewModelTest {
     fun onLoginSucceeded_replaysPendingBookmarkAction_andClearsIt() = runTest {
         val posts = listOf(fakePost("1", isBookmarked = false))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, null)) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), fakeTopicPreferencesStore())
         viewModel.onIntent(FeedIntent.BookmarkTapped("1"))
 
         viewModel.onIntent(FeedIntent.LoginSucceeded)
@@ -218,7 +204,7 @@ class FeedViewModelTest {
     fun onLoginDismissed_clearsPendingAction_withoutCallingRepository() = runTest {
         val posts = listOf(fakePost("1"))
         val repository = FakePostsRepository { _, _ -> Result.success(Page(posts, null)) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(initialSession = null), fakeBookmarkIdsStore(), fakeTopicPreferencesStore())
         viewModel.onIntent(FeedIntent.BookmarkTapped("1"))
 
         viewModel.onIntent(FeedIntent.LoginDismissed)
@@ -236,7 +222,7 @@ class FeedViewModelTest {
             repository,
             FakeAuthRepository(initialSession = Session("t")),
             fakeBookmarkIdsStore(),
-            FakeTopicPreferencesStore(),
+            fakeTopicPreferencesStore(),
         )
 
         viewModel.onIntent(FeedIntent.BookmarkTapped("1"))
@@ -248,7 +234,7 @@ class FeedViewModelTest {
     @Test
     fun `initial filter is All, followed by stored interests`() = runTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
-        val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Kotlin, Topic.Android)) }
+        val store = fakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Kotlin, Topic.Android)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
 
         assertEquals(Topic.All, viewModel.state.value.selectedTopic)
@@ -258,7 +244,7 @@ class FeedViewModelTest {
     @Test
     fun `editing interests away from the active filter falls back to All`() = runTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
-        val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Android, Topic.Kotlin)) }
+        val store = fakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Android, Topic.Kotlin)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
         viewModel.onIntent(FeedIntent.TopicSelected(Topic.Android)) // user is filtered on Android
         store.setSelectedTopics(setOf(Topic.Kotlin)) // edits interests, drops Android
@@ -271,11 +257,11 @@ class FeedViewModelTest {
     @Test
     fun `FeedViewModel reacts automatically when the store's topics change after construction`() = runTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
-        val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Android, Topic.Kotlin)) }
+        val store = fakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Android, Topic.Kotlin)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
 
         assertEquals(Topic.All, viewModel.state.value.selectedTopic)
-        assertEquals(listOf(Topic.All, Topic.Android, Topic.Kotlin), viewModel.state.value.availableTopics)
+        assertEquals(listOf(Topic.All, Topic.Kotlin, Topic.Android), viewModel.state.value.availableTopics) // catalogue order
 
         store.setSelectedTopics(setOf(Topic.Kotlin)) // simulates editing interests from Settings, without calling any method on vm directly
         advanceUntilIdle() // let the reactive collector process the change
@@ -289,7 +275,7 @@ class FeedViewModelTest {
         val repository = FakePostsRepository { topic, _ ->
             Result.success(Page(listOf(fakePost("${topic.id}-1", topic = topic)), nextCursor = null))
         }
-        val store = FakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Kotlin)) }
+        val store = fakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Kotlin)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
 
         viewModel.onIntent(FeedIntent.TopicSelected(Topic.Kotlin))
@@ -303,7 +289,7 @@ class FeedViewModelTest {
         val timeSource = TestTimeSource()
         var servedId = "old"
         val repository = FakePostsRepository { _, _ -> Result.success(Page(listOf(fakePost(servedId)), null)) }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore(), timeSource)
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), fakeTopicPreferencesStore(), timeSource)
         servedId = "new"
         timeSource += 2.minutes
 
@@ -321,7 +307,7 @@ class FeedViewModelTest {
             fetchCount++
             Result.success(Page(listOf(fakePost("1")), null))
         }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore(), timeSource)
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), fakeTopicPreferencesStore(), timeSource)
         val callsAfterInitial = fetchCount
 
         viewModel.onIntent(FeedIntent.FeedResumed) // e.g. a quick tab flip right after loading
@@ -337,7 +323,7 @@ class FeedViewModelTest {
             fetchCount++
             Result.success(Page(listOf(fakePost("1"), fakePost("2")), nextCursor = null))
         }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore(), timeSource)
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), fakeTopicPreferencesStore(), timeSource)
         viewModel.onIntent(FeedIntent.PageChanged(1))
         timeSource += 2.minutes
         val callsBeforeResume = fetchCount
@@ -354,7 +340,7 @@ class FeedViewModelTest {
         val repository = FakePostsRepository { _, _ ->
             if (fail) Result.failure(RuntimeException("offline")) else Result.success(Page(listOf(fakePost("1")), null))
         }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore(), timeSource)
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), fakeTopicPreferencesStore(), timeSource)
         fail = true
         timeSource += 2.minutes
 
@@ -372,7 +358,7 @@ class FeedViewModelTest {
             // First call is the initial load; the refresh re-fetches with a null cursor.
             Result.success(Page(listOf(fakePost("load-$callCount-cursor-$cursor")), nextCursor = null))
         }
-        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), FakeTopicPreferencesStore())
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), fakeTopicPreferencesStore())
 
         viewModel.onIntent(FeedIntent.Refresh)
 

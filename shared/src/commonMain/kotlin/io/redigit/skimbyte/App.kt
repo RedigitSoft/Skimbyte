@@ -41,6 +41,7 @@ import io.redigit.skimbyte.ui.navigation.SkimbyteNavigationRail
 import io.redigit.skimbyte.data.local.TopicPreferencesStore
 import io.redigit.skimbyte.data.local.TutorialStore
 import io.redigit.skimbyte.data.repositories.TopicsRepository
+import io.redigit.skimbyte.ui.components.NewTopicsDialog
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsViewModel
 import io.redigit.skimbyte.ui.screens.onboarding.SplashScreen
@@ -66,9 +67,10 @@ sealed interface AppStage {
 @Preview
 fun App() {
     KoinApplication(configuration = koinConfiguration { modules(appModule) }) {
-        // Eagerly create the topics repository: its init fetches GET /v1/topics, so the catalogue
-        // refreshes at app start instead of only when the interests screen first opens.
-        koinInject<TopicsRepository>()
+        // Eagerly create the topics repository: its init fetches GET /v1/topics on every app open
+        // and reconciles the result with the persisted catalogue, so new server-side topics are
+        // discovered (and announced below) without any polling.
+        val topicsRepository = koinInject<TopicsRepository>()
         val themeModeStore = koinInject<ThemeModeStore>()
         val themeMode by themeModeStore.themeModeFlow.collectAsState()
         SkimbyteTheme(themeMode = themeMode) {
@@ -112,6 +114,20 @@ fun App() {
                     }
                 }
             }
+
+            // Announce topics the catalogue sync discovered. During onboarding the picker already
+            // shows the whole catalogue, so pending discoveries are acknowledged silently there.
+            val newTopics by topicsRepository.pendingNewTopics.collectAsState()
+            if (newTopics.isNotEmpty()) {
+                when (stage) {
+                    AppStage.Main -> NewTopicsDialog(
+                        topics = newTopics,
+                        onDismiss = topicsRepository::acknowledgeNewTopics,
+                    )
+                    AppStage.Onboarding -> LaunchedEffect(newTopics) { topicsRepository.acknowledgeNewTopics() }
+                    AppStage.Splash -> Unit // keep pending until a real stage shows
+                }
+            }
         }
     }
 }
@@ -142,7 +158,7 @@ private fun MainShell() {
     }
     LaunchedEffect(scrollTick) {
         if (!navVisible) {
-            delay(1000.milliseconds)
+            delay(600.milliseconds)
             navVisible = true
         }
     }
