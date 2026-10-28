@@ -31,6 +31,14 @@ class LoginSheetViewModel(private val authRepository: AuthRepository) : ViewMode
                 } else {
                     _state.value.copy(error = "GitHub sign-in is coming soon")
                 }
+            // Apple is gated exactly like GitHub: same provider-/start URL shape on the server,
+            // same shared redirect completion. See ApiConfig.APPLE_SIGN_IN_ENABLED.
+            LoginSheetIntent.AppleSignInStarted ->
+                _state.value = if (ApiConfig.APPLE_SIGN_IN_ENABLED) {
+                    _state.value.copy(isSubmitting = true, error = null)
+                } else {
+                    _state.value.copy(error = "Apple sign-in is coming soon")
+                }
             LoginSheetIntent.GoogleSignInStarted -> _state.value = _state.value.copy(isSubmitting = true, error = null)
             // Shared by both providers: the auth server redirects back to the same mobile deep link
             // with tokens regardless of which OAuth provider was used.

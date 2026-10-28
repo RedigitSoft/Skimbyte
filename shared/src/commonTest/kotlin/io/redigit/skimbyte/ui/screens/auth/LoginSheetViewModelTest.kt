@@ -49,6 +49,15 @@ class LoginSheetViewModelTest {
     }
 
     @Test
+    fun appleSignIn_showsComingSoonMessage() = runTest {
+        val viewModel = LoginSheetViewModel(FakeAuthRepository())
+
+        viewModel.onIntent(LoginSheetIntent.AppleSignInStarted)
+
+        assertEquals("Apple sign-in is coming soon", viewModel.state.value.error)
+    }
+
+    @Test
     fun googleSignInStarted_setsSubmitting() = runTest {
         val viewModel = LoginSheetViewModel(FakeAuthRepository())
 

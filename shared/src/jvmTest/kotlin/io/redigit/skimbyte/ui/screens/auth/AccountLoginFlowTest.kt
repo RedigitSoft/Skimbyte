@@ -96,6 +96,7 @@ class AccountLoginFlowTest {
                             if (!loginSheetDismissed) {
                                 LoginSheetContent(
                                     state = LoginSheetState(),
+                                    onAppleSignInClick = {},
                                     onGithubSignInClick = {},
                                     onGoogleSignInClick = {},
                                     onNotNowClick = { loginSheetDismissed = true },

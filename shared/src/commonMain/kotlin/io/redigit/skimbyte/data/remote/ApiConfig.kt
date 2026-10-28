@@ -24,6 +24,11 @@ object ApiConfig {
     // the GitHub button will begin the real flow instead of showing "coming soon".
     const val GITHUB_SIGN_IN_ENABLED = false
 
+    // Sign in with Apple follows the same provider-/start shape as Google/GitHub. Flip once the
+    // auth server's /auth/oauth/apple/start endpoint exists (needs an Apple Services ID + key —
+    // see the Apple notes in the auth server's docs); until then the button shows "coming soon".
+    const val APPLE_SIGN_IN_ENABLED = false
+
     // Falls back to the mock network module automatically when no real API URL is configured,
     // so a fresh clone without local.properties still runs end to end on fake data.
     val DEMO_MODE = BASE_URL.isBlank()

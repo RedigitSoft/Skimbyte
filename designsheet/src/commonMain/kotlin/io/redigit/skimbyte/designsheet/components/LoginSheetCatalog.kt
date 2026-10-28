@@ -24,12 +24,14 @@ fun LoginSheetCatalogContent() {
     ) {
         LoginSheetContent(
             state = LoginSheetState(),
+            onAppleSignInClick = {},
             onGithubSignInClick = {},
             onGoogleSignInClick = {},
             onNotNowClick = {},
         )
         LoginSheetContent(
             state = LoginSheetState(error = "Google sign-in failed"),
+            onAppleSignInClick = {},
             onGithubSignInClick = {},
             onGoogleSignInClick = {},
             onNotNowClick = {},

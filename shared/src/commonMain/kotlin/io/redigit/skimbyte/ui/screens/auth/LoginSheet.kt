@@ -44,6 +44,11 @@ private fun googleSignInStartUrl(): String = oauthStartUrl("google")
 // and the redirect is handled by the one GoogleAuthCallback path. Gated by ApiConfig.GITHUB_SIGN_IN_ENABLED.
 private fun githubSignInStartUrl(): String = oauthStartUrl("github")
 
+// Sign in with Apple also goes through the server (the /start endpoint drives Apple's web OAuth
+// flow and redirects back to the shared mobile redirect URI), so no Apple SDK is needed in the
+// client on any platform. Gated by ApiConfig.APPLE_SIGN_IN_ENABLED.
+private fun appleSignInStartUrl(): String = oauthStartUrl("apple")
+
 private fun oauthStartUrl(provider: String): String =
     URLBuilder("${ApiConfig.AUTH_BASE_URL}/auth/oauth/$provider/start").apply {
         parameters.append("redirect_uri", BackendConfig.GOOGLE_REDIRECT_URI)
@@ -78,6 +83,10 @@ fun LoginSheet(
     ) {
         LoginSheetContent(
             state = state,
+            onAppleSignInClick = {
+                viewModel.onIntent(LoginSheetIntent.AppleSignInStarted)
+                if (ApiConfig.APPLE_SIGN_IN_ENABLED) openUrl(appleSignInStartUrl())
+            },
             onGithubSignInClick = {
                 viewModel.onIntent(LoginSheetIntent.GithubSignInStarted)
                 if (ApiConfig.GITHUB_SIGN_IN_ENABLED) openUrl(githubSignInStartUrl())
@@ -99,6 +108,7 @@ fun LoginSheet(
 @Composable
 fun LoginSheetContent(
     state: LoginSheetState,
+    onAppleSignInClick: () -> Unit,
     onGithubSignInClick: () -> Unit,
     onGoogleSignInClick: () -> Unit,
     onNotNowClick: () -> Unit,
@@ -120,6 +130,16 @@ fun LoginSheetContent(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+        Button(
+            onClick = onAppleSignInClick,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.onSurface,
+                contentColor = MaterialTheme.colorScheme.surface,
+            ),
+        ) {
+            Text("Continue with Apple")
+        }
         Button(
             onClick = onGithubSignInClick,
             modifier = Modifier.fillMaxWidth(),
@@ -162,6 +182,7 @@ private fun LoginSheetContentPreview() {
     SkimbyteTheme {
         LoginSheetContent(
             state = LoginSheetState(),
+            onAppleSignInClick = {},
             onGithubSignInClick = {},
             onGoogleSignInClick = {},
             onNotNowClick = {},
@@ -175,6 +196,7 @@ private fun LoginSheetContentLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         LoginSheetContent(
             state = LoginSheetState(),
+            onAppleSignInClick = {},
             onGithubSignInClick = {},
             onGoogleSignInClick = {},
             onNotNowClick = {},
@@ -188,6 +210,7 @@ private fun LoginSheetContentErrorPreview() {
     SkimbyteTheme {
         LoginSheetContent(
             state = LoginSheetState(error = "Google sign-in failed"),
+            onAppleSignInClick = {},
             onGithubSignInClick = {},
             onGoogleSignInClick = {},
             onNotNowClick = {},

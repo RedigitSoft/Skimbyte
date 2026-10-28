@@ -18,6 +18,7 @@ class LoginSheetContentTest {
             SkimbyteTheme {
                 LoginSheetContent(
                     state = LoginSheetState(),
+                    onAppleSignInClick = {},
                     onGithubSignInClick = { clicked = true },
                     onGoogleSignInClick = {},
                     onNotNowClick = {},
@@ -37,6 +38,7 @@ class LoginSheetContentTest {
             SkimbyteTheme {
                 LoginSheetContent(
                     state = LoginSheetState(),
+                    onAppleSignInClick = {},
                     onGithubSignInClick = {},
                     onGoogleSignInClick = { clicked = true },
                     onNotNowClick = {},
@@ -56,6 +58,7 @@ class LoginSheetContentTest {
             SkimbyteTheme {
                 LoginSheetContent(
                     state = LoginSheetState(),
+                    onAppleSignInClick = {},
                     onGithubSignInClick = {},
                     onGoogleSignInClick = {},
                     onNotNowClick = { clicked = true },
@@ -74,6 +77,7 @@ class LoginSheetContentTest {
             SkimbyteTheme {
                 LoginSheetContent(
                     state = LoginSheetState(error = "Google sign-in failed"),
+                    onAppleSignInClick = {},
                     onGithubSignInClick = {},
                     onGoogleSignInClick = {},
                     onNotNowClick = {},
