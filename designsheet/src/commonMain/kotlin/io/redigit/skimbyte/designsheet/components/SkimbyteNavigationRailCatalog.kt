@@ -23,10 +23,6 @@ fun SkimbyteNavigationRailCatalogContent() {
             onDestinationSelected = {},
         )
         SkimbyteNavigationRail(
-            selected = TopLevelDestination.Search,
-            onDestinationSelected = {},
-        )
-        SkimbyteNavigationRail(
             selected = TopLevelDestination.Account,
             onDestinationSelected = {},
         )
