@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,6 +42,7 @@ import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.SavedPostRow
 import io.redigit.skimbyte.ui.components.SharedElementContext
+import io.redigit.skimbyte.ui.components.SignedOutPrompt
 import io.redigit.skimbyte.ui.screens.auth.LoginSheet
 import kotlinx.coroutines.launch
 import kotlin.time.Instant
@@ -60,7 +62,10 @@ fun BookmarksListScreen(
     ) { padding ->
         when {
             state.isLoggedOut -> {
-                var showLogin by remember { mutableStateOf(true) }
+                // The sheet opens on demand from the prompt's button (the Account tab already
+                // auto-prompts once per session; nagging again on every Bookmarks visit was worse
+                // than a clear call to action).
+                var showLogin by remember { mutableStateOf(false) }
                 if (showLogin) {
                     LoginSheet(
                         onDismiss = { showLogin = false },
@@ -71,7 +76,12 @@ fun BookmarksListScreen(
                     )
                 }
                 Box(Modifier.padding(padding).fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Log in to see your bookmarks", style = MaterialTheme.typography.bodyLarge)
+                    SignedOutPrompt(
+                        icon = Icons.Filled.Bookmark,
+                        title = "Your bookmarks live here",
+                        message = "Sign in to save stories from the feed and pick them up on any device.",
+                        onSignInClick = { showLogin = true },
+                    )
                 }
             }
             state.isLoadingInitial -> Box(

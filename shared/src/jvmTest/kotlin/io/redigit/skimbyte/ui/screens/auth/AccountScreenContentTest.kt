@@ -6,6 +6,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import kotlin.test.Test
@@ -23,6 +24,7 @@ class AccountScreenContentTest {
                 AccountScreen(
                     state = AccountState(isLoggedIn = true),
                     onIntent = {},
+                    onSignInClick = {},
                     onSettingsClick = {},
                     onAvatarClick = { clicked = true },
                     onAvatarEditClick = {},
@@ -45,6 +47,7 @@ class AccountScreenContentTest {
                 AccountScreen(
                     state = AccountState(isLoggedIn = true),
                     onIntent = {},
+                    onSignInClick = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = { clicked = true },
@@ -67,6 +70,7 @@ class AccountScreenContentTest {
                 AccountScreen(
                     state = AccountState(isLoggedIn = true),
                     onIntent = {},
+                    onSignInClick = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -88,6 +92,7 @@ class AccountScreenContentTest {
                 AccountScreen(
                     state = AccountState(isLoggedIn = true, avatarError = "Could not update avatar"),
                     onIntent = {},
+                    onSignInClick = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -107,6 +112,7 @@ class AccountScreenContentTest {
                 AccountScreen(
                     state = AccountState(isLoggedIn = true, bannerError = "Could not update banner"),
                     onIntent = {},
+                    onSignInClick = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -127,6 +133,7 @@ class AccountScreenContentTest {
                 AccountScreen(
                     state = AccountState(isLoggedIn = true),
                     onIntent = {},
+                    onSignInClick = {},
                     onSettingsClick = { clicked = true },
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -149,6 +156,7 @@ class AccountScreenContentTest {
                 AccountScreen(
                     state = AccountState(isLoggedIn = true),
                     onIntent = { capturedIntent = it },
+                    onSignInClick = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -172,7 +180,7 @@ class AccountScreenContentTest {
                 AccountScreen(
                     state = AccountState(isLoggedIn = true),
                     onIntent = { capturedIntent = it },
-                    onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
+                    onSignInClick = {}, onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
                 )
             }
         }
@@ -192,6 +200,7 @@ class AccountScreenContentTest {
                 AccountScreen(
                     state = AccountState(isLoggedIn = true),
                     onIntent = { capturedIntent = it },
+                    onSignInClick = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -216,6 +225,7 @@ class AccountScreenContentTest {
                 AccountScreen(
                     state = AccountState(isLoggedIn = false),
                     onIntent = {},
+                    onSignInClick = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -225,5 +235,52 @@ class AccountScreenContentTest {
             }
         }
         onNodeWithText("You're not signed in").assertExists()
+    }
+
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
+    @Test
+    fun loggedOut_settingsStaysAvailable_logoutDoesNot() = runComposeUiTest {
+        var settingsClicked = false
+        setContent {
+            SkimbyteTheme {
+                AccountScreen(
+                    state = AccountState(isLoggedIn = false),
+                    onIntent = {},
+                    onSignInClick = {},
+                    onSettingsClick = { settingsClicked = true },
+                    onAvatarClick = {},
+                    onAvatarEditClick = {},
+                    onBannerClick = {},
+                    onBannerEditClick = {},
+                )
+            }
+        }
+        // Settings are device-local preferences: logging out must not lock the user out of them.
+        // The signed-out prompt pushes the row below the fold, so bring it into view first.
+        onNodeWithText("Settings").performScrollTo().performClick()
+        assertEquals(true, settingsClicked)
+        onNodeWithTag("logoutRow").assertDoesNotExist()
+    }
+
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
+    @Test
+    fun loggedOut_signInButton_invokesOnSignInClick() = runComposeUiTest {
+        var signInClicked = false
+        setContent {
+            SkimbyteTheme {
+                AccountScreen(
+                    state = AccountState(isLoggedIn = false),
+                    onIntent = {},
+                    onSignInClick = { signInClicked = true },
+                    onSettingsClick = {},
+                    onAvatarClick = {},
+                    onAvatarEditClick = {},
+                    onBannerClick = {},
+                    onBannerEditClick = {},
+                )
+            }
+        }
+        onNodeWithTag("signedOutPromptSignIn").performClick()
+        assertEquals(true, signInClicked)
     }
 }

@@ -15,6 +15,7 @@ import io.redigit.skimbyte.designsheet.components.SavedPostRowCatalogContent
 import io.redigit.skimbyte.designsheet.components.SearchScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SelectionControlsCatalogContent
 import io.redigit.skimbyte.designsheet.components.SettingsScreenCatalogContent
+import io.redigit.skimbyte.designsheet.components.SignedOutPromptCatalogContent
 import io.redigit.skimbyte.designsheet.components.SkimbyteBottomNavBarCatalogContent
 import io.redigit.skimbyte.designsheet.components.SkimbyteNavigationRailCatalogContent
 import io.redigit.skimbyte.designsheet.components.StackedCardBrowserCatalogContent
@@ -50,6 +51,7 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("navigation-rail", "Navigation rail", "Navigation") { SkimbyteNavigationRailCatalogContent() },
     CatalogItem("saved-post-row", "Saved post row", "Bookmarks") { SavedPostRowCatalogContent() },
     CatalogItem("login-sheet", "Login sheet", "Bookmarks") { LoginSheetCatalogContent() },
+    CatalogItem("signed-out-prompt", "Signed-out prompt", "Bookmarks") { SignedOutPromptCatalogContent() },
     CatalogItem("account-screen", "Account", "Bookmarks") { AccountScreenCatalogContent() },
     CatalogItem("profile-images", "Avatar & banner", "Account") { ProfileImagesCatalogContent() },
     CatalogItem("image-cropper", "Image cropper", "Account") { ImageCropScreenCatalogContent() },

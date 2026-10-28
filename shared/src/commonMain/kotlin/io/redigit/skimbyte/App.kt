@@ -50,7 +50,6 @@ import io.redigit.skimbyte.data.repositories.TopicsRepository
 import io.redigit.skimbyte.ui.components.NewTopicsDialog
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsViewModel
-import io.redigit.skimbyte.ui.screens.onboarding.SplashScreen
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsScreen
 import io.redigit.skimbyte.ui.screens.onboarding.TutorialOverlay
 import io.redigit.skimbyte.theme.SkimbyteTheme
@@ -64,7 +63,6 @@ import org.koin.dsl.koinConfiguration
 import kotlin.time.Duration.Companion.milliseconds
 
 sealed interface AppStage {
-    data object Splash : AppStage
     data object Onboarding : AppStage
     data object Main : AppStage
 }
@@ -91,9 +89,13 @@ fun App() {
         val themeMode by themeModeStore.themeModeFlow.collectAsState()
         SkimbyteTheme(themeMode = themeMode) {
             val topicPreferencesStore = koinInject<TopicPreferencesStore>()
-            var stage by remember { mutableStateOf<AppStage>(AppStage.Splash) }
-            LaunchedEffect(Unit) {
-                stage = if (topicPreferencesStore.hasCompletedOnboarding()) AppStage.Main else AppStage.Onboarding
+            // The onboarding check is a synchronous settings read, so the first stage is decided
+            // before the first frame - no in-app splash. (On Android the system splash screen
+            // already covers startup; a Compose splash after it showed as a second splash.)
+            var stage by remember {
+                mutableStateOf<AppStage>(
+                    if (topicPreferencesStore.hasCompletedOnboarding()) AppStage.Main else AppStage.Onboarding,
+                )
             }
             AnimatedContent(
                 targetState = stage,
@@ -101,7 +103,6 @@ fun App() {
                 label = "appStage",
             ) { current ->
                 when (current) {
-                    AppStage.Splash -> SplashScreen()
                     AppStage.Onboarding -> {
                         val topicsViewModel = koinViewModel<TopicsViewModel> { parametersOf(false) }
                         val uiState by topicsViewModel.state.collectAsState()
@@ -141,7 +142,6 @@ fun App() {
                         onDismiss = topicsRepository::acknowledgeNewTopics,
                     )
                     AppStage.Onboarding -> LaunchedEffect(newTopics) { topicsRepository.acknowledgeNewTopics() }
-                    AppStage.Splash -> Unit // keep pending until a real stage shows
                 }
             }
         }

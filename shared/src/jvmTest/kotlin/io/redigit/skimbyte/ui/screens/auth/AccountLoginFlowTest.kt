@@ -84,6 +84,7 @@ class AccountLoginFlowTest {
                             AccountScreen(
                                 state = AccountState(isLoggedIn = false),
                                 onIntent = {},
+                                onSignInClick = {},
                                 onSettingsClick = {},
                                 onAvatarClick = {},
                                 onAvatarEditClick = {},

@@ -35,12 +35,13 @@ class AccountScreenshotTest {
         followedTopics = Topic.selectable.take(5),
     )
 
-    private fun content(dark: Boolean) {
+    private fun content(dark: Boolean, state: AccountState = richState) {
         composeTestRule.setContent {
             SkimbyteTheme(darkTheme = dark) {
                 AccountScreen(
-                    state = richState,
+                    state = state,
                     onIntent = {},
+                    onSignInClick = {},
                     onSettingsClick = {},
                     onAvatarClick = {},
                     onAvatarEditClick = {},
@@ -60,6 +61,18 @@ class AccountScreenshotTest {
     @Test
     fun loggedInLight() {
         content(dark = false)
+        composeTestRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun signedOutDark() {
+        content(dark = true, state = AccountState(isLoggedIn = false))
+        composeTestRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun signedOutLight() {
+        content(dark = false, state = AccountState(isLoggedIn = false))
         composeTestRule.onRoot().captureRoboImage()
     }
 }

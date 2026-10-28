@@ -31,6 +31,7 @@ fun AccountScreenCatalogContent() {
                 followedTopics = Topic.selectable.take(5),
             ),
             onIntent = {},
+            onSignInClick = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},

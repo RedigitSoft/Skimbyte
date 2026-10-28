@@ -64,6 +64,7 @@ import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.AvatarWithEditBadge
 import io.redigit.skimbyte.ui.components.BannerImage
+import io.redigit.skimbyte.ui.components.SignedOutPrompt
 import io.redigit.skimbyte.util.rememberImagePickerLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -72,6 +73,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AccountScreen(
     state: AccountState,
     onIntent: (AccountIntent) -> Unit,
+    onSignInClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onAvatarClick: () -> Unit,
     onAvatarEditClick: () -> Unit,
@@ -146,45 +148,56 @@ fun AccountScreen(
                 if (state.followedTopics.isNotEmpty()) {
                     FollowedTopicsSection(topics = state.followedTopics)
                 }
+            } else {
+                SignedOutPrompt(
+                    icon = Icons.Filled.AccountCircle,
+                    title = "You're not signed in",
+                    message = "Sign in to sync your profile, bookmarks, and reading stats across devices.",
+                    onSignInClick = onSignInClick,
+                )
+            }
 
-                EyebrowText("Feed & app config", modifier = Modifier.padding(start = 4.dp))
-                Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
-                    Column {
-                        AccountActionRow(
-                            icon = Icons.Outlined.Schedule,
-                            label = "Daily digest time",
-                            supporting = "Scheduled brief delivery",
-                            trailingValue = state.digestTime,
-                            onClick = { onIntent(AccountIntent.DigestTimeCycled) },
-                        )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        AccountActionRow(
-                            icon = Icons.Filled.Notes,
-                            label = "Summary length",
-                            supporting = "Reading depth",
-                            trailingValue = state.summaryLength.label,
-                            onClick = { onIntent(AccountIntent.SummaryLengthCycled) },
-                        )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        AccountActionRow(
-                            icon = Icons.Filled.Notifications,
-                            label = "Notifications",
-                            supporting = "Breaking releases & CVEs",
-                            trailingValue = if (state.notificationsEnabled) "On" else "Off",
-                            onClick = { onIntent(AccountIntent.NotificationsToggled(!state.notificationsEnabled)) },
-                        )
-                    }
+            // Feed preferences and Settings are device-local and stay available signed out —
+            // only the profile itself needs an account.
+            EyebrowText("Feed & app config", modifier = Modifier.padding(start = 4.dp))
+            Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
+                Column {
+                    AccountActionRow(
+                        icon = Icons.Outlined.Schedule,
+                        label = "Daily digest time",
+                        supporting = "Scheduled brief delivery",
+                        trailingValue = state.digestTime,
+                        onClick = { onIntent(AccountIntent.DigestTimeCycled) },
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    AccountActionRow(
+                        icon = Icons.Filled.Notes,
+                        label = "Summary length",
+                        supporting = "Reading depth",
+                        trailingValue = state.summaryLength.label,
+                        onClick = { onIntent(AccountIntent.SummaryLengthCycled) },
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    AccountActionRow(
+                        icon = Icons.Filled.Notifications,
+                        label = "Notifications",
+                        supporting = "Breaking releases & CVEs",
+                        trailingValue = if (state.notificationsEnabled) "On" else "Off",
+                        onClick = { onIntent(AccountIntent.NotificationsToggled(!state.notificationsEnabled)) },
+                    )
                 }
+            }
 
-                EyebrowText("Account", modifier = Modifier.padding(start = 4.dp))
-                Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
-                    Column {
-                        AccountActionRow(
-                            icon = Icons.Filled.Settings,
-                            label = "Settings",
-                            supporting = "Theme, display & preferences",
-                            onClick = onSettingsClick,
-                        )
+            EyebrowText("Account", modifier = Modifier.padding(start = 4.dp))
+            Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
+                Column {
+                    AccountActionRow(
+                        icon = Icons.Filled.Settings,
+                        label = "Settings",
+                        supporting = "Theme, display & preferences",
+                        onClick = onSettingsClick,
+                    )
+                    if (state.isLoggedIn) {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         AccountActionRow(
                             icon = Icons.AutoMirrored.Filled.Logout,
@@ -197,8 +210,6 @@ fun AccountScreen(
                         )
                     }
                 }
-            } else {
-                AccountSignedOutState()
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -432,28 +443,6 @@ private fun AccountErrorBanner(message: String) {
     }
 }
 
-@Composable
-private fun AccountSignedOutState(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxWidth().padding(vertical = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Icon(
-            Icons.Filled.AccountCircle,
-            contentDescription = null,
-            modifier = Modifier.size(56.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text("You're not signed in", style = MaterialTheme.typography.titleMedium)
-        Text(
-            text = "Log in to manage your profile and settings.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-}
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AccountRoute(
@@ -479,6 +468,9 @@ fun AccountRoute(
     AccountScreen(
         state = state,
         onIntent = viewModel::onIntent,
+        // Re-arm the login sheet: the signed-out prompt must always be able to reopen it after
+        // an earlier dismissal, or signing in becomes unreachable from this tab.
+        onSignInClick = { loginSheetDismissed = false },
         onSettingsClick = onSettingsClick,
         onAvatarClick = onAvatarClick,
         onAvatarEditClick = { editing = ImageEditTarget.Avatar },
@@ -540,6 +532,7 @@ private fun AccountScreenLoggedOutPreview() {
         AccountScreen(
             state = AccountState(isLoggedIn = false),
             onIntent = {},
+            onSignInClick = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -557,6 +550,7 @@ private fun AccountScreenLoggedInPreview() {
         AccountScreen(
             state = richAccountState,
             onIntent = {},
+            onSignInClick = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -574,6 +568,7 @@ private fun AccountScreenLoggedInLightPreview() {
         AccountScreen(
             state = richAccountState,
             onIntent = {},
+            onSignInClick = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -594,6 +589,7 @@ private fun AccountScreenWithImagesPreview() {
                 bannerUrl = "https://picsum.photos/seed/skimbyte-banner/800/300",
             ),
             onIntent = {},
+            onSignInClick = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
@@ -611,6 +607,7 @@ private fun AccountScreenWithErrorPreview() {
         AccountScreen(
             state = richAccountState.copy(avatarError = "Could not update avatar"),
             onIntent = {},
+            onSignInClick = {},
             onSettingsClick = {},
             onAvatarClick = {},
             onAvatarEditClick = {},
