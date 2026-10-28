@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -88,7 +89,9 @@ fun AccountScreen(
         modifier = modifier.fillMaxSize(),
     ) {
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        // The shell no longer consumes the top inset (see MainShell); keep this screen's banner
+        // below the status bar.
+        modifier = Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -119,10 +122,13 @@ fun AccountScreen(
             state.bannerError?.let { AccountErrorBanner(message = it) }
 
             if (state.isLoggedIn) {
-                if (state.displayName != null) {
+                // Until the server returns a display name, the (real, userId-derived) handle
+                // stands in as the identity line rather than showing a fake name.
+                (state.displayName ?: state.handle)?.let { identityName ->
                     ProfileIdentityHeader(
-                        displayName = state.displayName,
-                        handle = state.handle,
+                        displayName = identityName,
+                        handle = state.handle.takeIf { state.displayName != null },
+                        email = state.email,
                         bio = state.bio,
                         isVerified = state.isVerified,
                     )
@@ -142,7 +148,7 @@ fun AccountScreen(
                 }
 
                 EyebrowText("Feed & app config", modifier = Modifier.padding(start = 4.dp))
-                Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
+                Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                     Column {
                         AccountActionRow(
                             icon = Icons.Outlined.Schedule,
@@ -151,7 +157,7 @@ fun AccountScreen(
                             trailingValue = state.digestTime,
                             onClick = { onIntent(AccountIntent.DigestTimeCycled) },
                         )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         AccountActionRow(
                             icon = Icons.Filled.Notes,
                             label = "Summary length",
@@ -159,7 +165,7 @@ fun AccountScreen(
                             trailingValue = state.summaryLength.label,
                             onClick = { onIntent(AccountIntent.SummaryLengthCycled) },
                         )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         AccountActionRow(
                             icon = Icons.Filled.Notifications,
                             label = "Notifications",
@@ -171,7 +177,7 @@ fun AccountScreen(
                 }
 
                 EyebrowText("Account", modifier = Modifier.padding(start = 4.dp))
-                Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
+                Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                     Column {
                         AccountActionRow(
                             icon = Icons.Filled.Settings,
@@ -179,7 +185,7 @@ fun AccountScreen(
                             supporting = "Theme, display & preferences",
                             onClick = onSettingsClick,
                         )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         AccountActionRow(
                             icon = Icons.AutoMirrored.Filled.Logout,
                             label = "Log out",
@@ -220,11 +226,12 @@ fun AccountScreen(
     }
 }
 
-/** Display name (with optional verified badge), handle, and bio. */
+/** Display name (with optional verified badge), handle, email, and bio. */
 @Composable
 private fun ProfileIdentityHeader(
     displayName: String,
     handle: String?,
+    email: String?,
     bio: String?,
     isVerified: Boolean,
     modifier: Modifier = Modifier,
@@ -248,6 +255,9 @@ private fun ProfileIdentityHeader(
         if (handle != null) {
             Text(handle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
         }
+        if (email != null) {
+            Text(email, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
         if (bio != null) {
             Text(
                 bio,
@@ -267,15 +277,15 @@ private fun ProfileStatsRow(
     streakDays: Int?,
     modifier: Modifier = Modifier,
 ) {
-    Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier.fillMaxWidth()) {
+    Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             StatCell(value = readCount?.toString() ?: "–", label = "Read", modifier = Modifier.weight(1f))
-            VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+            VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
             StatCell(value = savedCount?.toString() ?: "–", label = "Saved", modifier = Modifier.weight(1f))
-            VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+            VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
             StatCell(value = streakDays?.let { "${it}d" } ?: "–", label = "Streak", modifier = Modifier.weight(1f))
         }
     }
@@ -295,7 +305,7 @@ private fun WeeklyVelocityChart(weeklyReads: List<Int>, modifier: Modifier = Mod
     val dayLabels = listOf("M", "T", "W", "T", "F", "S", "S")
     val reads = weeklyReads.take(7)
     val maxReads = (reads.maxOrNull() ?: 0).coerceAtLeast(1)
-    Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier.fillMaxWidth()) {
+    Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             EyebrowText("Weekly reading velocity")
             Row(
@@ -490,7 +500,7 @@ fun AccountRoute(
         ImageEditSheet(
             onDismiss = { editing = null },
             // Camera capture isn't available yet (the ImagePicker is gallery-only), so "Take photo"
-            // falls back to the gallery as a placeholder - see SERVER_API.md (#3).
+            // falls back to the gallery as a placeholder.
             onTakePhoto = { editing = null; pick() },
             onChooseFromGallery = { editing = null; pick() },
             onRemove = if (hasImage) {

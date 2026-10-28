@@ -6,13 +6,14 @@ import io.redigit.skimbyte.data.remote.ApiConfig
 /**
  * The logged-in user's profile. [userId], [avatarUrl] and [bannerUrl] come from the live `/me`
  * endpoint today; the remaining fields back the profile screen's identity header, stats, and
- * reading-velocity chart and are not yet returned by the server (see SERVER_API.md) - they stay
+ * reading-velocity chart and are not yet returned by the server - they stay
  * null/empty until it does, at which point they flow through [toDomain] unchanged.
  */
 data class Profile(
     val userId: String,
     val avatarUrl: String?,
     val bannerUrl: String?,
+    val email: String? = null,
     val displayName: String? = null,
     val handle: String? = null,
     val bio: String? = null,
@@ -27,6 +28,7 @@ fun MeResponseDto.toDomain(): Profile = Profile(
     userId = userId,
     avatarUrl = avatarUrl?.let(ApiConfig::resolveSpacesUrl),
     bannerUrl = bannerUrl?.let(ApiConfig::resolveSpacesUrl),
+    email = email,
     displayName = displayName,
     handle = handle,
     bio = bio,

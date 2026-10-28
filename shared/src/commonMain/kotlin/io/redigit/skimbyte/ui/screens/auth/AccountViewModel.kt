@@ -16,21 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-/**
- * Placeholder profile values shown until the `/me` endpoint returns the real ones. Centralized and
- * clearly named so they're trivial to delete once the server fields land - see SERVER_API.md for
- * the exact contract the backend needs to provide.
- */
-internal object ProfilePlaceholders {
-    const val DISPLAY_NAME = "Skimbyte Reader"
-    const val HANDLE = "@skimbyte"
-    const val BIO = "Reading the daily developer brief on Skimbyte."
-    const val VERIFIED = true
-    const val READ_COUNT = 142
-    const val STREAK_DAYS = 14
-    val WEEKLY_READS = listOf(8, 12, 6, 14, 20, 9, 11)
-}
-
 class AccountViewModel(
     private val authRepository: AuthRepository,
     private val profileRepository: ProfileRepository,
@@ -58,22 +43,22 @@ class AccountViewModel(
                     loggedIn = loggedIn,
                     avatarUrl = profile?.avatarUrl,
                     bannerUrl = profile?.bannerUrl,
-                    displayName = if (loggedIn) profile?.displayName ?: ProfilePlaceholders.DISPLAY_NAME else null,
+                    // Only real data is surfaced: fields the server doesn't return yet stay null
+                    // and their profile sections simply don't render. The handle and saved count
+                    // are derived from data we do have.
+                    displayName = if (loggedIn) profile?.displayName else null,
                     handle = if (loggedIn) {
-                        profile?.handle ?: profile?.userId?.let { "@" + it.take(8) } ?: ProfilePlaceholders.HANDLE
+                        profile?.handle ?: profile?.userId?.let { "@" + it.take(8) }
                     } else {
                         null
                     },
-                    bio = if (loggedIn) profile?.bio ?: ProfilePlaceholders.BIO else null,
-                    isVerified = loggedIn && (profile?.isVerified ?: ProfilePlaceholders.VERIFIED),
-                    readCount = if (loggedIn) profile?.readCount ?: ProfilePlaceholders.READ_COUNT else null,
+                    bio = if (loggedIn) profile?.bio else null,
+                    email = if (loggedIn) profile?.email else null,
+                    isVerified = loggedIn && profile?.isVerified == true,
+                    readCount = if (loggedIn) profile?.readCount else null,
                     savedCount = if (loggedIn) profile?.savedCount ?: bookmarks.size else null,
-                    streakDays = if (loggedIn) profile?.streakDays ?: ProfilePlaceholders.STREAK_DAYS else null,
-                    weeklyReads = if (loggedIn) {
-                        profile?.weeklyReads?.ifEmpty { null } ?: ProfilePlaceholders.WEEKLY_READS
-                    } else {
-                        emptyList()
-                    },
+                    streakDays = if (loggedIn) profile?.streakDays else null,
+                    weeklyReads = if (loggedIn) profile?.weeklyReads.orEmpty() else emptyList(),
                     followedTopics = if (loggedIn) topics.toList() else emptyList(),
                 )
             }.collect { d ->
@@ -84,6 +69,7 @@ class AccountViewModel(
                     bannerUrl = d.bannerUrl,
                     displayName = d.displayName,
                     handle = d.handle,
+                    email = d.email,
                     bio = d.bio,
                     isVerified = d.isVerified,
                     readCount = d.readCount,
@@ -179,6 +165,7 @@ class AccountViewModel(
         val bannerUrl: String?,
         val displayName: String?,
         val handle: String?,
+        val email: String?,
         val bio: String?,
         val isVerified: Boolean,
         val readCount: Int?,

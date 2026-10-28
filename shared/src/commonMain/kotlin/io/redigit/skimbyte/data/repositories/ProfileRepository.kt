@@ -60,7 +60,7 @@ class ProfileRepositoryImpl(
     override suspend fun uploadBanner(image: PickedImage): Result<Unit> = upload(TYPE_BANNER, image)
 
     // Optimistic/local only: there is no delete endpoint yet, so this clears the URL in-memory and
-    // does not persist across a reload. Point at DELETE /me/avatar|banner once it exists (SERVER_API.md).
+    // does not persist across a reload. Point at DELETE /me/avatar|banner once it exists.
     override suspend fun removeAvatar(): Result<Unit> = runCatching {
         avatarVersion = null
         _profile.value = _profile.value?.copy(avatarUrl = null)

@@ -22,9 +22,10 @@ data class AccountState(
     val bannerError: String? = null,
     // Identity + reading stats shown on the profile screen. Populated by AccountViewModel from the
     // real profile where available (handle derived from userId, saved count from bookmarks, followed
-    // topics from preferences) and from placeholders otherwise (see ProfilePlaceholders / SERVER_API.md).
+    // topics from preferences); fields the server doesn't return yet stay null and don't render.
     val displayName: String? = null,
     val handle: String? = null,
+    val email: String? = null,
     val bio: String? = null,
     val isVerified: Boolean = false,
     val readCount: Int? = null,
