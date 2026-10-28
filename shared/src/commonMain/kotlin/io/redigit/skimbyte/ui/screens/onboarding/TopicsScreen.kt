@@ -92,7 +92,7 @@ private fun TopicChip(
         label = "topicChipContent",
     )
     val border by animateColorAsState(
-        if (isSelected) Color.Transparent else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+        if (isSelected) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
         label = "topicChipBorder",
     )
     Surface(
