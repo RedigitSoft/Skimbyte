@@ -18,4 +18,20 @@ class ApiConfigTest {
     fun `already absolute url is passed through unchanged`() {
         assertEquals("https://other.cdn/x.jpg", ApiConfig.resolveSpacesUrl("https://other.cdn/x.jpg"))
     }
+
+    @Test
+    fun `relative assets path is prefixed with the asset base url`() {
+        assertEquals(
+            "${ApiConfig.ASSET_BASE_URL}/assets/placeholder-kotlin.png",
+            ApiConfig.resolveImageUrl("/assets/placeholder-kotlin.png"),
+        )
+    }
+
+    @Test
+    fun `absolute image url is passed through unchanged`() {
+        assertEquals(
+            "https://blog.jetbrains.com/x.png",
+            ApiConfig.resolveImageUrl("https://blog.jetbrains.com/x.png"),
+        )
+    }
 }

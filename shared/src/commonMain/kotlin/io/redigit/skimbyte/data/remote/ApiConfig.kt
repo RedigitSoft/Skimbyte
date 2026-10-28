@@ -5,7 +5,11 @@ object ApiConfig {
     // BackendConfig, same as AUTH_BASE_URL below. See :shared's generateAuthConfig Gradle task
     // and local.properties.example (key: skimbyteApiBaseUrl).
     const val BASE_URL = BackendConfig.API_BASE_URL
-    const val ASSET_BASE_URL = BASE_URL
+
+    // Prepended to relative imageUrl paths from the API ("/assets/placeholder-kotlin.png") by
+    // resolveImageUrl below. Its own local.properties key (skimbyteAssetBaseUrl) so assets can
+    // move to a CDN without touching the API base; defaults to BASE_URL when unset.
+    const val ASSET_BASE_URL = BackendConfig.ASSET_BASE_URL
 
     // The auth server is live independent of DEMO_MODE — see AuthModule's dedicated HttpClient.
     const val AUTH_BASE_URL = BackendConfig.AUTH_BASE_URL
@@ -17,7 +21,7 @@ object ApiConfig {
     // GitHub OAuth start endpoint (/auth/oauth/github/start) isn't live on the auth server yet. The
     // client flow is fully scaffolded (start URL + shared redirect handling, see GoogleAuthCallback
     // which bridges any provider's token redirect); flip this to true once the endpoint exists and
-    // the GitHub button will begin the real flow instead of showing "coming soon". See SERVER_API.md.
+    // the GitHub button will begin the real flow instead of showing "coming soon".
     const val GITHUB_SIGN_IN_ENABLED = false
 
     // Falls back to the mock network module automatically when no real API URL is configured,

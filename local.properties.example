@@ -10,11 +10,16 @@ googleAuthRedirectUri=app://callback
 # Leave blank to run the app against the built-in demo/mock data instead of a real backend.
 skimbyteApiBaseUrl=
 
+# Base URL prepended to relative image paths the posts API returns (e.g.
+# /assets/placeholder-kotlin.png). Defaults to skimbyteApiBaseUrl when unset — only
+# set this if the placeholder assets move off the API host (e.g. to a CDN/bucket).
+#skimbyteAssetBaseUrl=
+
 # the auth server (auth-server) product id for this app — provisioned once via POST /admin/products.
 # Sent on every register/login call so the auth server knows which app the auth event is for.
 skimbyteProductId=
 
-# DigitalOcean Spaces CDN domain for avatar/banner images — defaults to the real domain below
-# (DO's own CDN endpoint for the app's Spaces bucket; cdn.example.com's DNS was never set up).
-# Override only if pointing at a different CDN (e.g. staging).
-#spacesCdnBaseUrl=
+# DigitalOcean Spaces CDN domain for avatar/banner images — the bucket's CDN endpoint
+# (copy the real value from the deployment notes; kept out of the repo like the other
+# endpoints above). Leave unset to disable remote avatar/banner images.
+spacesCdnBaseUrl=

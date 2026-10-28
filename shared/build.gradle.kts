@@ -155,6 +155,11 @@ val generateAuthConfig by tasks.registering {
         val authBaseUrl = props.getProperty("authBaseUrl", "")
         val googleRedirectUri = props.getProperty("googleAuthRedirectUri", "")
         val skimbyteApiBaseUrl = props.getProperty("skimbyteApiBaseUrl", "")
+        // Host for relative image paths the API returns (e.g. /assets/placeholder-kotlin.png).
+        // Defaults to the API base itself — override only if assets move to a CDN/bucket.
+        val skimbyteAssetBaseUrl = props.getProperty("skimbyteAssetBaseUrl", skimbyteApiBaseUrl)
+        // DO Spaces CDN domain for avatar/banner images — kept out of committed source like the
+        // other endpoints (see local.properties.example); blank disables remote avatar images.
         val spacesCdnBaseUrl = props.getProperty("spacesCdnBaseUrl", "")
         val productId = props.getProperty("skimbyteProductId", "")
 
@@ -171,6 +176,9 @@ val generateAuthConfig by tasks.registering {
                 // Blank means no live posts/bookmarks API is configured — ApiConfig.DEMO_MODE
                 // falls back to the mock network module automatically in that case.
                 const val API_BASE_URL = "$skimbyteApiBaseUrl"
+                // Base for relative imageUrl paths ("/assets/…") — skimbyteAssetBaseUrl in
+                // local.properties, falling back to API_BASE_URL when unset.
+                const val ASSET_BASE_URL = "$skimbyteAssetBaseUrl"
                 const val SPACES_CDN_BASE_URL = "$spacesCdnBaseUrl"
                 // the auth server's product id for this app — provisioned via POST /admin/products.
                 const val PRODUCT_ID = "$productId"
