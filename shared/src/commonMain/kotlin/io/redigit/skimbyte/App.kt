@@ -10,9 +10,12 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,12 +32,15 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.network.ktor3.KtorNetworkFetcherFactory
+import coil3.request.crossfade
 import kotlinx.coroutines.delay
 import androidx.window.core.layout.WindowSizeClass
 import io.redigit.skimbyte.ui.screens.bookmarks.BookmarksNavHost
 import io.redigit.skimbyte.di.appModule
 import io.redigit.skimbyte.ui.screens.feed.FeedNavHost
-import io.redigit.skimbyte.ui.screens.feed.SearchNavHost
 import io.redigit.skimbyte.ui.navigation.TopLevelDestination
 import io.redigit.skimbyte.ui.navigation.SkimbyteBottomNavBar
 import io.redigit.skimbyte.ui.navigation.SkimbyteNavigationRail
@@ -66,6 +72,16 @@ sealed interface AppStage {
 @Composable
 @Preview
 fun App() {
+    // Coil's Ktor network fetcher is not auto-registered (unlike the OkHttp artifact), so without
+    // this factory AsyncImage has no network support at all and every remote image silently shows
+    // its placeholder. A plain HttpClient (default engine per platform) is used on purpose: the
+    // app's authenticated client would attach bearer tokens to third-party image hosts.
+    setSingletonImageLoaderFactory { context ->
+        ImageLoader.Builder(context)
+            .components { add(KtorNetworkFetcherFactory()) }
+            .crossfade(true)
+            .build()
+    }
     KoinApplication(configuration = koinConfiguration { modules(appModule) }) {
         // Eagerly create the topics repository: its init fetches GET /v1/topics on every app open
         // and reconciles the result with the persisted catalogue, so new server-side topics are
@@ -172,6 +188,11 @@ private fun MainShell() {
         if (!isCompact) SkimbyteNavigationRail(selected, onDestinationSelected)
         Scaffold(
             modifier = Modifier.weight(1f),
+            // The top inset is deliberately left unconsumed so detail pages can draw edge-to-edge
+            // under the status bar; tab root screens apply statusBarsPadding (or a TopAppBar,
+            // which insets itself) individually.
+            contentWindowInsets = ScaffoldDefaults.contentWindowInsets
+                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
             floatingActionButton = {
                 AnimatedVisibility(
                     visible = isCompact && isShowingRoot && navVisible,
@@ -195,7 +216,6 @@ private fun MainShell() {
                     when (selected) {
                         TopLevelDestination.Feed -> FeedNavHost(onRootChanged = { isShowingRoot = it })
                         TopLevelDestination.Bookmarks -> BookmarksNavHost(onRootChanged = { isShowingRoot = it })
-                        TopLevelDestination.Search -> SearchNavHost(onRootChanged = { isShowingRoot = it })
                         TopLevelDestination.Account -> AccountNavHost(onRootChanged = { isShowingRoot = it })
                     }
                 }

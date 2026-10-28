@@ -74,13 +74,13 @@ fun PostCard(
     ) {
         val imageModifier = if (sharedTransition != null) {
             with(sharedTransition.scope) {
-                Modifier.fillMaxWidth().height(200.dp).sharedElement(
+                Modifier.fillMaxWidth().height(300.dp).sharedElement(
                     rememberSharedContentState(key = "post-image-${post.id}"),
                     sharedTransition.animatedVisibilityScope,
                 )
             }
         } else {
-            Modifier.fillMaxWidth().height(200.dp)
+            Modifier.fillMaxWidth().height(300.dp)
         }
         Box(modifier = imageModifier) {
             if (post.imageUrl != null) {

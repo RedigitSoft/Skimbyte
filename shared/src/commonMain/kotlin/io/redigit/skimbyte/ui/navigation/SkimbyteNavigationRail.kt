@@ -69,7 +69,7 @@ private fun SkimbyteNavigationRailBookmarksPreview() {
 private fun SkimbyteNavigationRailSearchPreview() {
     SkimbyteTheme {
         SkimbyteNavigationRail(
-            selected = TopLevelDestination.Search,
+            selected = TopLevelDestination.Account,
             onDestinationSelected = {},
         )
     }

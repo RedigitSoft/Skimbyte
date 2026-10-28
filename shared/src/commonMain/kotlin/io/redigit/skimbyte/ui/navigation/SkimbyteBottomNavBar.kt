@@ -115,7 +115,6 @@ private fun NavDestinationItem(
 internal fun TopLevelDestination.icon() = when (this) {
     TopLevelDestination.Feed -> Icons.Filled.Home
     TopLevelDestination.Bookmarks -> Icons.Filled.Bookmark
-    TopLevelDestination.Search -> Icons.Filled.Search
     TopLevelDestination.Account -> Icons.Filled.Person
 }
 

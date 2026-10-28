@@ -1,6 +1,7 @@
 package io.redigit.skimbyte.ui.components
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -36,6 +37,15 @@ class PostDetailScreenshotTest {
         isBookmarked = true,
     )
 
+    // The markdown body renders asynchronously; capture only once it's actually on screen, or the
+    // golden intermittently records/verifies without the summary text.
+    private fun awaitMarkdownBody() {
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.onAllNodes(hasText("reflection bugs", substring = true))
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+    }
+
     @Test
     fun darkState() {
         composeTestRule.setContent {
@@ -43,6 +53,7 @@ class PostDetailScreenshotTest {
                 PostDetailScreen(post = post, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onBack = {})
             }
         }
+        awaitMarkdownBody()
         composeTestRule.onRoot().captureRoboImage()
     }
 
@@ -53,6 +64,7 @@ class PostDetailScreenshotTest {
                 PostDetailScreen(post = post, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onBack = {})
             }
         }
+        awaitMarkdownBody()
         composeTestRule.onRoot().captureRoboImage()
     }
 }

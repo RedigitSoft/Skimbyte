@@ -10,19 +10,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,22 +56,9 @@ fun PostDetailScreen(
     modifier: Modifier = Modifier,
     sharedTransition: SharedElementContext? = null,
 ) {
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                expandedHeight = 48.dp,
-            )
-        },
-    ) { padding ->
+    Box(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         Column(
-            modifier = Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         ) {
             val imageModifier = if (sharedTransition != null) {
                 with(sharedTransition.scope) {
@@ -136,6 +124,25 @@ fun PostDetailScreen(
                     readSourceLabel = "View source",
                 )
             }
+        }
+        // No top bar: the hero image runs edge-to-edge under the status bar, with a slight scrim
+        // fading from the top so the status bar icons and back button stay legible over it.
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(112.dp)
+                .background(
+                    Brush.verticalGradient(
+                        0f to MaterialTheme.colorScheme.scrim.copy(alpha = 0.45f),
+                        1f to Color.Transparent,
+                    ),
+                ),
+        )
+        FilledTonalIconButton(
+            onClick = onBack,
+            modifier = Modifier.statusBarsPadding().padding(start = 8.dp, top = 4.dp),
+        ) {
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
         }
     }
 }

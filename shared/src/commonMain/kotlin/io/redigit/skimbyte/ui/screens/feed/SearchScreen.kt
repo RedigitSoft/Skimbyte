@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -38,7 +39,8 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     sharedTransition: SharedElementContext? = null,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    // statusBarsPadding: the shell no longer consumes the top inset (see MainShell).
+    Column(modifier = modifier.fillMaxSize().statusBarsPadding()) {
         SearchField(
             query = state.query,
             onQueryChange = { onIntent(SearchIntent.QueryChanged(it)) },

@@ -1,14 +1,20 @@
 package io.redigit.skimbyte.ui.screens.feed
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.gestures.snapping.SnapPosition
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,9 +55,10 @@ fun FeedScreen(
             onLoginSuccess = { onIntent(FeedIntent.LoginSucceeded) },
         )
     }
-    Column(modifier = modifier.fillMaxSize()) {
+    // statusBarsPadding: the shell no longer consumes the top inset (see MainShell).
+    Column(modifier = modifier.fillMaxSize().statusBarsPadding()) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
-            EyebrowText("Feed")
+//            EyebrowText("Feed")
             Text("For You", style = MaterialTheme.typography.titleLarge)
         }
         TopicFilterRow(
@@ -58,7 +66,7 @@ fun FeedScreen(
             selectedTopic = state.selectedTopic,
             onTopicSelected = { onIntent(FeedIntent.TopicSelected(it)) },
         )
-        val currentFeed = state.currentFeed
+        /*val currentFeed = state.currentFeed
         if (currentFeed.posts.isNotEmpty()) {
             val brief = dailyBrief(currentFeed.posts, currentFeed.currentIndex)
             DailyProgressBar(
@@ -66,7 +74,7 @@ fun FeedScreen(
                 total = brief.total,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
-        }
+        }*/
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = { onIntent(FeedIntent.Refresh) },
@@ -114,7 +122,7 @@ private fun TopicFeedPager(
 
     HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize()) { page ->
         val topic = topics[page]
-        TopicPostsPager(
+        TopicPostsList(
             feed = state.feeds[topic] ?: TopicFeed(),
             isActive = topic == state.selectedTopic,
             onPageChanged = { onIntent(FeedIntent.PageChanged(it)) },
@@ -128,10 +136,10 @@ private fun TopicFeedPager(
     }
 }
 
-/** A single topic's posts as a vertical, one-card-at-a-time pager. */
+/** A single topic's posts as a vertical scrolling list of cards. */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun TopicPostsPager(
+private fun TopicPostsList(
     feed: TopicFeed,
     isActive: Boolean,
     onPageChanged: (Int) -> Unit,
@@ -147,24 +155,28 @@ private fun TopicPostsPager(
         feed.error != null && feed.posts.isEmpty() -> ErrorState(modifier)
         feed.posts.isEmpty() -> EmptyState(modifier)
         else -> {
-            val postsState = rememberPagerState(
-                initialPage = feed.currentIndex.coerceIn(0, feed.posts.lastIndex),
-            ) { feed.posts.size }
+            val listState = rememberLazyListState(
+                initialFirstVisibleItemIndex = feed.currentIndex.coerceIn(0, feed.posts.lastIndex),
+            )
             // Only the visible topic reports its scroll position, so off-screen pages don't
-            // overwrite the selected topic's index.
+            // overwrite the selected topic's index. The topmost visible card is the reader's
+            // position: it drives the daily-brief progress and the near-end load-more prefetch.
             if (isActive) {
-                LaunchedEffect(postsState.currentPage) { onPageChanged(postsState.currentPage) }
+                LaunchedEffect(listState) {
+                    snapshotFlow { listState.firstVisibleItemIndex }.collect { onPageChanged(it) }
+                }
             }
-            VerticalPager(
-                state = postsState,
+            LazyColumn(
+                state = listState,
                 contentPadding = PaddingValues(top = 8.dp, bottom = 96.dp),
-                pageSpacing = 12.dp,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                // Scrolling settles with a card aligned to the top, pager-like, while still
+                // letting taller-than-viewport cards be read by continuing the scroll.
+                flingBehavior = rememberSnapFlingBehavior(listState, SnapPosition.Start),
                 modifier = modifier.fillMaxSize(),
-            ) { page ->
-                val post = feed.posts[page]
-                // The card wraps its content instead of filling the page: forcing full height left
-                // an empty slab of card surface below the action bar on anything but tiny screens.
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            ) {
+                items(feed.posts, key = { it.id }) { post ->
                     PostCard(
                         post = post,
                         isBookmarkLoading = post.id in pendingBookmarkToggles,
