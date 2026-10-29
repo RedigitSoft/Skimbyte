@@ -86,4 +86,45 @@ class LoginSheetContentTest {
         }
         onNodeWithText("Google sign-in failed").assertExists()
     }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun appleButton_isShownByDefault() = runComposeUiTest {
+        var clicked = false
+        setContent {
+            SkimbyteTheme {
+                LoginSheetContent(
+                    state = LoginSheetState(),
+                    onAppleSignInClick = { clicked = true },
+                    onGithubSignInClick = {},
+                    onGoogleSignInClick = {},
+                    onNotNowClick = {},
+                )
+            }
+        }
+        onNodeWithText("Continue with Apple").performClick()
+        waitForIdle()
+        assertEquals(true, clicked)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun appleButton_isHiddenWhenUnavailable() = runComposeUiTest {
+        setContent {
+            SkimbyteTheme {
+                LoginSheetContent(
+                    state = LoginSheetState(),
+                    onAppleSignInClick = {},
+                    onGithubSignInClick = {},
+                    onGoogleSignInClick = {},
+                    onNotNowClick = {},
+                    isAppleSignInAvailable = false,
+                )
+            }
+        }
+        // Mirrors the live call site, which passes ApiConfig.APPLE_SIGN_IN_ENABLED: a parked
+        // provider must disappear entirely rather than ship as a dead button.
+        onNodeWithText("Continue with Apple").assertDoesNotExist()
+        onNodeWithText("Continue with GitHub").assertExists()
+    }
 }

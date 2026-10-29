@@ -83,6 +83,10 @@ fun LoginSheet(
     ) {
         LoginSheetContent(
             state = state,
+            // Unlike GitHub (live imminently, shows "coming soon" meanwhile), Apple sign-in is
+            // deliberately parked until the App Store release needs it — hide the button entirely
+            // rather than shipping one that stays dead for months.
+            isAppleSignInAvailable = ApiConfig.APPLE_SIGN_IN_ENABLED,
             onAppleSignInClick = {
                 viewModel.onIntent(LoginSheetIntent.AppleSignInStarted)
                 if (ApiConfig.APPLE_SIGN_IN_ENABLED) openUrl(appleSignInStartUrl())
@@ -113,6 +117,9 @@ fun LoginSheetContent(
     onGoogleSignInClick: () -> Unit,
     onNotNowClick: () -> Unit,
     modifier: Modifier = Modifier,
+    // Defaults to true so previews/catalog document the full sheet; the live call site passes
+    // ApiConfig.APPLE_SIGN_IN_ENABLED so release builds hide the button until the flow exists.
+    isAppleSignInAvailable: Boolean = true,
 ) {
     Column(
         modifier = modifier.fillMaxWidth().padding(24.dp),
@@ -130,15 +137,17 @@ fun LoginSheetContent(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
-        Button(
-            onClick = onAppleSignInClick,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.onSurface,
-                contentColor = MaterialTheme.colorScheme.surface,
-            ),
-        ) {
-            Text("Continue with Apple")
+        if (isAppleSignInAvailable) {
+            Button(
+                onClick = onAppleSignInClick,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.onSurface,
+                    contentColor = MaterialTheme.colorScheme.surface,
+                ),
+            ) {
+                Text("Continue with Apple")
+            }
         }
         Button(
             onClick = onGithubSignInClick,
