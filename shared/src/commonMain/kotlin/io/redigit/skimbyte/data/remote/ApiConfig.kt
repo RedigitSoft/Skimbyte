@@ -18,11 +18,10 @@ object ApiConfig {
     // register/login call so the auth server knows which app the auth event is for.
     const val PRODUCT_ID = BackendConfig.PRODUCT_ID
 
-    // GitHub OAuth start endpoint (/auth/oauth/github/start) isn't live on the auth server yet. The
-    // client flow is fully scaffolded (start URL + shared redirect handling, see GoogleAuthCallback
-    // which bridges any provider's token redirect); flip this to true once the endpoint exists and
-    // the GitHub button will begin the real flow instead of showing "coming soon".
-    const val GITHUB_SIGN_IN_ENABLED = false
+    // GitHub OAuth is live on the auth server (/auth/oauth/github/start; the shared redirect
+    // handling via GoogleAuthCallback completes any provider's flow). Flip to false to fall back
+    // to the "coming soon" state if the server-side provider config is ever withdrawn.
+    const val GITHUB_SIGN_IN_ENABLED = true
 
     // Sign in with Apple follows the same provider-/start shape as Google/GitHub. Flip once the
     // auth server's /auth/oauth/apple/start endpoint exists (needs an Apple Services ID + key —
