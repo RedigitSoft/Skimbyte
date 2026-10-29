@@ -43,6 +43,9 @@ fun AvatarWithEditBadge(
     onAvatarClick: () -> Unit,
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
+    // False while signed out: the avatar is purely decorative — no viewer tap target, no
+    // camera badge (there is no image to view and nowhere to upload one to).
+    editable: Boolean = true,
     sharedTransition: SharedElementContext? = null,
 ) {
     val avatarModifier = if (sharedTransition != null) {
@@ -60,10 +63,19 @@ fun AvatarWithEditBadge(
         Box(
             modifier = avatarModifier
                 .size(120.dp)
+                // Surface ring separates the avatar from whatever banner it overlaps.
+                .border(4.dp, MaterialTheme.colorScheme.surface, CircleShape)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                .clickable(enabled = !isUploading, onClick = onAvatarClick)
-                .semantics { contentDescription = "View avatar" },
+                .then(
+                    if (editable) {
+                        Modifier
+                            .clickable(enabled = !isUploading, onClick = onAvatarClick)
+                            .semantics { contentDescription = "View avatar" }
+                    } else {
+                        Modifier
+                    },
+                ),
             contentAlignment = Alignment.Center,
         ) {
             if (avatarUrl != null) {
@@ -85,23 +97,25 @@ fun AvatarWithEditBadge(
                 CircularProgressIndicator(modifier = Modifier.size(40.dp))
             }
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .size(32.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
-                .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
-                .clickable(enabled = !isUploading, onClick = onEditClick)
-                .semantics { contentDescription = "Change avatar" },
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                Icons.Filled.PhotoCamera,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-                tint = MaterialTheme.colorScheme.onPrimary,
-            )
+        if (editable) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
+                    .clickable(enabled = !isUploading, onClick = onEditClick)
+                    .semantics { contentDescription = "Change avatar" },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Filled.PhotoCamera,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
         }
     }
 }

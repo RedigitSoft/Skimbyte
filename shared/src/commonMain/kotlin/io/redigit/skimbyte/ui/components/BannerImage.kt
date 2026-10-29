@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -44,6 +45,9 @@ fun BannerImage(
     onBannerClick: () -> Unit,
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
+    // False while signed out: the banner is purely decorative — no viewer tap target, no
+    // camera badge (there is no image to view and nowhere to upload one to).
+    editable: Boolean = true,
     sharedTransition: SharedElementContext? = null,
 ) {
     val bannerModifier = if (sharedTransition != null) {
@@ -64,9 +68,24 @@ fun BannerImage(
                 .fillMaxWidth()
                 .height(180.dp)
                 .clip(bannerShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .clickable(enabled = !isUploading, onClick = onBannerClick)
-                .semantics { contentDescription = "View banner" },
+                // Brand-wash gradient instead of a flat void while there's no banner image.
+                .background(
+                    Brush.linearGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.30f),
+                            MaterialTheme.colorScheme.surfaceVariant,
+                        ),
+                    ),
+                )
+                .then(
+                    if (editable) {
+                        Modifier
+                            .clickable(enabled = !isUploading, onClick = onBannerClick)
+                            .semantics { contentDescription = "View banner" }
+                    } else {
+                        Modifier
+                    },
+                ),
             contentAlignment = Alignment.Center,
         ) {
             if (bannerUrl != null) {
@@ -81,23 +100,25 @@ fun BannerImage(
                 CircularProgressIndicator()
             }
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(12.dp)
-                .size(36.dp)
-                .background(MaterialTheme.colorScheme.primary, CircleShape)
-                .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
-                .clickable(enabled = !isUploading, onClick = onEditClick)
-                .semantics { contentDescription = "Change banner" },
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                Icons.Filled.PhotoCamera,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.onPrimary,
-            )
+        if (editable) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(12.dp)
+                    .size(36.dp)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+                    .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
+                    .clickable(enabled = !isUploading, onClick = onEditClick)
+                    .semantics { contentDescription = "Change banner" },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Filled.PhotoCamera,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
         }
     }
 }

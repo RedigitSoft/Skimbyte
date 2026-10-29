@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -59,6 +60,7 @@ fun PostDetailScreen(
     Box(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         Column(
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             val imageModifier = if (sharedTransition != null) {
                 with(sharedTransition.scope) {
@@ -71,6 +73,9 @@ fun PostDetailScreen(
                 Modifier.fillMaxWidth().height(280.dp)
             }
             Box(modifier = imageModifier) {
+                // Same branded stand-in as PostCard: loading, fetch failure, and image-less
+                // posts all render the topic-tinted placeholder instead of a void.
+                TopicImagePlaceholder(topic = post.topic, modifier = Modifier.fillMaxSize())
                 if (post.imageUrl != null) {
                     AsyncImage(
                         model = post.imageUrl,
@@ -79,12 +84,12 @@ fun PostDetailScreen(
                         modifier = Modifier.fillMaxSize(),
                         clipToBounds = true,
                     )
-                } else {
-                    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant))
                 }
             }
             Column(
-                modifier = Modifier.padding(16.dp),
+                // Cap the text measure on wide windows (desktop/web): the hero stays full-bleed,
+                // but body lines longer than ~75 characters get hard to read.
+                modifier = Modifier.widthIn(max = 640.dp).fillMaxWidth().padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Row(

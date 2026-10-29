@@ -83,6 +83,9 @@ fun PostCard(
             Modifier.fillMaxWidth().height(300.dp)
         }
         Box(modifier = imageModifier) {
+            // Always under the image: covers loading, a failed fetch, and image-less posts, so
+            // none of them leave a flat void (see TopicImagePlaceholder).
+            TopicImagePlaceholder(topic = post.topic, modifier = Modifier.fillMaxSize())
             if (post.imageUrl != null) {
                 AsyncImage(
                     model = post.imageUrl,
@@ -91,8 +94,6 @@ fun PostCard(
                     modifier = Modifier.fillMaxSize(),
                     clipToBounds = true,
                 )
-            } else {
-                Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant))
             }
         }
         Column(

@@ -21,6 +21,7 @@ import io.redigit.skimbyte.designsheet.components.SkimbyteNavigationRailCatalogC
 import io.redigit.skimbyte.designsheet.components.StackedCardBrowserCatalogContent
 import io.redigit.skimbyte.designsheet.components.TextFieldsCatalogContent
 import io.redigit.skimbyte.designsheet.components.TopicFilterCatalogContent
+import io.redigit.skimbyte.designsheet.components.TopicImagePlaceholderCatalogContent
 import io.redigit.skimbyte.designsheet.components.TopicsScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.TutorialOverlayCatalogContent
 import io.redigit.skimbyte.designsheet.tokens.ColorTokensContent
@@ -41,6 +42,7 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("selection-controls", "Selection controls", "Components") { SelectionControlsCatalogContent() },
     CatalogItem("text-fields", "Text fields", "Components") { TextFieldsCatalogContent() },
     CatalogItem("post-card", "Post card", "Feed") { PostCardCatalogContent() },
+    CatalogItem("topic-image-placeholder", "Topic image placeholder", "Feed") { TopicImagePlaceholderCatalogContent() },
     CatalogItem("topic-filter", "Topic filter", "Feed") { TopicFilterCatalogContent() },
     CatalogItem("bookmark-button", "Bookmark button", "Feed") { BookmarkButtonCatalogContent() },
     CatalogItem("stacked-card-browser", "Stacked card browser", "Feed") { StackedCardBrowserCatalogContent() },

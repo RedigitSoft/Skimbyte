@@ -283,4 +283,28 @@ class AccountScreenContentTest {
         onNodeWithTag("signedOutPromptSignIn").performClick()
         assertEquals(true, signInClicked)
     }
+
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
+    @Test
+    fun loggedOut_bannerAndAvatar_areNotInteractive() = runComposeUiTest {
+        setContent {
+            SkimbyteTheme {
+                AccountScreen(
+                    state = AccountState(isLoggedIn = false),
+                    onIntent = {},
+                    onSignInClick = {},
+                    onSettingsClick = {},
+                    onAvatarClick = {},
+                    onAvatarEditClick = {},
+                    onBannerClick = {},
+                    onBannerEditClick = {},
+                )
+            }
+        }
+        // Signed out there is nothing to view or upload: no viewer tap targets, no camera badges.
+        onNodeWithContentDescription("View banner").assertDoesNotExist()
+        onNodeWithContentDescription("View avatar").assertDoesNotExist()
+        onNodeWithContentDescription("Change banner").assertDoesNotExist()
+        onNodeWithContentDescription("Change avatar").assertDoesNotExist()
+    }
 }

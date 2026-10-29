@@ -102,6 +102,8 @@ fun AccountScreen(
                 isUploading = state.bannerUploadInProgress,
                 onBannerClick = onBannerClick,
                 onEditClick = onBannerEditClick,
+                // Signed out there's nothing to view or upload — the header is decorative.
+                editable = state.isLoggedIn,
                 sharedTransition = bannerSharedTransition,
             )
             Box(modifier = Modifier.fillMaxWidth().offset(y = (-60).dp), contentAlignment = Alignment.CenterStart) {
@@ -111,6 +113,7 @@ fun AccountScreen(
                     onAvatarClick = onAvatarClick,
                     onEditClick = onAvatarEditClick,
                     modifier = Modifier.padding(start = 24.dp),
+                    editable = state.isLoggedIn,
                     sharedTransition = avatarSharedTransition,
                 )
             }
@@ -324,21 +327,33 @@ private fun WeeklyVelocityChart(weeklyReads: List<Int>, modifier: Modifier = Mod
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.Bottom,
             ) {
+                // Only the first busiest day gets the count label, so ties don't double-label.
+                val busiestIndex = reads.indexOfFirst { it == maxReads && it > 0 }
                 reads.forEachIndexed { index, value ->
                     val fraction = value.toFloat() / maxReads
-                    val isBusiest = value == maxReads && value > 0
+                    val isBusiest = index == busiestIndex
                     Column(
                         modifier = Modifier.weight(1f),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
+                        if (isBusiest) {
+                            Text(
+                                value.toString(),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
                         Box(
                             modifier = Modifier
-                                .width(12.dp)
-                                .height((4 + fraction * 44).dp)
-                                .clip(RoundedCornerShape(4.dp))
+                                .width(16.dp)
+                                // Minimum height keeps low-count days legible instead of
+                                // rendering as a near-invisible sliver.
+                                .height((8 + fraction * 56).dp)
+                                .clip(RoundedCornerShape(6.dp))
                                 .background(
-                                    MaterialTheme.colorScheme.primary.copy(alpha = if (isBusiest) 1f else 0.35f),
+                                    MaterialTheme.colorScheme.primary.copy(alpha = if (isBusiest) 1f else 0.55f),
                                 ),
                         )
                         Text(

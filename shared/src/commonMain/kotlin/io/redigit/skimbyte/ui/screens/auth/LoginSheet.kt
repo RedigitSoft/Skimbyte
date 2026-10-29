@@ -1,14 +1,18 @@
 package io.redigit.skimbyte.ui.screens.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -139,18 +143,10 @@ fun LoginSheetContent(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
-        if (isAppleSignInAvailable) {
-            Button(
-                onClick = onAppleSignInClick,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.onSurface,
-                    contentColor = MaterialTheme.colorScheme.surface,
-                ),
-            ) {
-                Text("Continue with Apple")
-            }
-        }
+        // GitHub is the visually-primary provider (a developer-news app's natural login);
+        // the others are outlined. Each carries its brand mark — logo-less provider buttons
+        // read as placeholders. GitHub/Apple marks tint to the button's content color; Google's
+        // multi-color G must not be tinted (brand guidelines), hence Image over Icon.
         Button(
             onClick = onGithubSignInClick,
             modifier = Modifier.fillMaxWidth(),
@@ -159,6 +155,8 @@ fun LoginSheetContent(
                 contentColor = MaterialTheme.colorScheme.surface,
             ),
         ) {
+            Icon(ProviderLogos.GitHub, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(10.dp))
             Text("Continue with GitHub")
         }
         OutlinedButton(
@@ -169,7 +167,19 @@ fun LoginSheetContent(
             if (state.isSubmitting) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
             } else {
+                Image(ProviderLogos.Google, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(10.dp))
                 Text("Continue with Google")
+            }
+        }
+        if (isAppleSignInAvailable) {
+            OutlinedButton(
+                onClick = onAppleSignInClick,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(ProviderLogos.Apple, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(10.dp))
+                Text("Continue with Apple")
             }
         }
         state.error?.let { error ->
