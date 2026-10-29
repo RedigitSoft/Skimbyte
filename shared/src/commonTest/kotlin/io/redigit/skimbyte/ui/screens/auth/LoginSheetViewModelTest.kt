@@ -1,5 +1,6 @@
 package io.redigit.skimbyte.ui.screens.auth
 
+import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.Session
 import kotlinx.coroutines.Dispatchers
@@ -39,22 +40,36 @@ class LoginSheetViewModelTest {
     @AfterTest
     fun tearDownMainDispatcher() = Dispatchers.resetMain()
 
+    // The gated providers' contract is relative to their ApiConfig flag (GitHub is live today,
+    // Apple parked): enabled → a real submission starts; disabled → an honest "coming soon".
+    // Asserting against the flag keeps these green across future flips.
+
     @Test
-    fun githubSignIn_showsComingSoonMessage() = runTest {
+    fun githubSignIn_matchesItsAvailabilityFlag() = runTest {
         val viewModel = LoginSheetViewModel(FakeAuthRepository())
 
         viewModel.onIntent(LoginSheetIntent.GithubSignInStarted)
 
-        assertEquals("GitHub sign-in is coming soon", viewModel.state.value.error)
+        if (ApiConfig.GITHUB_SIGN_IN_ENABLED) {
+            assertTrue(viewModel.state.value.isSubmitting)
+            assertEquals(null, viewModel.state.value.error)
+        } else {
+            assertEquals("GitHub sign-in is coming soon", viewModel.state.value.error)
+        }
     }
 
     @Test
-    fun appleSignIn_showsComingSoonMessage() = runTest {
+    fun appleSignIn_matchesItsAvailabilityFlag() = runTest {
         val viewModel = LoginSheetViewModel(FakeAuthRepository())
 
         viewModel.onIntent(LoginSheetIntent.AppleSignInStarted)
 
-        assertEquals("Apple sign-in is coming soon", viewModel.state.value.error)
+        if (ApiConfig.APPLE_SIGN_IN_ENABLED) {
+            assertTrue(viewModel.state.value.isSubmitting)
+            assertEquals(null, viewModel.state.value.error)
+        } else {
+            assertEquals("Apple sign-in is coming soon", viewModel.state.value.error)
+        }
     }
 
     @Test

@@ -27,9 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.ktor.http.URLBuilder
 import io.redigit.skimbyte.data.remote.ApiConfig
-import io.redigit.skimbyte.data.remote.BackendConfig
 import io.redigit.skimbyte.data.remote.GoogleAuthCallback
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.util.authRedirectUri
 import io.redigit.skimbyte.util.openUrl
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -51,7 +51,9 @@ private fun appleSignInStartUrl(): String = oauthStartUrl("apple")
 
 private fun oauthStartUrl(provider: String): String =
     URLBuilder("${ApiConfig.AUTH_BASE_URL}/auth/oauth/$provider/start").apply {
-        parameters.append("redirect_uri", BackendConfig.GOOGLE_REDIRECT_URI)
+        // Platform-aware: mobile passes the deep link, desktop its RFC 8252 loopback listener
+        // (see authRedirectUri) — each must be in the server's exact-match allowlist.
+        parameters.append("redirect_uri", authRedirectUri())
         parameters.append("product_id", ApiConfig.PRODUCT_ID)
     }.buildString()
 

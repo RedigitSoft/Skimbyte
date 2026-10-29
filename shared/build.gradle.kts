@@ -9,6 +9,16 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.dokka)
+}
+
+dokka {
+    moduleName.set("Skimbyte")
+    dokkaPublications.html {
+        // Served at /api/ on the docs site (see .github/workflows/deploy-site.yml);
+        // the landing page is the MkDocs site in docs-site/.
+        suppressInheritedMembers.set(true)
+    }
 }
 
 kotlin {
