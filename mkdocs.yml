@@ -1,0 +1,41 @@
+site_name: Skimbyte
+site_description: A daily, skimmable developer-news brief — one shared Compose codebase on Android, iOS, Desktop, and Web.
+repo_name: Skimbyte
+docs_dir: docs-site
+
+theme:
+  name: material
+  logo: assets/app-icon.svg
+  favicon: assets/app-icon.svg
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - tables
+
+# The Dokka API reference (/api/) and live designsheet (/designsheet/) are deployed alongside
+# this site by .github/workflows/deploy-site.yml and linked from the pages — they can't appear
+# in nav because mkdocs --strict only accepts doc files there.
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Testing: testing.md
+  - Design system: design-system.md

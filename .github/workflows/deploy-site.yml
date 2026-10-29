@@ -1,4 +1,9 @@
-name: Deploy designsheet to GitHub Pages
+name: Deploy docs site to GitHub Pages
+
+# One Pages deployment, three artifacts:
+#   /            MkDocs site (docs-site/)
+#   /api/        Dokka HTML for :shared
+#   /designsheet/  the live component catalog (Wasm)
 
 on:
   push:
@@ -33,10 +38,28 @@ jobs:
       - name: Build designsheet (Wasm production bundle)
         run: ./gradlew :designsheet:wasmJsBrowserDistribution
 
+      - name: Generate API docs (Dokka)
+        run: ./gradlew :shared:dokkaGenerate
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build MkDocs site
+        run: |
+          pip install mkdocs-material
+          mkdocs build --strict --site-dir site
+
+      - name: Assemble combined site
+        run: |
+          cp -r shared/build/dokka/html site/api
+          cp -r designsheet/build/dist/wasmJs/productionExecutable site/designsheet
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: designsheet/build/dist/wasmJs/productionExecutable
+          path: site
 
   deploy:
     needs: build
