@@ -219,6 +219,75 @@ class AccountScreenContentTest {
 
     @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
+    fun tappingDeleteDataRow_showsConfirmationDialog_withoutInvokingOnIntent() = runComposeUiTest {
+        var capturedIntent: AccountIntent? = null
+        setContent {
+            SkimbyteTheme {
+                AccountScreen(
+                    state = AccountState(isLoggedIn = true),
+                    onIntent = { capturedIntent = it },
+                    onSignInClick = {}, onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
+                )
+            }
+        }
+        onNodeWithTag("deleteDataRow").performClick()
+        waitForIdle()
+        onNodeWithText("Delete my data?").assertExists()
+        assertNull(capturedIntent)
+    }
+
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
+    @Test
+    fun confirmingDeleteDialog_invokesOnIntentWithDeleteDataConfirmed() = runComposeUiTest {
+        var capturedIntent: AccountIntent? = null
+        setContent {
+            SkimbyteTheme {
+                AccountScreen(
+                    state = AccountState(isLoggedIn = true),
+                    onIntent = { capturedIntent = it },
+                    onSignInClick = {}, onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
+                )
+            }
+        }
+        onNodeWithTag("deleteDataRow").performClick()
+        waitForIdle()
+        onNodeWithTag("confirmDeleteData").performClick()
+        waitForIdle()
+        assertEquals(AccountIntent.DeleteDataConfirmed, capturedIntent)
+    }
+
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
+    @Test
+    fun deleteDataError_isShownToTheUser() = runComposeUiTest {
+        setContent {
+            SkimbyteTheme {
+                AccountScreen(
+                    state = AccountState(isLoggedIn = true, deleteDataError = "Could not delete your data"),
+                    onIntent = {},
+                    onSignInClick = {}, onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
+                )
+            }
+        }
+        onNodeWithText("Could not delete your data").assertExists()
+    }
+
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
+    @Test
+    fun loggedOut_deleteDataRow_isNotShown() = runComposeUiTest {
+        setContent {
+            SkimbyteTheme {
+                AccountScreen(
+                    state = AccountState(isLoggedIn = false),
+                    onIntent = {},
+                    onSignInClick = {}, onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
+                )
+            }
+        }
+        onNodeWithTag("deleteDataRow").assertDoesNotExist()
+    }
+
+    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
+    @Test
     fun loggedOut_showsSignedOutState() = runComposeUiTest {
         setContent {
             SkimbyteTheme {

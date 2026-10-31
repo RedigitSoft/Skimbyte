@@ -77,6 +77,11 @@ private fun demoMockEngine(): MockEngine {
             "/v1/auth/refresh" -> respondJson(authResponseJson())
             "/v1/posts" -> respondJson(pagedPostsJson(topicFilter = request.url.parameters["topic"]))
             "/v1/bookmarks" -> respondJson(pagedPostsJson(topicFilter = null, idsOnly = bookmarked))
+            "/v1/me" -> {
+                // Account deletion: drop all of this user's server-side data (bookmarks).
+                if (request.method.value == "DELETE") bookmarked.clear()
+                respond(content = "", status = HttpStatusCode.NoContent)
+            }
             else -> {
                 val postId = bookmarkPostId(request.url.encodedPath)
                 when {

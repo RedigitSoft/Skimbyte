@@ -6,6 +6,7 @@ import io.redigit.skimbyte.data.local.AppConfigStore
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.ProfileRepository
+import io.redigit.skimbyte.data.repositories.UserDataRepository
 import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ class AccountViewModel(
     followedTopics: StateFlow<Set<Topic>>,
     bookmarkIds: StateFlow<Set<String>>,
     private val appConfigStore: AppConfigStore,
+    private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AccountState())
@@ -112,6 +114,22 @@ class AccountViewModel(
             AccountIntent.SummaryLengthCycled -> appConfigStore.cycleSummaryLength()
             is AccountIntent.NotificationsToggled -> appConfigStore.setNotificationsEnabled(intent.enabled)
             AccountIntent.Refresh -> onRefresh()
+            AccountIntent.DeleteDataConfirmed -> onDeleteData()
+        }
+    }
+
+    private fun onDeleteData() {
+        if (_state.value.deleteDataInProgress) return
+        _state.value = _state.value.copy(deleteDataInProgress = true, deleteDataError = null)
+        viewModelScope.launch {
+            val result = userDataRepository.deleteAll()
+            _state.value = _state.value.copy(
+                deleteDataInProgress = false,
+                deleteDataError = result.exceptionOrNull()?.let { "Could not delete your data" },
+            )
+            // Sign out only once the server confirms the delete; the session flow then flips to
+            // signed-out and the combine block re-renders the screen.
+            if (result.isSuccess) authRepository.logout()
         }
     }
 

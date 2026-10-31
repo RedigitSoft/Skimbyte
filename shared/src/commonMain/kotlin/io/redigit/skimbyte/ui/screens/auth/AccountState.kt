@@ -20,6 +20,8 @@ data class AccountState(
     val pendingCrop: PendingCrop? = null,
     val avatarError: String? = null,
     val bannerError: String? = null,
+    val deleteDataInProgress: Boolean = false,
+    val deleteDataError: String? = null,
     // Identity + reading stats shown on the profile screen. Populated by AccountViewModel from the
     // real profile where available (handle derived from userId, saved count from bookmarks, followed
     // topics from preferences); fields the server doesn't return yet stay null and don't render.

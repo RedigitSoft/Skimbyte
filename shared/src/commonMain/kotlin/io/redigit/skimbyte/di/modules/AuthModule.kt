@@ -47,6 +47,7 @@ val authModule = module {
             get<TopicPreferencesStore>().selectedTopicsFlow,
             get<BookmarkIdsStore>().ids,
             get(),
+            get(),
         )
     }
 }

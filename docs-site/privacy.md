@@ -51,7 +51,7 @@ All communication with the Skimbyte and the auth server servers uses HTTPS.
 
 ## Deleting your data
 
-In the app, open your **Account** screen and choose **Delete account**. This immediately and
+In the app, open your **Account** screen and choose **Delete my data**. This immediately and
 permanently deletes everything the Skimbyte server stores about you (your bookmarks) and
 signs you out.
 

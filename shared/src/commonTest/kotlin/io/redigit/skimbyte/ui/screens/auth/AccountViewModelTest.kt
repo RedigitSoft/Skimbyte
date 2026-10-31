@@ -7,6 +7,7 @@ import io.redigit.skimbyte.data.models.Profile
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.data.repositories.ProfileRepository
 import io.redigit.skimbyte.data.repositories.Session
+import io.redigit.skimbyte.data.repositories.UserDataRepository
 import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -25,11 +26,25 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 private class FakeAuthRepositoryForAccount(loggedIn: Boolean) : AuthRepository {
-    override val session: StateFlow<Session?> = MutableStateFlow(if (loggedIn) Session("token") else null).asStateFlow()
+    private val _session = MutableStateFlow(if (loggedIn) Session("token") else null)
+    override val session: StateFlow<Session?> = _session.asStateFlow()
     override suspend fun login(email: String, password: String) = error("unused")
     override suspend fun register(email: String, password: String) = error("unused")
     override suspend fun completeGoogleSignIn(redirectUri: String) = error("unused")
-    override fun logout() = error("unused")
+    override fun logout() {
+        _session.value = null
+    }
+}
+
+private class FakeUserDataRepository : UserDataRepository {
+    var result: Result<Unit> = Result.success(Unit)
+    var gate: CompletableDeferred<Unit>? = null
+    var callCount = 0
+    override suspend fun deleteAll(): Result<Unit> {
+        callCount++
+        gate?.await()
+        return result
+    }
 }
 
 private class FakeProfileRepository(initial: Profile? = null) : ProfileRepository {
@@ -94,12 +109,14 @@ class AccountViewModelTest {
         followedTopics: Set<Topic> = emptySet(),
         bookmarkIds: Set<String> = emptySet(),
         appConfig: AppConfigStore = FakeAppConfigStore(),
+        userData: UserDataRepository = FakeUserDataRepository(),
     ) = AccountViewModel(
         auth,
         profile,
         MutableStateFlow(followedTopics),
         MutableStateFlow(bookmarkIds),
         appConfig,
+        userData,
     )
 
     @Test
@@ -252,6 +269,46 @@ class AccountViewModelTest {
 
         assertEquals(1, repo.removeAvatarCallCount)
         assertNull(vm.state.value.avatarUrl)
+    }
+
+    @Test
+    fun onDeleteData_success_deletesDataThenSignsOut() = runTest {
+        val userData = FakeUserDataRepository()
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), FakeProfileRepository(), userData = userData)
+
+        vm.onIntent(AccountIntent.DeleteDataConfirmed)
+
+        assertEquals(1, userData.callCount)
+        assertEquals(false, vm.state.value.deleteDataInProgress)
+        assertNull(vm.state.value.deleteDataError)
+        assertEquals(false, vm.state.value.isLoggedIn) // logout() flipped the session to signed out
+    }
+
+    @Test
+    fun onDeleteData_failure_setsErrorAndKeepsSession() = runTest {
+        val userData = FakeUserDataRepository()
+        userData.result = Result.failure(RuntimeException("boom"))
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), FakeProfileRepository(), userData = userData)
+
+        vm.onIntent(AccountIntent.DeleteDataConfirmed)
+
+        assertEquals("Could not delete your data", vm.state.value.deleteDataError)
+        assertEquals(false, vm.state.value.deleteDataInProgress)
+        assertEquals(true, vm.state.value.isLoggedIn) // delete failed, so no sign out — user can retry
+    }
+
+    @Test
+    fun onDeleteData_whileAlreadyDeleting_isIgnored() = runTest {
+        val gate = CompletableDeferred<Unit>()
+        val userData = FakeUserDataRepository()
+        userData.gate = gate
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), FakeProfileRepository(), userData = userData)
+
+        vm.onIntent(AccountIntent.DeleteDataConfirmed) // suspends on the gate
+        vm.onIntent(AccountIntent.DeleteDataConfirmed) // ignored: still in progress
+        gate.complete(Unit)
+
+        assertEquals(1, userData.callCount)
     }
 
     @Test

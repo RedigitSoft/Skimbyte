@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Notes
@@ -84,6 +85,7 @@ fun AccountScreen(
     bannerSharedTransition: SharedElementContext? = null,
 ) {
     var showLogoutConfirm by rememberSaveable { mutableStateOf(false) }
+    var showDeleteConfirm by rememberSaveable { mutableStateOf(false) }
 
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
@@ -211,9 +213,20 @@ fun AccountScreen(
                             iconTint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.testTag("logoutRow"),
                         )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        AccountActionRow(
+                            icon = Icons.Filled.DeleteForever,
+                            label = "Delete my data",
+                            supporting = "Permanently remove your Skimbyte data",
+                            onClick = { showDeleteConfirm = true },
+                            tint = MaterialTheme.colorScheme.error,
+                            iconTint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.testTag("deleteDataRow"),
+                        )
                     }
                 }
             }
+            state.deleteDataError?.let { AccountErrorBanner(message = it) }
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
@@ -235,6 +248,38 @@ fun AccountScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showLogoutConfirm = false }) { Text("Cancel") }
+            },
+        )
+    }
+
+    if (showDeleteConfirm) {
+        AlertDialog(
+            onDismissRequest = { if (!state.deleteDataInProgress) showDeleteConfirm = false },
+            title = { Text("Delete my data?") },
+            text = {
+                Text(
+                    "This permanently deletes your bookmarks and other Skimbyte data from our " +
+                        "servers, and signs you out. All your Skimbyte data is removed — see " +
+                        "the privacy policy. This can't be undone.",
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    modifier = Modifier.testTag("confirmDeleteData"),
+                    enabled = !state.deleteDataInProgress,
+                    onClick = {
+                        showDeleteConfirm = false
+                        onIntent(AccountIntent.DeleteDataConfirmed)
+                    },
+                ) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    enabled = !state.deleteDataInProgress,
+                    onClick = { showDeleteConfirm = false },
+                ) { Text("Cancel") }
             },
         )
     }
@@ -621,6 +666,24 @@ private fun AccountScreenWithErrorPreview() {
     SkimbyteTheme {
         AccountScreen(
             state = richAccountState.copy(avatarError = "Could not update avatar"),
+            onIntent = {},
+            onSignInClick = {},
+            onSettingsClick = {},
+            onAvatarClick = {},
+            onAvatarEditClick = {},
+            onBannerClick = {},
+            onBannerEditClick = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview
+@Composable
+private fun AccountScreenWithDeleteErrorPreview() {
+    SkimbyteTheme {
+        AccountScreen(
+            state = richAccountState.copy(deleteDataError = "Could not delete your data"),
             onIntent = {},
             onSignInClick = {},
             onSettingsClick = {},
