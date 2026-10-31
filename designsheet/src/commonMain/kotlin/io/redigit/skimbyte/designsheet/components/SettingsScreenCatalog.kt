@@ -19,6 +19,8 @@ fun SettingsScreenCatalogContent() {
             state = SettingsState(themeMode = ThemeMode.System),
             onIntent = {},
             onEditInterestsClick = {},
+            onPrivacyPolicyClick = {},
+            onLicensesClick = {},
             onBack = {},
             modifier = Modifier.height(400.dp),
         )

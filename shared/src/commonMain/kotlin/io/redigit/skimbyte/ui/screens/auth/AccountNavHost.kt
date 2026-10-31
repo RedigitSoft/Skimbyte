@@ -25,13 +25,17 @@ import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.navigation.AccountHome
 import io.redigit.skimbyte.ui.navigation.AvatarViewer
 import io.redigit.skimbyte.ui.navigation.BannerViewer
+import io.redigit.skimbyte.ui.navigation.Licenses
 import io.redigit.skimbyte.ui.navigation.Settings
 import io.redigit.skimbyte.ui.navigation.Topics
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsViewModel
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsScreen
+import io.redigit.skimbyte.ui.screens.settings.LicensesRoute
 import io.redigit.skimbyte.ui.screens.settings.SettingsViewModel
 import io.redigit.skimbyte.ui.screens.settings.SettingsScreen
+import io.redigit.skimbyte.util.WebsiteLinks
+import io.redigit.skimbyte.util.openUrl
 import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
 import io.redigit.skimbyte.ui.components.BANNER_SHARED_ELEMENT_KEY
 import io.redigit.skimbyte.util.AVATAR_ASPECT
@@ -48,6 +52,7 @@ private val navConfig = SavedStateConfiguration {
             subclass(AccountHome::class, AccountHome.serializer())
             subclass(Settings::class, Settings.serializer())
             subclass(Topics::class, Topics.serializer())
+            subclass(Licenses::class, Licenses.serializer())
             subclass(AvatarViewer::class, AvatarViewer.serializer())
             subclass(BannerViewer::class, BannerViewer.serializer())
         }
@@ -121,8 +126,13 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
                         state = settingsState,
                         onIntent = viewModel::onIntent,
                         onEditInterestsClick = { backStack.add(Topics) },
+                        onPrivacyPolicyClick = { openUrl(WebsiteLinks.PRIVACY_POLICY_URL) },
+                        onLicensesClick = { backStack.add(Licenses) },
                         onBack = { backStack.removeLastOrNull() },
                     )
+                }
+                entry<Licenses>(metadata = ListDetailSceneStrategy.detailPane()) {
+                    LicensesRoute(onBack = { backStack.removeLastOrNull() })
                 }
                 entry<Topics>(metadata = ListDetailSceneStrategy.detailPane()) {
                     val viewModel = koinViewModel<TopicsViewModel> { parametersOf(true) }

@@ -10,6 +10,17 @@ plugins {
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.aboutLibraries)
+}
+
+// License metadata for the in-app "Open source licenses" screen. The exported JSON is committed
+// (read at runtime via compose resources), so re-run :shared:exportLibraryDefinitions whenever
+// dependencies change in gradle/libs.versions.toml.
+aboutLibraries {
+    export {
+        outputFile = file("src/commonMain/composeResources/files/aboutlibraries.json")
+        prettyPrint = true
+    }
 }
 
 dokka {
@@ -124,6 +135,7 @@ kotlin {
             implementation(libs.coil3.compose)
             implementation(libs.coil3.networkKtor)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.aboutLibraries.composeM3)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
