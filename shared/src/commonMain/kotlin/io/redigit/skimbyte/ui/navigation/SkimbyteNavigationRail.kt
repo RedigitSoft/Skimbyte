@@ -1,5 +1,6 @@
 package io.redigit.skimbyte.ui.navigation
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
@@ -15,7 +16,8 @@ import io.redigit.skimbyte.theme.SkimbyteTheme
 /**
  * The expanded-width (tablet / desktop / unfolded) counterpart to [SkimbyteBottomNavBar]. Uses the
  * same visual language: a primary-accented pill indicator behind the selected destination with its
- * icon and label in the primary color, so navigation reads consistently across window sizes.
+ * icon and label in the primary color, so navigation reads consistently across window sizes. The
+ * items are vertically centered in the rail rather than pinned to the top edge.
  */
 @Composable
 fun SkimbyteNavigationRail(
@@ -24,6 +26,7 @@ fun SkimbyteNavigationRail(
     modifier: Modifier = Modifier,
 ) {
     NavigationRail(modifier = modifier) {
+        Spacer(modifier = Modifier.weight(1f))
         TopLevelDestination.entries.forEach { destination ->
             NavigationRailItem(
                 selected = destination == selected,
@@ -39,6 +42,7 @@ fun SkimbyteNavigationRail(
                 ),
             )
         }
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
