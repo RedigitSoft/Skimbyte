@@ -11,9 +11,6 @@ sealed interface AccountIntent {
     data object CropCancelled : AccountIntent
     data object AvatarRemoved : AccountIntent
     data object BannerRemoved : AccountIntent
-    data object DigestTimeCycled : AccountIntent
-    data object SummaryLengthCycled : AccountIntent
-    data class NotificationsToggled(val enabled: Boolean) : AccountIntent
     data object Refresh : AccountIntent
 
     /** The user confirmed the delete-my-data dialog; wipes Skimbyte data and signs out. */

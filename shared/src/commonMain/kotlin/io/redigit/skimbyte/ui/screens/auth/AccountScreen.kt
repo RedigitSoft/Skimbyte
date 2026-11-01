@@ -26,11 +26,8 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -149,37 +146,8 @@ fun AccountScreen(
                 )
             }
 
-            // Feed preferences and Settings are device-local and stay available signed out —
-            // only the profile itself needs an account.
-            EyebrowText("Feed & app config", modifier = Modifier.padding(start = 4.dp))
-            Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
-                Column {
-                    AccountActionRow(
-                        icon = Icons.Outlined.Schedule,
-                        label = "Daily digest time",
-                        supporting = "Scheduled brief delivery",
-                        trailingValue = state.digestTime,
-                        onClick = { onIntent(AccountIntent.DigestTimeCycled) },
-                    )
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    AccountActionRow(
-                        icon = Icons.Filled.Notes,
-                        label = "Summary length",
-                        supporting = "Reading depth",
-                        trailingValue = state.summaryLength.label,
-                        onClick = { onIntent(AccountIntent.SummaryLengthCycled) },
-                    )
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    AccountActionRow(
-                        icon = Icons.Filled.Notifications,
-                        label = "Notifications",
-                        supporting = "Breaking releases & CVEs",
-                        trailingValue = if (state.notificationsEnabled) "On" else "Off",
-                        onClick = { onIntent(AccountIntent.NotificationsToggled(!state.notificationsEnabled)) },
-                    )
-                }
-            }
-
+            // Settings are device-local and stay available signed out — only the profile itself
+            // needs an account.
             EyebrowText("Account", modifier = Modifier.padding(start = 4.dp))
             Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                 Column {

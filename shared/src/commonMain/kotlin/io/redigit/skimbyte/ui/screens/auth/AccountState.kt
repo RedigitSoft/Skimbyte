@@ -1,6 +1,5 @@
 package io.redigit.skimbyte.ui.screens.auth
 
-import io.redigit.skimbyte.data.local.SummaryLength
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.util.PickedImage
 
@@ -32,8 +31,4 @@ data class AccountState(
     val isVerified: Boolean = false,
     val savedCount: Int? = null,
     val followedTopics: List<Topic> = emptyList(),
-    // Tunable feed/app config shown on the profile (backed by AppConfigStore).
-    val digestTime: String = "08:30",
-    val summaryLength: SummaryLength = SummaryLength.Medium,
-    val notificationsEnabled: Boolean = true,
 )
