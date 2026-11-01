@@ -155,12 +155,15 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
-    fun uploadAvatar_oversizedImage_failsWithoutCallingTheApi() = runTest(UnconfinedTestDispatcher()) {
+    fun uploadAvatar_undecodableOversizedBlob_failsWithoutCallingTheApi() = runTest(UnconfinedTestDispatcher()) {
         val api = FakeAuthApiForProfile(Result.success(MeResponseDto("u1")))
         val sessionFlow = MutableStateFlow(Session("token"))
         val repo = ProfileRepositoryImpl(api, sessionFlow, backgroundScope)
         advanceUntilIdle()
 
+        // Zeroed bytes can't be decoded, so compression can't shrink them below the cap; the upload
+        // must fail closed rather than send a multi-MB blob. (A real oversized photo is instead
+        // compressed under the cap and uploaded — covered by ImageCompression's platform tests.)
         val oversized = PickedImage(ByteArray(3 * 1024 * 1024 + 1), "image/png")
         val result = repo.uploadAvatar(oversized)
 

@@ -3,7 +3,9 @@ package io.redigit.skimbyte.data.repositories
 import io.redigit.skimbyte.data.models.Profile
 import io.redigit.skimbyte.data.models.toDomain
 import io.redigit.skimbyte.data.remote.AuthApi
+import io.redigit.skimbyte.util.MAX_UPLOAD_IMAGE_BYTES
 import io.redigit.skimbyte.util.PickedImage
+import io.redigit.skimbyte.util.compressForUpload
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,17 +77,22 @@ class ProfileRepositoryImpl(
         _profile.value = authApi.me().toDomain().withVersions()
     }
 
-    private suspend fun upload(type: String, image: PickedImage): Result<Unit> {
-        if (image.bytes.size > MAX_IMAGE_BYTES) return Result.failure(IllegalArgumentException("Image too large"))
-        return runCatching {
-            authApi.uploadImage(type, image)
-            val version = kotlin.time.Clock.System.now().epochSeconds
-            when (type) {
-                TYPE_AVATAR -> avatarVersion = version
-                TYPE_BANNER -> bannerVersion = version
-            }
-            _profile.value = runCatching { authApi.me().toDomain().withVersions() }.getOrNull() ?: _profile.value
+    private suspend fun upload(type: String, image: PickedImage): Result<Unit> = runCatching {
+        // Crops come out as large PNGs; shrink to the upload cap (re-encoding as JPEG, downscaling
+        // if needed) so avatars and banners stay small.
+        val prepared = compressForUpload(image, MAX_UPLOAD_IMAGE_BYTES)
+        // Safety net: if even full compression can't get under the cap (e.g. undecodable bytes),
+        // fail rather than pushing a multi-MB upload the server would reject.
+        if (prepared.bytes.size > MAX_UPLOAD_IMAGE_BYTES) {
+            throw IllegalArgumentException("Image too large")
         }
+        authApi.uploadImage(type, prepared)
+        val version = kotlin.time.Clock.System.now().epochSeconds
+        when (type) {
+            TYPE_AVATAR -> avatarVersion = version
+            TYPE_BANNER -> bannerVersion = version
+        }
+        _profile.value = runCatching { authApi.me().toDomain().withVersions() }.getOrNull() ?: _profile.value
     }
 
     private fun Profile.withVersions(): Profile =
@@ -98,7 +105,6 @@ class ProfileRepositoryImpl(
     }
 
     companion object {
-        const val MAX_IMAGE_BYTES = 3 * 1024 * 1024
         private const val TYPE_AVATAR = "avatar"
         private const val TYPE_BANNER = "banner"
     }
