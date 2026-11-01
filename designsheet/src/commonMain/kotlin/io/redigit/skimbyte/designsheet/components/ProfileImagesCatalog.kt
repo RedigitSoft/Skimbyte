@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.AvatarWithEditBadge
 import io.redigit.skimbyte.ui.components.BannerImage
+import io.redigit.skimbyte.ui.components.ImageUploadState
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -21,22 +22,25 @@ fun ProfileImagesCatalogContent() {
         modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        AvatarWithEditBadge(avatarUrl = null, isUploading = false, onAvatarClick = {}, onEditClick = {})
+        AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Idle, onAvatarClick = {}, onEditClick = {})
         AvatarWithEditBadge(
             avatarUrl = "https://picsum.photos/seed/skimbyte-avatar/200",
-            isUploading = false,
+            uploadState = ImageUploadState.Idle,
             onAvatarClick = {},
             onEditClick = {},
         )
-        AvatarWithEditBadge(avatarUrl = null, isUploading = true, onAvatarClick = {}, onEditClick = {})
-        BannerImage(bannerUrl = null, isUploading = false, onBannerClick = {}, onEditClick = {})
+        AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Compressing, onAvatarClick = {}, onEditClick = {})
+        AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Uploading, onAvatarClick = {}, onEditClick = {})
+        AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Error, onAvatarClick = {}, onEditClick = {})
+        BannerImage(bannerUrl = null, uploadState = ImageUploadState.Idle, onBannerClick = {}, onEditClick = {})
         BannerImage(
             bannerUrl = "https://picsum.photos/seed/skimbyte-banner/800/300",
-            isUploading = false,
+            uploadState = ImageUploadState.Idle,
             onBannerClick = {},
             onEditClick = {},
         )
-        BannerImage(bannerUrl = null, isUploading = true, onBannerClick = {}, onEditClick = {})
+        BannerImage(bannerUrl = null, uploadState = ImageUploadState.Uploading, onBannerClick = {}, onEditClick = {})
+        BannerImage(bannerUrl = null, uploadState = ImageUploadState.Error, onBannerClick = {}, onEditClick = {})
     }
 }
 

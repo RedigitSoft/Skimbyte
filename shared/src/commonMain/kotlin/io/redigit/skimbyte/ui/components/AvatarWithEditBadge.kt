@@ -4,15 +4,19 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +43,7 @@ const val AVATAR_SHARED_ELEMENT_KEY = "avatar-image"
 @Composable
 fun AvatarWithEditBadge(
     avatarUrl: String?,
-    isUploading: Boolean,
+    uploadState: ImageUploadState,
     onAvatarClick: () -> Unit,
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -48,6 +52,7 @@ fun AvatarWithEditBadge(
     editable: Boolean = true,
     sharedTransition: SharedElementContext? = null,
 ) {
+    val busy = uploadState.isBusy
     val avatarModifier = if (sharedTransition != null) {
         with(sharedTransition.scope) {
             Modifier.sharedElement(
@@ -70,7 +75,7 @@ fun AvatarWithEditBadge(
                 .then(
                     if (editable) {
                         Modifier
-                            .clickable(enabled = !isUploading, onClick = onAvatarClick)
+                            .clickable(enabled = !busy, onClick = onAvatarClick)
                             .semantics { contentDescription = "View avatar" }
                     } else {
                         Modifier
@@ -93,28 +98,50 @@ fun AvatarWithEditBadge(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            if (isUploading) {
-                CircularProgressIndicator(modifier = Modifier.size(40.dp))
+            if (busy) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                    uploadState.caption()?.let {
+                        Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurface)
+                    }
+                }
             }
         }
         if (editable) {
+            val isError = uploadState == ImageUploadState.Error
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
                     .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
-                    .clickable(enabled = !isUploading, onClick = onEditClick)
+                    .clickable(enabled = !busy, onClick = onEditClick)
                     .semantics { contentDescription = "Change avatar" },
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(
-                    Icons.Filled.PhotoCamera,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                )
+                when {
+                    busy -> CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp,
+                    )
+                    isError -> Icon(
+                        Icons.Filled.ErrorOutline,
+                        contentDescription = "Upload failed",
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onError,
+                    )
+                    else -> Icon(
+                        Icons.Filled.PhotoCamera,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
             }
         }
     }
@@ -124,7 +151,7 @@ fun AvatarWithEditBadge(
 @Preview
 @Composable
 private fun AvatarWithEditBadgeNoAvatarPreview() {
-    SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, isUploading = false, onAvatarClick = {}, onEditClick = {}) }
+    SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Idle, onAvatarClick = {}, onEditClick = {}) }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -132,15 +159,29 @@ private fun AvatarWithEditBadgeNoAvatarPreview() {
 @Composable
 private fun AvatarWithEditBadgeNoAvatarLightPreview() {
     SkimbyteTheme(darkTheme = false) {
-        AvatarWithEditBadge(avatarUrl = null, isUploading = false, onAvatarClick = {}, onEditClick = {})
+        AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Idle, onAvatarClick = {}, onEditClick = {})
     }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
+private fun AvatarWithEditBadgeCompressingPreview() {
+    SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Compressing, onAvatarClick = {}, onEditClick = {}) }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview
+@Composable
 private fun AvatarWithEditBadgeUploadingPreview() {
-    SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, isUploading = true, onAvatarClick = {}, onEditClick = {}) }
+    SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Uploading, onAvatarClick = {}, onEditClick = {}) }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview
+@Composable
+private fun AvatarWithEditBadgeErrorPreview() {
+    SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Error, onAvatarClick = {}, onEditClick = {}) }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -150,7 +191,7 @@ private fun AvatarWithEditBadgeWithImagePreview() {
     SkimbyteTheme {
         AvatarWithEditBadge(
             avatarUrl = "https://picsum.photos/seed/skimbyte-avatar/200",
-            isUploading = false,
+            uploadState = ImageUploadState.Idle,
             onAvatarClick = {},
             onEditClick = {},
         )

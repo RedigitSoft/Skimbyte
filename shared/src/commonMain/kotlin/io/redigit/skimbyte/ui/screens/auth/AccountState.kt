@@ -1,6 +1,7 @@
 package io.redigit.skimbyte.ui.screens.auth
 
 import io.redigit.skimbyte.data.models.Topic
+import io.redigit.skimbyte.ui.components.ImageUploadState
 import io.redigit.skimbyte.util.PickedImage
 
 /** Which profile image an in-progress pick/crop targets. */
@@ -13,8 +14,8 @@ data class AccountState(
     val isLoggedIn: Boolean = false,
     val avatarUrl: String? = null,
     val bannerUrl: String? = null,
-    val avatarUploadInProgress: Boolean = false,
-    val bannerUploadInProgress: Boolean = false,
+    val avatarUpload: ImageUploadState = ImageUploadState.Idle,
+    val bannerUpload: ImageUploadState = ImageUploadState.Idle,
     val isRefreshing: Boolean = false,
     val pendingCrop: PendingCrop? = null,
     val avatarError: String? = null,

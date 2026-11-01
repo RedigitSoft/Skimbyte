@@ -172,6 +172,20 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
+    fun uploadAvatar_reportsCompressingThenUploadingStages() = runTest(UnconfinedTestDispatcher()) {
+        val api = FakeAuthApiForProfile(Result.success(MeResponseDto("u1")))
+        val sessionFlow = MutableStateFlow(Session("token"))
+        val repo = ProfileRepositoryImpl(api, sessionFlow, backgroundScope)
+        advanceUntilIdle()
+
+        val stages = mutableListOf<UploadStage>()
+        repo.uploadAvatar(PickedImage(ByteArray(10), "image/png")) { stages.add(it) }
+        advanceUntilIdle()
+
+        assertEquals(listOf(UploadStage.Compressing, UploadStage.Uploading), stages)
+    }
+
+    @Test
     fun uploadAvatar_success_refetchesProfile() = runTest(UnconfinedTestDispatcher()) {
         val api = FakeAuthApiForProfile(Result.success(MeResponseDto("u1", avatarUrl = "avatars/u1/new.jpg")))
         val sessionFlow = MutableStateFlow(Session("token"))

@@ -94,7 +94,7 @@ fun AccountScreen(
         Column(modifier = Modifier.fillMaxWidth()) {
             BannerImage(
                 bannerUrl = state.bannerUrl,
-                isUploading = state.bannerUploadInProgress,
+                uploadState = state.bannerUpload,
                 onBannerClick = onBannerClick,
                 onEditClick = onBannerEditClick,
                 // Signed out there's nothing to view or upload — the header is decorative.
@@ -104,7 +104,7 @@ fun AccountScreen(
             Box(modifier = Modifier.fillMaxWidth().offset(y = (-60).dp), contentAlignment = Alignment.CenterStart) {
                 AvatarWithEditBadge(
                     avatarUrl = state.avatarUrl,
-                    isUploading = state.avatarUploadInProgress,
+                    uploadState = state.avatarUpload,
                     onAvatarClick = onAvatarClick,
                     onEditClick = onAvatarEditClick,
                     modifier = Modifier.padding(start = 24.dp),

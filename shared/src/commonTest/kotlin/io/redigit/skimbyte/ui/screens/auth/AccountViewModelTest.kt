@@ -5,7 +5,9 @@ import io.redigit.skimbyte.data.models.Profile
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.data.repositories.ProfileRepository
 import io.redigit.skimbyte.data.repositories.Session
+import io.redigit.skimbyte.data.repositories.UploadStage
 import io.redigit.skimbyte.data.repositories.UserDataRepository
+import io.redigit.skimbyte.ui.components.ImageUploadState
 import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -56,13 +58,17 @@ private class FakeProfileRepository(initial: Profile? = null) : ProfileRepositor
     var removeAvatarCallCount = 0
     var removeBannerCallCount = 0
     var refreshCallCount = 0
-    override suspend fun uploadAvatar(image: PickedImage): Result<Unit> {
+    override suspend fun uploadAvatar(image: PickedImage, onStage: (UploadStage) -> Unit): Result<Unit> {
         uploadAvatarCallCount++
+        onStage(UploadStage.Compressing)
         avatarUploadGate?.await()
+        onStage(UploadStage.Uploading)
         return avatarResult
     }
-    override suspend fun uploadBanner(image: PickedImage): Result<Unit> {
+    override suspend fun uploadBanner(image: PickedImage, onStage: (UploadStage) -> Unit): Result<Unit> {
         uploadBannerCallCount++
+        onStage(UploadStage.Compressing)
+        onStage(UploadStage.Uploading)
         return bannerResult
     }
     override suspend fun removeAvatar(): Result<Unit> {
@@ -181,7 +187,7 @@ class AccountViewModelTest {
         vm.onIntent(AccountIntent.CropConfirmed(PickedImage(ByteArray(8), "image/png")))
 
         assertNull(vm.state.value.pendingCrop)
-        assertEquals(false, vm.state.value.avatarUploadInProgress)
+        assertEquals(ImageUploadState.Idle, vm.state.value.avatarUpload)
         assertNull(vm.state.value.avatarError)
         assertEquals(1, repo.uploadAvatarCallCount)
     }
@@ -195,7 +201,7 @@ class AccountViewModelTest {
         vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
         vm.onIntent(AccountIntent.CropConfirmed(PickedImage(ByteArray(8), "image/png")))
 
-        assertEquals(false, vm.state.value.avatarUploadInProgress)
+        assertEquals(ImageUploadState.Error, vm.state.value.avatarUpload)
         assertEquals("Could not update avatar", vm.state.value.avatarError)
     }
 
@@ -213,6 +219,23 @@ class AccountViewModelTest {
         gate.complete(Unit)
 
         assertEquals(1, repo.uploadAvatarCallCount)
+    }
+
+    @Test
+    fun onCropConfirmed_avatar_surfacesInProgressStateWhileUploading() = runTest {
+        val gate = CompletableDeferred<Unit>()
+        val repo = FakeProfileRepository()
+        repo.avatarUploadGate = gate
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), repo)
+
+        vm.onIntent(AccountIntent.AvatarPicked(PickedImage(ByteArray(10), "image/png")))
+        vm.onIntent(AccountIntent.CropConfirmed(PickedImage(ByteArray(8), "image/png")))
+
+        // The fake reports Compressing then blocks on the gate before it would report Uploading,
+        // so the screen shows an in-flight (busy) state rather than Idle.
+        assertEquals(ImageUploadState.Compressing, vm.state.value.avatarUpload)
+
+        gate.complete(Unit)
     }
 
     @Test
@@ -287,7 +310,7 @@ class AccountViewModelTest {
         vm.onIntent(AccountIntent.CropConfirmed(PickedImage(ByteArray(8), "image/png")))
 
         assertNull(vm.state.value.pendingCrop)
-        assertEquals(false, vm.state.value.bannerUploadInProgress)
+        assertEquals(ImageUploadState.Idle, vm.state.value.bannerUpload)
         assertNull(vm.state.value.bannerError)
         assertEquals(1, repo.uploadBannerCallCount)
     }

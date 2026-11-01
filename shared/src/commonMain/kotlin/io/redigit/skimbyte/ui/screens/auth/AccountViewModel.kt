@@ -5,7 +5,10 @@ import androidx.lifecycle.viewModelScope
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.ProfileRepository
+import io.redigit.skimbyte.data.repositories.UploadStage
 import io.redigit.skimbyte.data.repositories.UserDataRepository
+import io.redigit.skimbyte.ui.components.ImageUploadState
+import io.redigit.skimbyte.ui.components.isBusy
 import io.redigit.skimbyte.util.PickedImage
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -128,27 +131,36 @@ class AccountViewModel(
     }
 
     private fun uploadAvatar(image: PickedImage) {
-        if (_state.value.avatarUploadInProgress) return
-        _state.value = _state.value.copy(avatarUploadInProgress = true, avatarError = null)
+        if (_state.value.avatarUpload.isBusy) return
+        _state.value = _state.value.copy(avatarUpload = ImageUploadState.Compressing, avatarError = null)
         viewModelScope.launch {
-            val result = profileRepository.uploadAvatar(image)
+            val result = profileRepository.uploadAvatar(image) { stage ->
+                _state.value = _state.value.copy(avatarUpload = stage.toUploadState())
+            }
             _state.value = _state.value.copy(
-                avatarUploadInProgress = false,
+                avatarUpload = if (result.isSuccess) ImageUploadState.Idle else ImageUploadState.Error,
                 avatarError = result.exceptionOrNull()?.let { "Could not update avatar" },
             )
         }
     }
 
     private fun uploadBanner(image: PickedImage) {
-        if (_state.value.bannerUploadInProgress) return
-        _state.value = _state.value.copy(bannerUploadInProgress = true, bannerError = null)
+        if (_state.value.bannerUpload.isBusy) return
+        _state.value = _state.value.copy(bannerUpload = ImageUploadState.Compressing, bannerError = null)
         viewModelScope.launch {
-            val result = profileRepository.uploadBanner(image)
+            val result = profileRepository.uploadBanner(image) { stage ->
+                _state.value = _state.value.copy(bannerUpload = stage.toUploadState())
+            }
             _state.value = _state.value.copy(
-                bannerUploadInProgress = false,
+                bannerUpload = if (result.isSuccess) ImageUploadState.Idle else ImageUploadState.Error,
                 bannerError = result.exceptionOrNull()?.let { "Could not update banner" },
             )
         }
+    }
+
+    private fun UploadStage.toUploadState(): ImageUploadState = when (this) {
+        UploadStage.Compressing -> ImageUploadState.Compressing
+        UploadStage.Uploading -> ImageUploadState.Uploading
     }
 
     private data class ProfileDerived(

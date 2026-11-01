@@ -14,10 +14,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+/** The phases an image upload passes through, reported via the `onStage` callbacks so the UI can
+ * show distinct feedback for each. */
+enum class UploadStage { Compressing, Uploading }
+
 interface ProfileRepository {
     val profile: StateFlow<Profile?>
-    suspend fun uploadAvatar(image: PickedImage): Result<Unit>
-    suspend fun uploadBanner(image: PickedImage): Result<Unit>
+    suspend fun uploadAvatar(image: PickedImage, onStage: (UploadStage) -> Unit = {}): Result<Unit>
+    suspend fun uploadBanner(image: PickedImage, onStage: (UploadStage) -> Unit = {}): Result<Unit>
     suspend fun removeAvatar(): Result<Unit>
     suspend fun removeBanner(): Result<Unit>
     /** Re-fetches the profile from `/me`, e.g. on pull-to-refresh. */
@@ -58,8 +62,11 @@ class ProfileRepositoryImpl(
         }
     }
 
-    override suspend fun uploadAvatar(image: PickedImage): Result<Unit> = upload(TYPE_AVATAR, image)
-    override suspend fun uploadBanner(image: PickedImage): Result<Unit> = upload(TYPE_BANNER, image)
+    override suspend fun uploadAvatar(image: PickedImage, onStage: (UploadStage) -> Unit): Result<Unit> =
+        upload(TYPE_AVATAR, image, onStage)
+
+    override suspend fun uploadBanner(image: PickedImage, onStage: (UploadStage) -> Unit): Result<Unit> =
+        upload(TYPE_BANNER, image, onStage)
 
     // Optimistic/local only: there is no delete endpoint yet, so this clears the URL in-memory and
     // does not persist across a reload. Point at DELETE /me/avatar|banner once it exists.
@@ -77,15 +84,17 @@ class ProfileRepositoryImpl(
         _profile.value = authApi.me().toDomain().withVersions()
     }
 
-    private suspend fun upload(type: String, image: PickedImage): Result<Unit> = runCatching {
+    private suspend fun upload(type: String, image: PickedImage, onStage: (UploadStage) -> Unit): Result<Unit> = runCatching {
         // Crops come out as large PNGs; shrink to the upload cap (re-encoding as JPEG, downscaling
         // if needed) so avatars and banners stay small.
+        onStage(UploadStage.Compressing)
         val prepared = compressForUpload(image, MAX_UPLOAD_IMAGE_BYTES)
         // Safety net: if even full compression can't get under the cap (e.g. undecodable bytes),
         // fail rather than pushing a multi-MB upload the server would reject.
         if (prepared.bytes.size > MAX_UPLOAD_IMAGE_BYTES) {
             throw IllegalArgumentException("Image too large")
         }
+        onStage(UploadStage.Uploading)
         authApi.uploadImage(type, prepared)
         val version = kotlin.time.Clock.System.now().epochSeconds
         when (type) {

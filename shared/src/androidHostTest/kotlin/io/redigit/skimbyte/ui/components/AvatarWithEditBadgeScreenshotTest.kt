@@ -24,7 +24,16 @@ class AvatarWithEditBadgeScreenshotTest {
     @Test
     fun noAvatar() {
         composeTestRule.setContent {
-            SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, isUploading = false, onAvatarClick = {}, onEditClick = {}) }
+            SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Idle, onAvatarClick = {}, onEditClick = {}) }
+        }
+        composeTestRule.onRoot().captureRoboImage()
+    }
+
+    @OptIn(ExperimentalSharedTransitionApi::class)
+    @Test
+    fun compressing() {
+        composeTestRule.setContent {
+            SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Compressing, onAvatarClick = {}, onEditClick = {}) }
         }
         composeTestRule.onRoot().captureRoboImage()
     }
@@ -33,7 +42,16 @@ class AvatarWithEditBadgeScreenshotTest {
     @Test
     fun uploading() {
         composeTestRule.setContent {
-            SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, isUploading = true, onAvatarClick = {}, onEditClick = {}) }
+            SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Uploading, onAvatarClick = {}, onEditClick = {}) }
+        }
+        composeTestRule.onRoot().captureRoboImage()
+    }
+
+    @OptIn(ExperimentalSharedTransitionApi::class)
+    @Test
+    fun error() {
+        composeTestRule.setContent {
+            SkimbyteTheme { AvatarWithEditBadge(avatarUrl = null, uploadState = ImageUploadState.Error, onAvatarClick = {}, onEditClick = {}) }
         }
         composeTestRule.onRoot().captureRoboImage()
     }
