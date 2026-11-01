@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - `avatarUrl`/`bannerUrl` from the auth server are always bare bucket-relative paths — resolve them the same way regardless of origin (Google-seeded or user-uploaded); never special-case the source.
-- `SPACES_CDN_BASE_URL` defaults to `https://cdn.example.com` (a real, non-secret, public CDN domain) — unlike `authBaseUrl`/`skimbyteApiBaseUrl`, which default to blank in `local.properties.example` because they're per-developer/per-environment.
+- `SPACES_CDN_BASE_URL` defaults to blank in `local.properties.example` (set it to your own CDN subdomain, e.g. `https://cdn.example.com`) — like `authBaseUrl`/`skimbyteApiBaseUrl`, which are also per-developer/per-environment.
 - the auth server's `avatarUrl`/`bannerUrl` fields on `/me` may not have shipped yet when this lands: the `me()` fetch must fail soft (catch, leave `profile` at `null`, never crash or surface an error) so the two repos can be built and deployed independently.
 - No new screen, no upload UI, no auto-refresh on a timer — data layer only, fetched once per session transition.
 
@@ -70,7 +70,7 @@ In `local.properties.example`, add a commented line near the other backend keys:
 # override only if pointing at a different CDN (e.g. staging).
 #spacesCdnBaseUrl=""
 ```
-In `shared/build.gradle.kts`'s `generateAuthConfig` task, add `val spacesCdnBaseUrl = props.getProperty("spacesCdnBaseUrl", "https://cdn.example.com")` and add `const val SPACES_CDN_BASE_URL = "$spacesCdnBaseUrl"` to the generated `BackendConfig` object, alongside `API_BASE_URL`.
+In `shared/build.gradle.kts`'s `generateAuthConfig` task, add `val spacesCdnBaseUrl = props.getProperty("spacesCdnBaseUrl", "")` and add `const val SPACES_CDN_BASE_URL = "$spacesCdnBaseUrl"` to the generated `BackendConfig` object, alongside `API_BASE_URL`.
 
 - [ ] **Step 4: Add the constant and resolver to `ApiConfig.kt`**
 

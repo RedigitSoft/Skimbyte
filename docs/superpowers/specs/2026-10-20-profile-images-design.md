@@ -35,7 +35,7 @@ the fetched data into it is explicitly out of scope for this change.
 
 ## Constraints
 
-- CDN domain: `https://cdn.example.com` — a custom subdomain in front of
+- CDN domain: a custom subdomain (e.g. `https://cdn.example.com`) in front of
   DigitalOcean Spaces' own CDN (not a reverse proxy; DNS CNAME + DO-managed
   TLS). Add `ApiConfig.SPACES_CDN_BASE_URL`, sourced the same way as
   `AUTH_BASE_URL`/`BASE_URL` (generated `BackendConfig`, via
