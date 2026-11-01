@@ -32,7 +32,6 @@ import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteTheme
-import io.redigit.skimbyte.ui.components.DailyProgressBar
 import io.redigit.skimbyte.ui.components.PostCard
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.components.TopicFilterRow
@@ -66,15 +65,6 @@ fun FeedScreen(
             selectedTopic = state.selectedTopic,
             onTopicSelected = { onIntent(FeedIntent.TopicSelected(it)) },
         )
-        /*val currentFeed = state.currentFeed
-        if (currentFeed.posts.isNotEmpty()) {
-            val brief = dailyBrief(currentFeed.posts, currentFeed.currentIndex)
-            DailyProgressBar(
-                read = brief.read,
-                total = brief.total,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-        }*/
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = { onIntent(FeedIntent.Refresh) },

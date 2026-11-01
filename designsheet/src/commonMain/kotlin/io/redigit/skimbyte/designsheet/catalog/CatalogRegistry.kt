@@ -3,7 +3,6 @@ package io.redigit.skimbyte.designsheet.catalog
 import io.redigit.skimbyte.designsheet.components.AccountScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.BookmarkButtonCatalogContent
 import io.redigit.skimbyte.designsheet.components.ButtonsCatalogContent
-import io.redigit.skimbyte.designsheet.components.DailyProgressBarCatalogContent
 import io.redigit.skimbyte.designsheet.components.ImageEditSheetCatalogContent
 import io.redigit.skimbyte.designsheet.components.ImageCropScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.LoginSheetCatalogContent
@@ -12,7 +11,6 @@ import io.redigit.skimbyte.designsheet.components.PostCardCatalogContent
 import io.redigit.skimbyte.designsheet.components.PostDetailScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.ProfileImagesCatalogContent
 import io.redigit.skimbyte.designsheet.components.SavedPostRowCatalogContent
-import io.redigit.skimbyte.designsheet.components.SearchScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SelectionControlsCatalogContent
 import io.redigit.skimbyte.designsheet.components.SettingsScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SignedOutPromptCatalogContent
@@ -46,9 +44,7 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("topic-filter", "Topic filter", "Feed") { TopicFilterCatalogContent() },
     CatalogItem("bookmark-button", "Bookmark button", "Feed") { BookmarkButtonCatalogContent() },
     CatalogItem("stacked-card-browser", "Stacked card browser", "Feed") { StackedCardBrowserCatalogContent() },
-    CatalogItem("daily-progress-bar", "Daily progress bar", "Feed") { DailyProgressBarCatalogContent() },
     CatalogItem("post-detail", "Post detail", "Feed") { PostDetailScreenCatalogContent() },
-    CatalogItem("search-screen", "Search", "Feed") { SearchScreenCatalogContent() },
     CatalogItem("bottom-nav-bar", "Bottom nav bar", "Navigation") { SkimbyteBottomNavBarCatalogContent() },
     CatalogItem("navigation-rail", "Navigation rail", "Navigation") { SkimbyteNavigationRailCatalogContent() },
     CatalogItem("saved-post-row", "Saved post row", "Bookmarks") { SavedPostRowCatalogContent() },
