@@ -232,7 +232,7 @@ class FeedViewModelTest {
     }
 
     @Test
-    fun `initial filter is All, followed by stored interests`() = runTest {
+    fun `initial filter is All then stored interests`() = runTest {
         val repository = FakePostsRepository { _, _ -> Result.success(Page(emptyList(), null)) }
         val store = fakeTopicPreferencesStore().apply { setSelectedTopics(setOf(Topic.Kotlin, Topic.Android)) }
         val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)

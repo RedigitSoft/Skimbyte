@@ -41,7 +41,7 @@ class TopicPreferencesStoreTest {
     }
 
     @Test
-    fun `legacy comma-separated ids still resolve, unknown ids ignored`() {
+    fun `legacy comma-separated ids still resolve and unknown ids ignored`() {
         val settings = FakeSettings(mapOf("selected_topics" to "kotlin,not-a-real-topic"))
         val store = SettingsTopicPreferencesStore(settings)
         assertEquals(setOf(Topic.Kotlin), store.selectedTopics())
@@ -69,13 +69,13 @@ class TopicPreferencesStoreTest {
     }
 
     @Test
-    fun `catalogue defaults to the built-in selectable topics, unselected`() {
+    fun `catalogue defaults to the built-in selectable topics unselected`() {
         val store = SettingsTopicPreferencesStore(FakeSettings())
         assertEquals(Topic.selectable.map { SelectableTopic(it, isSelected = false) }, store.knownTopics())
     }
 
     @Test
-    fun `syncKnownTopics returns the newly discovered topics, unselected`() {
+    fun `syncKnownTopics returns the newly discovered topics unselected`() {
         val store = SettingsTopicPreferencesStore(FakeSettings())
         store.setSelectedTopics(setOf(Topic.Kotlin))
         val ai = Topic(id = "ai", displayLabel = "AI", apiValue = "AI")
@@ -91,7 +91,7 @@ class TopicPreferencesStoreTest {
     }
 
     @Test
-    fun `syncKnownTopics adopts server order, drops unserved topics, and is quiet when nothing is new`() {
+    fun `syncKnownTopics adopts server order and drops unserved topics and is quiet when nothing is new`() {
         val store = SettingsTopicPreferencesStore(FakeSettings())
         store.setSelectedTopics(setOf(Topic.Android))
 
