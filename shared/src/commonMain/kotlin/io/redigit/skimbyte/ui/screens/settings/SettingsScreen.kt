@@ -85,7 +85,9 @@ fun SettingsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Column(
-                modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth().padding(horizontal = 16.dp),
+                modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp, bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 EyebrowText("Appearance", modifier = Modifier.padding(start = 4.dp))
