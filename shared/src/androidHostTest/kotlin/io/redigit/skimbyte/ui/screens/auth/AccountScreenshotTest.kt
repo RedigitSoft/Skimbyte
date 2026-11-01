@@ -28,10 +28,7 @@ class AccountScreenshotTest {
         handle = "@alexrivera",
         bio = "Staff Android & Systems Engineer. Writing KMP, Rust microservices, and local LLMs.",
         isVerified = true,
-        readCount = 142,
         savedCount = 18,
-        streakDays = 14,
-        weeklyReads = listOf(8, 12, 6, 14, 20, 9, 11),
         followedTopics = Topic.selectable.take(5),
     )
 

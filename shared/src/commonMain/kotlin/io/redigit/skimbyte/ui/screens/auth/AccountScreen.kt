@@ -16,11 +16,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.background
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -41,7 +39,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -52,7 +49,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -140,16 +136,7 @@ fun AccountScreen(
                         isVerified = state.isVerified,
                     )
                 }
-                if (state.readCount != null || state.savedCount != null || state.streakDays != null) {
-                    ProfileStatsRow(
-                        readCount = state.readCount,
-                        savedCount = state.savedCount,
-                        streakDays = state.streakDays,
-                    )
-                }
-                if (state.weeklyReads.isNotEmpty()) {
-                    WeeklyVelocityChart(weeklyReads = state.weeklyReads)
-                }
+                state.savedCount?.let { SavedStat(savedCount = it) }
                 if (state.followedTopics.isNotEmpty()) {
                     FollowedTopicsSection(topics = state.followedTopics)
                 }
@@ -328,87 +315,17 @@ private fun ProfileIdentityHeader(
     }
 }
 
-/** Three-up reading stats: read / saved / streak. */
+/** The user's saved-post count — the one profile stat backed by real data (their bookmarks). */
 @Composable
-private fun ProfileStatsRow(
-    readCount: Int?,
-    savedCount: Int?,
-    streakDays: Int?,
-    modifier: Modifier = Modifier,
-) {
+private fun SavedStat(savedCount: Int, modifier: Modifier = Modifier) {
     Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier.fillMaxWidth()) {
-        Row(
+        Column(
             modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            StatCell(value = readCount?.toString() ?: "–", label = "Read", modifier = Modifier.weight(1f))
-            VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
-            StatCell(value = savedCount?.toString() ?: "–", label = "Saved", modifier = Modifier.weight(1f))
-            VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
-            StatCell(value = streakDays?.let { "${it}d" } ?: "–", label = "Streak", modifier = Modifier.weight(1f))
-        }
-    }
-}
-
-@Composable
-private fun StatCell(value: String, label: String, modifier: Modifier = Modifier) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(value, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        EyebrowText(label)
-    }
-}
-
-/** A seven-day reading-velocity bar chart; the busiest day is accented. */
-@Composable
-private fun WeeklyVelocityChart(weeklyReads: List<Int>, modifier: Modifier = Modifier) {
-    val dayLabels = listOf("M", "T", "W", "T", "F", "S", "S")
-    val reads = weeklyReads.take(7)
-    val maxReads = (reads.maxOrNull() ?: 0).coerceAtLeast(1)
-    Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            EyebrowText("Weekly reading velocity")
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.Bottom,
-            ) {
-                // Only the first busiest day gets the count label, so ties don't double-label.
-                val busiestIndex = reads.indexOfFirst { it == maxReads && it > 0 }
-                reads.forEachIndexed { index, value ->
-                    val fraction = value.toFloat() / maxReads
-                    val isBusiest = index == busiestIndex
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
-                    ) {
-                        if (isBusiest) {
-                            Text(
-                                value.toString(),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .width(16.dp)
-                                // Minimum height keeps low-count days legible instead of
-                                // rendering as a near-invisible sliver.
-                                .height((8 + fraction * 56).dp)
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(
-                                    MaterialTheme.colorScheme.primary.copy(alpha = if (isBusiest) 1f else 0.55f),
-                                ),
-                        )
-                        Text(
-                            dayLabels.getOrElse(index) { "" },
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
+            Text(savedCount.toString(), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            EyebrowText("Saved")
         }
     }
 }
@@ -577,10 +494,7 @@ private val richAccountState = AccountState(
     handle = "@alexrivera",
     bio = "Staff Android & Systems Engineer. Writing KMP, Rust microservices, and local LLMs.",
     isVerified = true,
-    readCount = 142,
     savedCount = 18,
-    streakDays = 14,
-    weeklyReads = listOf(8, 12, 6, 14, 20, 9, 11),
     followedTopics = Topic.selectable.take(5),
 )
 

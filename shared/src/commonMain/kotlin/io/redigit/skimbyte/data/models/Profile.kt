@@ -5,9 +5,9 @@ import io.redigit.skimbyte.data.remote.ApiConfig
 
 /**
  * The logged-in user's profile. [userId], [avatarUrl] and [bannerUrl] come from the live `/me`
- * endpoint today; the remaining fields back the profile screen's identity header, stats, and
- * reading-velocity chart and are not yet returned by the server - they stay
- * null/empty until it does, at which point they flow through [toDomain] unchanged.
+ * endpoint today; the identity fields ([displayName], [handle], [bio], [isVerified]) and
+ * [savedCount] back the profile screen and are not all returned by the server yet - they stay
+ * null until it does, at which point they flow through [toDomain] unchanged.
  */
 data class Profile(
     val userId: String,
@@ -18,10 +18,7 @@ data class Profile(
     val handle: String? = null,
     val bio: String? = null,
     val isVerified: Boolean = false,
-    val readCount: Int? = null,
     val savedCount: Int? = null,
-    val streakDays: Int? = null,
-    val weeklyReads: List<Int> = emptyList(),
 )
 
 fun MeResponseDto.toDomain(): Profile = Profile(
@@ -33,8 +30,5 @@ fun MeResponseDto.toDomain(): Profile = Profile(
     handle = handle,
     bio = bio,
     isVerified = isVerified ?: false,
-    readCount = readCount,
     savedCount = savedCount,
-    streakDays = streakDays,
-    weeklyReads = weeklyReads ?: emptyList(),
 )

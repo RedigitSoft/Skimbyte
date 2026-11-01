@@ -17,8 +17,5 @@ data class MeResponseDto(
     val handle: String? = null,
     val bio: String? = null,
     val isVerified: Boolean? = null,
-    val readCount: Int? = null,
     val savedCount: Int? = null,
-    val streakDays: Int? = null,
-    val weeklyReads: List<Int>? = null,
 )

@@ -22,18 +22,15 @@ data class AccountState(
     val bannerError: String? = null,
     val deleteDataInProgress: Boolean = false,
     val deleteDataError: String? = null,
-    // Identity + reading stats shown on the profile screen. Populated by AccountViewModel from the
-    // real profile where available (handle derived from userId, saved count from bookmarks, followed
-    // topics from preferences); fields the server doesn't return yet stay null and don't render.
+    // Identity shown on the profile screen, plus the saved count. Populated by AccountViewModel from
+    // the real profile where available (handle derived from userId, saved count from bookmarks,
+    // followed topics from preferences); fields the server doesn't return yet stay null/empty.
     val displayName: String? = null,
     val handle: String? = null,
     val email: String? = null,
     val bio: String? = null,
     val isVerified: Boolean = false,
-    val readCount: Int? = null,
     val savedCount: Int? = null,
-    val streakDays: Int? = null,
-    val weeklyReads: List<Int> = emptyList(),
     val followedTopics: List<Topic> = emptyList(),
     // Tunable feed/app config shown on the profile (backed by AppConfigStore).
     val digestTime: String = "08:30",

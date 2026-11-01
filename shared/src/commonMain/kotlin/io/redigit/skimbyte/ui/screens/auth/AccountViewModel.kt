@@ -57,10 +57,7 @@ class AccountViewModel(
                     bio = if (loggedIn) profile?.bio else null,
                     email = if (loggedIn) profile?.email else null,
                     isVerified = loggedIn && profile?.isVerified == true,
-                    readCount = if (loggedIn) profile?.readCount else null,
                     savedCount = if (loggedIn) profile?.savedCount ?: bookmarks.size else null,
-                    streakDays = if (loggedIn) profile?.streakDays else null,
-                    weeklyReads = if (loggedIn) profile?.weeklyReads.orEmpty() else emptyList(),
                     followedTopics = if (loggedIn) topics.toList() else emptyList(),
                 )
             }.collect { d ->
@@ -74,10 +71,7 @@ class AccountViewModel(
                     email = d.email,
                     bio = d.bio,
                     isVerified = d.isVerified,
-                    readCount = d.readCount,
                     savedCount = d.savedCount,
-                    streakDays = d.streakDays,
-                    weeklyReads = d.weeklyReads,
                     followedTopics = d.followedTopics,
                 )
             }
@@ -186,10 +180,7 @@ class AccountViewModel(
         val email: String?,
         val bio: String?,
         val isVerified: Boolean,
-        val readCount: Int?,
         val savedCount: Int?,
-        val streakDays: Int?,
-        val weeklyReads: List<Int>,
         val followedTopics: List<Topic>,
     )
 }
