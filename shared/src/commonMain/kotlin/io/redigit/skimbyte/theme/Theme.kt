@@ -18,8 +18,10 @@ import androidx.compose.ui.graphics.Color
  * and light mode rendered lavender cards. A `.copy()` on a stock scheme is what produced that, so
  * both schemes now name every role and neither inherits a baseline value.
  *
- * `primary`, `onPrimary` and dark `error` are carried over from the shipped theme unchanged - they
- * are RED-12's subject and the accent hue is pending a board decision. See [SkimbyteAccent].
+ * The two shipped WCAG AA failures the RED-2 audit caught - white on the accent fill, and the dark
+ * `error` red - are fixed here. The accent *hue* itself is still the shipped one while the board
+ * decides on RED-3 - see [SkimbyteAccent] - and it still fails AA where `primary` is used as text
+ * on light surfaces (3.11:1 on `surface`); moving the hue is what clears that.
  */
 // M3's "fixed" accent roles hold the same value in both schemes by definition, so they are
 // declared once. The spec's role table omits them because nothing in the app references them yet -
@@ -41,9 +43,11 @@ private val TertiaryFixedDim = Color(0xFFF0D3A4)
 private val OnTertiaryFixed = Color(0xFF4A2E09)
 private val OnTertiaryFixedVariant = Color(0xFF7B4A13)
 
-private val SkimbyteDarkColors = darkColorScheme(
+internal val SkimbyteDarkColors = darkColorScheme(
     primary = SkimbyteAccent,
-    onPrimary = SkimbyteOnPrimary,
+    // Ink, not white: the shipped white label reached 3.28:1 on this fill at 12sp (StoryMeta.kt
+    // TopicPill, TopicFilterRow, TopicsScreen chips). Graphite10 clears 5.47:1.
+    onPrimary = Graphite10,
     primaryContainer = Color(0xFF4F2224),
     onPrimaryContainer = Clay70,
     inversePrimary = Clay10,
@@ -73,13 +77,12 @@ private val SkimbyteDarkColors = darkColorScheme(
     inverseOnSurface = Graphite10,
     outline = Graphite60,
     outlineVariant = Graphite50,
-    error = SkimbyteError,
-    // Cream0, not Graphite10 as the spec's table has it: the spec assumed the lighter oxblood
-    // `error` that RED-12 will introduce. Against the carried-over `#C64545` an ink tint reaches
-    // only 3.70:1, where white reaches 4.84:1. Both `onError` call sites are icon tints
-    // (AvatarWithEditBadge.kt, BannerImage.kt), so 3:1 would pass - but the two are one AA step
-    // apart for free. RED-12 must move this back to Graphite10 when it swaps in CrimsonDark.
-    onError = Cream0,
+    // The shipped `#C64545` was a validation red for a cream page (6.46:1 there) and reached only
+    // 3.70:1 on this floor and 3.04:1 on a dialog. CrimsonDark is the spec's stop, solved to clear
+    // 4.5:1 on every container level through surfaceContainerHighest (4.55:1 there, 6.19:1 here).
+    error = CrimsonDark,
+    // Ink on the lighter crimson (6.19:1); white reaches only 2.90:1 against it.
+    onError = Graphite10,
     errorContainer = Color(0xFF59222D),
     onErrorContainer = Color(0xFFF0A8B7),
     scrim = Color.Black,
@@ -97,9 +100,10 @@ private val SkimbyteDarkColors = darkColorScheme(
     onTertiaryFixedVariant = OnTertiaryFixedVariant,
 )
 
-private val SkimbyteLightColors = lightColorScheme(
+internal val SkimbyteLightColors = lightColorScheme(
     primary = SkimbyteAccent,
-    onPrimary = SkimbyteOnPrimary,
+    // Same 3.28:1 failure as dark - the fill is identical in both schemes.
+    onPrimary = Graphite10,
     primaryContainer = Clay80,
     onPrimaryContainer = Color(0xFF521E22),
     inversePrimary = Clay60,
@@ -129,8 +133,6 @@ private val SkimbyteLightColors = lightColorScheme(
     inverseOnSurface = Cream5,
     outline = Cream60,
     outlineVariant = Cream50,
-    // Light `error` had no shipped value to carry over - it was Material's baseline, which is the
-    // very thing this change removes - so it takes the spec's derived stop. Dark `error` is held.
     error = CrimsonLight,
     onError = Cream0,
     errorContainer = Color(0xFFF9DCE2),

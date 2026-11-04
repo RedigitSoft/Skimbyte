@@ -63,18 +63,10 @@ val CrimsonDark = Color(0xFFE8738A)
 val CrimsonLight = Color(0xFFA31431)
 
 /**
- * The three accent stops [RED-12] owns, carried over from the shipped theme unchanged.
- *
- * These are deliberately *not* re-derived here. RED-12 tracks the two shipped WCAG AA failures
- * that both live on this family - `onPrimary` on `primary` (3.28:1) and dark `error` on
- * `surfaceVariant` (3.44:1) - and the choice of accent hue is still pending a board decision.
- * Completing the role set does not require touching them, so this change leaves them exactly as
- * they shipped and fixes only the roles that were never set at all.
- *
- * When RED-12 lands, `primary` becomes `Clay50`/`Clay10` and `error` becomes
- * `CrimsonDark`/`CrimsonLight`, and dark `onError` must move back to [Graphite10] in the same
- * commit - white is only correct against the darker carried-over red (see Theme.kt).
+ * The accent hue, carried over from the shipped theme while the board decides between keeping it
+ * and moving `primary` onto the Clay ramp (RED-3). Everything drawn *on* it is already fixed:
+ * white on this fill reached only 3.28:1 at the 12sp `TopicPill` label, so `onPrimary` is
+ * [Graphite10] (5.47:1) in both schemes - the same ink the Clay ramp pairs with, so the hue swap
+ * is a one-role change whichever way the board goes.
  */
 val SkimbyteAccent = Color(0xFFCC785C)
-val SkimbyteOnPrimary = Color(0xFFFFFFFF)
-val SkimbyteError = Color(0xFFC64545)
