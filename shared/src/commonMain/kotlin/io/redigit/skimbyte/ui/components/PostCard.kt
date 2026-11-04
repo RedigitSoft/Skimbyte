@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -67,6 +68,12 @@ fun PostCard(
 ) {
     Card(
         shape = MaterialTheme.shapes.extraLarge,
+        // Pinned, not left to CardDefaults: the default resolves to surfaceContainerHighest, which
+        // put this card on a different role (and, while the theme was incomplete, a different hue
+        // family) from SavedPostRow. Both now name surfaceContainer - elevation level 2.
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
         modifier = modifier
             .fillMaxWidth()
             .widthIn(max = 480.dp)

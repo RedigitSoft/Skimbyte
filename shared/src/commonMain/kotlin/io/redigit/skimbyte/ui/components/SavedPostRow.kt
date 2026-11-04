@@ -51,7 +51,9 @@ fun SavedPostRow(
 ) {
     Surface(
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surface,
+        // surfaceContainer, matching PostCard: a saved row is a card, so it sits at elevation
+        // level 2 rather than on the screen floor.
+        color = MaterialTheme.colorScheme.surfaceContainer,
         modifier = modifier.fillMaxWidth().clickable { onClick(post) },
     ) {
         Row(

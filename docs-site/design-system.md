@@ -23,7 +23,8 @@ A deployed build is browsable at [designsheet/](../designsheet/) on this site.
 ## Principles
 
 - **Theme:** Material 3 Expressive (`MaterialExpressiveTheme` with spring-based motion), with
-  Skimbyte's brand colors layered onto the expressive color roles. Dark is the default.
+  both color schemes specified role-by-role from Skimbyte's own warm ramps rather than layered
+  onto Material's baseline. Dark is the default.
 - **No hardcoded values:** colors, shapes, and type always come from `MaterialTheme` /
   shared tokens — components never embed raw hex values or dp-sized text styles.
 - **Stateless components:** every reusable composable takes `(state, callbacks)` and hoists all
