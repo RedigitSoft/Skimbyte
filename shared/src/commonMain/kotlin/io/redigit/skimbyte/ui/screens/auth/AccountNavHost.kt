@@ -129,6 +129,11 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
                         onPrivacyPolicyClick = { openUrl(WebsiteLinks.PRIVACY_POLICY_URL) },
                         onLicensesClick = { backStack.add(Licenses) },
                         onBack = { backStack.removeLastOrNull() },
+                        isLoggedIn = uiState.isLoggedIn,
+                        onLogout = { accountViewModel.onIntent(AccountIntent.Logout) },
+                        onDeleteData = { accountViewModel.onIntent(AccountIntent.DeleteDataConfirmed) },
+                        deleteInProgress = uiState.deleteDataInProgress,
+                        deleteError = uiState.deleteDataError,
                     )
                 }
                 entry<Licenses>(metadata = ListDetailSceneStrategy.detailPane()) {
@@ -143,6 +148,7 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
                     TopicsScreen(
                         state = topicsState,
                         onIntent = viewModel::onIntent,
+                        onBack = { backStack.removeLastOrNull() },
                     )
                 }
             },

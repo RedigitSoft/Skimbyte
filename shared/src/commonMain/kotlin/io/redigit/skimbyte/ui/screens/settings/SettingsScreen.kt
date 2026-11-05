@@ -17,12 +17,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Contrast
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Interests
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -33,13 +36,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.theme.EyebrowText
@@ -61,7 +71,16 @@ fun SettingsScreen(
     onLicensesClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    // Account actions live here rather than on the profile so the profile stays about *you*; shown
+    // only when signed in. The logout/delete logic is the AccountViewModel's — these are callbacks.
+    isLoggedIn: Boolean = false,
+    onLogout: () -> Unit = {},
+    onDeleteData: () -> Unit = {},
+    deleteInProgress: Boolean = false,
+    deleteError: String? = null,
 ) {
+    var showLogoutConfirm by rememberSaveable { mutableStateOf(false) }
+    var showDeleteConfirm by rememberSaveable { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -132,8 +151,88 @@ fun SettingsScreen(
                         )
                     }
                 }
+
+                if (isLoggedIn) {
+                    EyebrowText("Account", modifier = Modifier.padding(start = 4.dp))
+                    deleteError?.let {
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(start = 4.dp),
+                        )
+                    }
+                    Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
+                        Column {
+                            SettingsActionRow(
+                                icon = Icons.AutoMirrored.Filled.Logout,
+                                label = "Log out",
+                                supporting = "Sign out of your account",
+                                onClick = { showLogoutConfirm = true },
+                                tint = MaterialTheme.colorScheme.error,
+                                showChevron = false,
+                                modifier = Modifier.testTag("logoutRow"),
+                            )
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            SettingsActionRow(
+                                icon = Icons.Filled.DeleteForever,
+                                label = "Delete my data",
+                                supporting = "Permanently remove your Skimbyte data",
+                                onClick = { showDeleteConfirm = true },
+                                tint = MaterialTheme.colorScheme.error,
+                                showChevron = false,
+                                modifier = Modifier.testTag("deleteDataRow"),
+                            )
+                        }
+                    }
+                }
             }
         }
+    }
+
+    if (showLogoutConfirm) {
+        AlertDialog(
+            onDismissRequest = { showLogoutConfirm = false },
+            title = { Text("Log out?") },
+            text = { Text("You'll need to sign in again to access your account.") },
+            confirmButton = {
+                TextButton(
+                    modifier = Modifier.testTag("confirmLogout"),
+                    onClick = {
+                        showLogoutConfirm = false
+                        onLogout()
+                    },
+                ) { Text("Log out") }
+            },
+            dismissButton = { TextButton(onClick = { showLogoutConfirm = false }) { Text("Cancel") } },
+        )
+    }
+
+    if (showDeleteConfirm) {
+        AlertDialog(
+            onDismissRequest = { if (!deleteInProgress) showDeleteConfirm = false },
+            title = { Text("Delete my data?") },
+            text = {
+                Text(
+                    "This permanently deletes your bookmarks and other Skimbyte data from our " +
+                        "servers, and signs you out. All your Skimbyte data is removed — see " +
+                        "the privacy policy. This can't be undone.",
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    modifier = Modifier.testTag("confirmDeleteData"),
+                    enabled = !deleteInProgress,
+                    onClick = {
+                        showDeleteConfirm = false
+                        onDeleteData()
+                    },
+                ) { Text("Delete", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(enabled = !deleteInProgress, onClick = { showDeleteConfirm = false }) { Text("Cancel") }
+            },
+        )
     }
 }
 
@@ -171,7 +270,11 @@ private fun ThemeModeToggleGroup(
     }
 }
 
-/** Icon-tile row matching the Account screen's action rows (label, supporting text, chevron). */
+/**
+ * Icon-tile row matching the Account screen's action rows (label, supporting text, chevron).
+ * [tint] accents the icon (and the label, when not the default) — error for destructive actions;
+ * [showChevron] is dropped for actions that open a dialog rather than navigate.
+ */
 @Composable
 private fun SettingsActionRow(
     icon: ImageVector,
@@ -179,6 +282,8 @@ private fun SettingsActionRow(
     supporting: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.primary,
+    showChevron: Boolean = true,
 ) {
     Row(
         modifier = modifier.fillMaxWidth().clickable(onClick = onClick).padding(16.dp),
@@ -187,27 +292,28 @@ private fun SettingsActionRow(
     ) {
         Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surface) {
             Box(modifier = Modifier.size(40.dp), contentAlignment = Alignment.Center) {
-                Icon(
-                    icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
+                Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp), tint = tint)
             }
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text(label, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                label,
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (tint == MaterialTheme.colorScheme.primary) MaterialTheme.colorScheme.onSurface else tint,
+            )
             Text(
                 supporting,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Icon(
-            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (showChevron) {
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 

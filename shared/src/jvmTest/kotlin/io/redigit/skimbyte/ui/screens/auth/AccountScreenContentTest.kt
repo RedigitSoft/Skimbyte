@@ -11,7 +11,6 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class AccountScreenContentTest {
 
@@ -149,145 +148,6 @@ class AccountScreenContentTest {
 
     @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
-    fun tappingLogoutRow_showsConfirmationDialog_withoutInvokingOnIntent() = runComposeUiTest {
-        var capturedIntent: AccountIntent? = null
-        setContent {
-            SkimbyteTheme {
-                AccountScreen(
-                    state = AccountState(isLoggedIn = true),
-                    onIntent = { capturedIntent = it },
-                    onSignInClick = {},
-                    onSettingsClick = {},
-                    onAvatarClick = {},
-                    onAvatarEditClick = {},
-                    onBannerClick = {},
-                    onBannerEditClick = {},
-                )
-            }
-        }
-        onNodeWithTag("logoutRow").performClick()
-        waitForIdle()
-        onNodeWithText("Log out?").assertExists()
-        assertNull(capturedIntent)
-    }
-
-    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
-    @Test
-    fun confirmingLogoutDialog_invokesOnIntentWithLogout() = runComposeUiTest {
-        var capturedIntent: AccountIntent? = null
-        setContent {
-            SkimbyteTheme {
-                AccountScreen(
-                    state = AccountState(isLoggedIn = true),
-                    onIntent = { capturedIntent = it },
-                    onSignInClick = {}, onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
-                )
-            }
-        }
-        onNodeWithTag("logoutRow").performClick()
-        waitForIdle()
-        onNodeWithTag("confirmLogout").performClick()
-        waitForIdle()
-        assertEquals(AccountIntent.Logout, capturedIntent)
-    }
-
-    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
-    @Test
-    fun dismissingLogoutDialog_doesNotInvokeOnIntent() = runComposeUiTest {
-        var capturedIntent: AccountIntent? = null
-        setContent {
-            SkimbyteTheme {
-                AccountScreen(
-                    state = AccountState(isLoggedIn = true),
-                    onIntent = { capturedIntent = it },
-                    onSignInClick = {},
-                    onSettingsClick = {},
-                    onAvatarClick = {},
-                    onAvatarEditClick = {},
-                    onBannerClick = {},
-                    onBannerEditClick = {},
-                )
-            }
-        }
-        onNodeWithTag("logoutRow").performClick()
-        waitForIdle()
-        onNodeWithText("Cancel").performClick()
-        waitForIdle()
-        onNodeWithText("Log out?").assertDoesNotExist()
-        assertNull(capturedIntent)
-    }
-
-    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
-    @Test
-    fun tappingDeleteDataRow_showsConfirmationDialog_withoutInvokingOnIntent() = runComposeUiTest {
-        var capturedIntent: AccountIntent? = null
-        setContent {
-            SkimbyteTheme {
-                AccountScreen(
-                    state = AccountState(isLoggedIn = true),
-                    onIntent = { capturedIntent = it },
-                    onSignInClick = {}, onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
-                )
-            }
-        }
-        onNodeWithTag("deleteDataRow").performClick()
-        waitForIdle()
-        onNodeWithText("Delete my data?").assertExists()
-        assertNull(capturedIntent)
-    }
-
-    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
-    @Test
-    fun confirmingDeleteDialog_invokesOnIntentWithDeleteDataConfirmed() = runComposeUiTest {
-        var capturedIntent: AccountIntent? = null
-        setContent {
-            SkimbyteTheme {
-                AccountScreen(
-                    state = AccountState(isLoggedIn = true),
-                    onIntent = { capturedIntent = it },
-                    onSignInClick = {}, onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
-                )
-            }
-        }
-        onNodeWithTag("deleteDataRow").performClick()
-        waitForIdle()
-        onNodeWithTag("confirmDeleteData").performClick()
-        waitForIdle()
-        assertEquals(AccountIntent.DeleteDataConfirmed, capturedIntent)
-    }
-
-    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
-    @Test
-    fun deleteDataError_isShownToTheUser() = runComposeUiTest {
-        setContent {
-            SkimbyteTheme {
-                AccountScreen(
-                    state = AccountState(isLoggedIn = true, deleteDataError = "Could not delete your data"),
-                    onIntent = {},
-                    onSignInClick = {}, onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
-                )
-            }
-        }
-        onNodeWithText("Could not delete your data").assertExists()
-    }
-
-    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
-    @Test
-    fun loggedOut_deleteDataRow_isNotShown() = runComposeUiTest {
-        setContent {
-            SkimbyteTheme {
-                AccountScreen(
-                    state = AccountState(isLoggedIn = false),
-                    onIntent = {},
-                    onSignInClick = {}, onSettingsClick = {}, onAvatarClick = {}, onAvatarEditClick = {}, onBannerClick = {}, onBannerEditClick = {},
-                )
-            }
-        }
-        onNodeWithTag("deleteDataRow").assertDoesNotExist()
-    }
-
-    @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
-    @Test
     fun loggedOut_showsSignedOutState() = runComposeUiTest {
         setContent {
             SkimbyteTheme {
@@ -308,7 +168,7 @@ class AccountScreenContentTest {
 
     @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)
     @Test
-    fun loggedOut_settingsStaysAvailable_logoutDoesNot() = runComposeUiTest {
+    fun loggedOut_settingsStaysAvailable() = runComposeUiTest {
         var settingsClicked = false
         setContent {
             SkimbyteTheme {
@@ -324,11 +184,9 @@ class AccountScreenContentTest {
                 )
             }
         }
-        // Settings are device-local preferences: logging out must not lock the user out of them.
-        // The signed-out prompt pushes the row below the fold, so bring it into view first.
+        // Settings are device-local: signing out must not lock the user out of them.
         onNodeWithText("Settings").performScrollTo().performClick()
         assertEquals(true, settingsClicked)
-        onNodeWithTag("logoutRow").assertDoesNotExist()
     }
 
     @OptIn(ExperimentalTestApi::class, ExperimentalSharedTransitionApi::class)

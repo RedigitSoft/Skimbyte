@@ -22,20 +22,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -79,8 +74,6 @@ fun AccountScreen(
     avatarSharedTransition: SharedElementContext? = null,
     bannerSharedTransition: SharedElementContext? = null,
 ) {
-    var showLogoutConfirm by rememberSaveable { mutableStateOf(false) }
-    var showDeleteConfirm by rememberSaveable { mutableStateOf(false) }
 
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
@@ -148,97 +141,20 @@ fun AccountScreen(
                 )
             }
 
-            // Settings are device-local and stay available signed out — only the profile itself
-            // needs an account.
+            // Settings (theme, account actions, privacy) are reachable here; they stay available
+            // signed out since they're device-local — only the profile itself needs an account.
             EyebrowText("Account", modifier = Modifier.padding(start = 4.dp))
             Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
-                Column {
-                    AccountActionRow(
-                        icon = Icons.Filled.Settings,
-                        label = "Settings",
-                        supporting = "Theme, display & preferences",
-                        onClick = onSettingsClick,
-                    )
-                    if (state.isLoggedIn) {
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        AccountActionRow(
-                            icon = Icons.AutoMirrored.Filled.Logout,
-                            label = "Log out",
-                            supporting = "Sign out of your account",
-                            onClick = { showLogoutConfirm = true },
-                            tint = MaterialTheme.colorScheme.error,
-                            iconTint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.testTag("logoutRow"),
-                        )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        AccountActionRow(
-                            icon = Icons.Filled.DeleteForever,
-                            label = "Delete my data",
-                            supporting = "Permanently remove your Skimbyte data",
-                            onClick = { showDeleteConfirm = true },
-                            tint = MaterialTheme.colorScheme.error,
-                            iconTint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.testTag("deleteDataRow"),
-                        )
-                    }
-                }
+                AccountActionRow(
+                    icon = Icons.Filled.Settings,
+                    label = "Settings",
+                    supporting = "Theme, account, privacy & more",
+                    onClick = onSettingsClick,
+                )
             }
-            state.deleteDataError?.let { AccountErrorBanner(message = it) }
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
-    }
-
-    if (showLogoutConfirm) {
-        AlertDialog(
-            onDismissRequest = { showLogoutConfirm = false },
-            title = { Text("Log out?") },
-            text = { Text("You'll need to sign in again to access your account.") },
-            confirmButton = {
-                TextButton(
-                    modifier = Modifier.testTag("confirmLogout"),
-                    onClick = {
-                        showLogoutConfirm = false
-                        onIntent(AccountIntent.Logout)
-                    },
-                ) { Text("Log out") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showLogoutConfirm = false }) { Text("Cancel") }
-            },
-        )
-    }
-
-    if (showDeleteConfirm) {
-        AlertDialog(
-            onDismissRequest = { if (!state.deleteDataInProgress) showDeleteConfirm = false },
-            title = { Text("Delete my data?") },
-            text = {
-                Text(
-                    "This permanently deletes your bookmarks and other Skimbyte data from our " +
-                        "servers, and signs you out. All your Skimbyte data is removed — see " +
-                        "the privacy policy. This can't be undone.",
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    modifier = Modifier.testTag("confirmDeleteData"),
-                    enabled = !state.deleteDataInProgress,
-                    onClick = {
-                        showDeleteConfirm = false
-                        onIntent(AccountIntent.DeleteDataConfirmed)
-                    },
-                ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    enabled = !state.deleteDataInProgress,
-                    onClick = { showDeleteConfirm = false },
-                ) { Text("Cancel") }
-            },
-        )
     }
 }
 
@@ -545,24 +461,6 @@ private fun AccountScreenWithErrorPreview() {
     SkimbyteTheme {
         AccountScreen(
             state = richAccountState.copy(avatarError = "Could not update avatar"),
-            onIntent = {},
-            onSignInClick = {},
-            onSettingsClick = {},
-            onAvatarClick = {},
-            onAvatarEditClick = {},
-            onBannerClick = {},
-            onBannerEditClick = {},
-        )
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Preview
-@Composable
-private fun AccountScreenWithDeleteErrorPreview() {
-    SkimbyteTheme {
-        AccountScreen(
-            state = richAccountState.copy(deleteDataError = "Could not delete your data"),
             onIntent = {},
             onSignInClick = {},
             onSettingsClick = {},

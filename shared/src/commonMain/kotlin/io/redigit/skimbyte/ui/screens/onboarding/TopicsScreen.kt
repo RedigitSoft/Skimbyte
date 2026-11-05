@@ -19,10 +19,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -44,17 +46,28 @@ fun TopicsScreen(
     state: TopicsState,
     onIntent: (TopicsIntent) -> Unit,
     modifier: Modifier = Modifier,
+    // Non-null when pushed as a screen you can back out of (editing interests from Settings);
+    // null in the first-run onboarding flow, which has no "back".
+    onBack: (() -> Unit)? = null,
 ) {
     Column(
         // Owns its insets: hosted both full-screen (onboarding, where the shell provides no
         // padding) and as a nav detail pane, so the screen itself keeps content below the
-        // status bar. Scrolls so long server-fed topic lists never clip the confirm button.
-        modifier = modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .verticalScroll(rememberScrollState()),
+        // status bar.
+        modifier = modifier.fillMaxSize().statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        if (onBack != null) {
+            IconButton(onClick = onBack, modifier = Modifier.align(Alignment.Start)) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            }
+        }
+        Column(
+            // Scrolls so long server-fed topic lists never clip the confirm button; the back bar
+            // above stays pinned.
+            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
         Column(
             modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth().padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -104,6 +117,7 @@ fun TopicsScreen(
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
+        }
         }
     }
 }
@@ -183,6 +197,7 @@ private fun TopicsScreenEditingPreview() {
                 isEditing = true,
             ),
             onIntent = {},
+            onBack = {},
         )
     }
 }
