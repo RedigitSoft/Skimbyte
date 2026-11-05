@@ -56,6 +56,8 @@ import io.redigit.skimbyte.ui.components.BannerImage
 import io.redigit.skimbyte.ui.components.StatusPrompt
 import io.redigit.skimbyte.ui.components.StatusPromptAction
 import io.redigit.skimbyte.ui.components.TopicChip
+import io.redigit.skimbyte.util.isCameraAvailable
+import io.redigit.skimbyte.util.rememberCameraLauncher
 import io.redigit.skimbyte.util.rememberImagePickerLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -315,6 +317,9 @@ fun AccountRoute(
     val state by viewModel.state.collectAsState()
     val pickAvatar = rememberImagePickerLauncher { image -> image?.let { viewModel.onIntent(AccountIntent.AvatarPicked(it)) } }
     val pickBanner = rememberImagePickerLauncher { image -> image?.let { viewModel.onIntent(AccountIntent.BannerPicked(it)) } }
+    val captureAvatar = rememberCameraLauncher { image -> image?.let { viewModel.onIntent(AccountIntent.AvatarPicked(it)) } }
+    val captureBanner = rememberCameraLauncher { image -> image?.let { viewModel.onIntent(AccountIntent.BannerPicked(it)) } }
+    val cameraAvailable = isCameraAvailable()
     var editing by remember { mutableStateOf<ImageEditTarget?>(null) }
     // Gate the sheet on dismissal (mirrors FeedScreen's pendingBookmarkAction gating) — with a
     // no-op onDismiss the sheet stays composed and "Not now" can't close it. rememberSaveable so
@@ -347,12 +352,15 @@ fun AccountRoute(
             ImageEditTarget.Avatar -> pickAvatar
             ImageEditTarget.Banner -> pickBanner
         }
+        val capture = when (target) {
+            ImageEditTarget.Avatar -> captureAvatar
+            ImageEditTarget.Banner -> captureBanner
+        }
         ImageEditSheet(
             onDismiss = { editing = null },
-            // Camera capture isn't available yet (the ImagePicker is gallery-only), so "Take photo"
-            // falls back to the gallery as a placeholder.
-            onTakePhoto = { editing = null; pick() },
+            onTakePhoto = { editing = null; capture() },
             onChooseFromGallery = { editing = null; pick() },
+            cameraAvailable = cameraAvailable,
             onRemove = if (hasImage) {
                 {
                     editing = null

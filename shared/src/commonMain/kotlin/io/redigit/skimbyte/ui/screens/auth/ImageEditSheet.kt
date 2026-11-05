@@ -41,6 +41,7 @@ fun ImageEditSheet(
     onTakePhoto: () -> Unit,
     onChooseFromGallery: () -> Unit,
     onRemove: (() -> Unit)?,
+    cameraAvailable: Boolean = true,
 ) {
     val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
@@ -48,6 +49,7 @@ fun ImageEditSheet(
             onTakePhoto = onTakePhoto,
             onChooseFromGallery = onChooseFromGallery,
             onRemove = onRemove,
+            cameraAvailable = cameraAvailable,
         )
     }
 }
@@ -60,6 +62,7 @@ fun ImageEditSheetContent(
     onChooseFromGallery: () -> Unit,
     onRemove: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    cameraAvailable: Boolean = true,
 ) {
     Column(modifier = modifier.fillMaxWidth().padding(bottom = 24.dp)) {
         Text(
@@ -67,12 +70,16 @@ fun ImageEditSheetContent(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 8.dp),
         )
-        OptionRow(
-            icon = Icons.Filled.PhotoCamera,
-            title = "Take photo",
-            subtitle = "Use your camera",
-            onClick = onTakePhoto,
-        )
+        // Only offered where a camera exists — hidden on desktops without a webcam (see
+        // isCameraAvailable). Gallery/file picking is always available.
+        if (cameraAvailable) {
+            OptionRow(
+                icon = Icons.Filled.PhotoCamera,
+                title = "Take photo",
+                subtitle = "Use your camera",
+                onClick = onTakePhoto,
+            )
+        }
         OptionRow(
             icon = Icons.Filled.Image,
             title = "Choose from gallery",
@@ -133,6 +140,15 @@ private fun ImageEditSheetContentPreview() {
 private fun ImageEditSheetContentNoRemovePreview() {
     SkimbyteTheme {
         ImageEditSheetContent(onTakePhoto = {}, onChooseFromGallery = {}, onRemove = null)
+    }
+}
+
+/** No camera (e.g. a desktop without a webcam): the "Take photo" row is omitted. */
+@Preview
+@Composable
+private fun ImageEditSheetContentNoCameraPreview() {
+    SkimbyteTheme {
+        ImageEditSheetContent(onTakePhoto = {}, onChooseFromGallery = {}, onRemove = {}, cameraAvailable = false)
     }
 }
 
