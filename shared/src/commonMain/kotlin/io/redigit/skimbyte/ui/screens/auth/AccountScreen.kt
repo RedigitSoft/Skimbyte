@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Verified
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.theme.EyebrowText
+import io.redigit.skimbyte.theme.SkimbyteShapeTokens
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.AvatarWithEditBadge
 import io.redigit.skimbyte.ui.components.BannerImage
@@ -198,32 +200,53 @@ private fun ProfileIdentityHeader(
     }
 }
 
-/** The user's saved-post count — the one profile stat backed by real data (their bookmarks). */
+/**
+ * The user's saved-post count — the one profile stat backed by real data (their bookmarks). A
+ * compact inline pill (bookmark glyph + count), the way the reference profile reads a stat, rather
+ * than a lone number marooned in a full-width card.
+ */
 @Composable
 private fun SavedStat(savedCount: Int, modifier: Modifier = Modifier) {
-    Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+    Surface(shape = SkimbyteShapeTokens.pill, color = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(savedCount.toString(), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            EyebrowText("Saved")
+            Icon(
+                Icons.Filled.Bookmark,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp),
+            )
+            Text(
+                "$savedCount saved",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
         }
     }
 }
 
-/** The user's followed topics, rendered as chips. Real data from topic preferences. */
+/**
+ * The user's followed topics, grouped into a tonal card (matching the screen's other sections)
+ * with the count in the eyebrow. Read-only chips — this lists what the user follows, it isn't a
+ * filter; it shares [TopicChip] with the feed's filter row so a topic reads the same in both places.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FollowedTopicsSection(topics: List<Topic>, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        EyebrowText("Followed topics", modifier = Modifier.padding(start = 4.dp))
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            topics.forEach { topic ->
-                // Read-only: this section lists what the user follows, it is not a filter. Shares
-                // TopicChip with the feed's filter row so a topic reads the same in both places.
-                TopicChip(label = topic.displayLabel)
+        EyebrowText("Followed topics · ${topics.size}", modifier = Modifier.padding(start = 4.dp))
+        Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                topics.forEach { topic ->
+                    TopicChip(label = topic.displayLabel)
+                }
             }
         }
     }

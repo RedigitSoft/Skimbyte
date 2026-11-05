@@ -19,3 +19,4 @@ captures
 node_modules/
 /design/
 /SERVER_API.md
+/design-refs/
