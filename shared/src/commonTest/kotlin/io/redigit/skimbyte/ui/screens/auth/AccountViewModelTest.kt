@@ -119,7 +119,7 @@ class AccountViewModelTest {
         val state = vm.state.value
         assertEquals(true, state.isLoggedIn)
         assertEquals("https://cdn/a.jpg", state.avatarUrl)
-        assertEquals("@u1", state.handle) // derived from userId when the server doesn't supply one
+        assertNull(state.handle) // no @username synthesized from the user id
     }
 
     @Test
@@ -135,7 +135,7 @@ class AccountViewModelTest {
         val state = vm.state.value
         assertEquals(3, state.savedCount)
         assertEquals(setOf(Topic.Kotlin, Topic.Android), state.followedTopics.toSet())
-        assertEquals("@user1234", state.handle) // first 8 chars of the userId
+        assertNull(state.handle) // no @username synthesized from the user id
     }
 
     @Test

@@ -47,14 +47,12 @@ class AccountViewModel(
                     avatarUrl = profile?.avatarUrl,
                     bannerUrl = profile?.bannerUrl,
                     // Only real data is surfaced: fields the server doesn't return yet stay null
-                    // and their profile sections simply don't render. The handle and saved count
-                    // are derived from data we do have.
+                    // and their profile sections simply don't render. The saved count is derived
+                    // from the bookmark set we have.
                     displayName = if (loggedIn) profile?.displayName else null,
-                    handle = if (loggedIn) {
-                        profile?.handle ?: profile?.userId?.let { "@" + it.take(8) }
-                    } else {
-                        null
-                    },
+                    // Only a real server-provided handle — no @username synthesized from the opaque
+                    // user id, which is noise, not an identity the user chose.
+                    handle = if (loggedIn) profile?.handle else null,
                     bio = if (loggedIn) profile?.bio else null,
                     email = if (loggedIn) profile?.email else null,
                     isVerified = loggedIn && profile?.isVerified == true,

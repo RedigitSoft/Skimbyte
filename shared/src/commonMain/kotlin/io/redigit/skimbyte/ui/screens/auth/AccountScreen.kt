@@ -119,12 +119,11 @@ fun AccountScreen(
             state.bannerError?.let { AccountErrorBanner(message = it) }
 
             if (state.isLoggedIn) {
-                // Until the server returns a display name, the (real, userId-derived) handle
-                // stands in as the identity line rather than showing a fake name.
-                (state.displayName ?: state.handle)?.let { identityName ->
+                // The real display name from the account; no synthesized @username. Email carries
+                // the identity if a name isn't set.
+                state.displayName?.let { name ->
                     ProfileIdentityHeader(
-                        displayName = identityName,
-                        handle = state.handle.takeIf { state.displayName != null },
+                        displayName = name,
                         email = state.email,
                         bio = state.bio,
                         isVerified = state.isVerified,
@@ -160,11 +159,10 @@ fun AccountScreen(
     }
 }
 
-/** Display name (with optional verified badge), handle, email, and bio. */
+/** Display name (with optional verified badge), email, and bio. */
 @Composable
 private fun ProfileIdentityHeader(
     displayName: String,
-    handle: String?,
     email: String?,
     bio: String?,
     isVerified: Boolean,
@@ -185,9 +183,6 @@ private fun ProfileIdentityHeader(
                     modifier = Modifier.size(20.dp),
                 )
             }
-        }
-        if (handle != null) {
-            Text(handle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
         }
         if (email != null) {
             Text(email, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
