@@ -121,17 +121,14 @@ fun AccountScreen(
             state.bannerError?.let { AccountErrorBanner(message = it) }
 
             if (state.isLoggedIn) {
-                // The real display name from the account; no synthesized @username. Email carries
-                // the identity if a name isn't set.
-                state.displayName?.let { name ->
-                    ProfileIdentityHeader(
-                        displayName = name,
-                        email = state.email,
-                        bio = state.bio,
-                        isVerified = state.isVerified,
-                    )
-                }
-                state.savedCount?.let { SavedStat(savedCount = it) }
+                ProfileHeader(
+                    // Real display name from the account; no synthesized @username.
+                    displayName = state.displayName,
+                    bio = state.bio,
+                    email = state.email,
+                    isVerified = state.isVerified,
+                    savedCount = state.savedCount,
+                )
                 if (state.followedTopics.isNotEmpty()) {
                     FollowedTopicsSection(topics = state.followedTopics)
                 }
@@ -161,41 +158,52 @@ fun AccountScreen(
     }
 }
 
-/** Display name (with optional verified badge), email, and bio. */
+/**
+ * The identity block, composed like the reference profile: name (with an optional verified badge),
+ * the bio prominently beneath it, the email as a quieter line, then a stat row. Each line renders
+ * only when its data exists, so a sparse profile collapses cleanly instead of showing gaps.
+ */
 @Composable
-private fun ProfileIdentityHeader(
-    displayName: String,
-    email: String?,
+private fun ProfileHeader(
+    displayName: String?,
     bio: String?,
+    email: String?,
     isVerified: Boolean,
+    savedCount: Int?,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(
-                text = displayName,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-            )
-            if (isVerified) {
-                Icon(
-                    Icons.Filled.Verified,
-                    contentDescription = "Verified",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp),
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        if (displayName != null) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    text = displayName,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
                 )
+                if (isVerified) {
+                    Icon(
+                        Icons.Filled.Verified,
+                        contentDescription = "Verified",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
             }
         }
-        if (email != null) {
-            Text(email, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
         if (bio != null) {
-            Text(
-                bio,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp),
-            )
+            Text(bio, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        if (email != null) {
+            Text(email, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        if (savedCount != null) {
+            // Stat row: one pill today (saved), laid out as a row so more stats can sit beside it.
+            Row(
+                modifier = Modifier.padding(top = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                SavedStat(savedCount = savedCount)
+            }
         }
     }
 }
