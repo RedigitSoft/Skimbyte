@@ -7,6 +7,7 @@ import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.BookmarkIdsStore
 import io.redigit.skimbyte.data.repositories.PostsRepository
+import io.redigit.skimbyte.data.remote.isNetworkError
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -97,7 +98,7 @@ class FeedViewModel(
                         it.copy(posts = page.items, nextCursor = page.nextCursor, currentIndex = 0, error = null, fetchedAt = timeSource.markNow())
                     }
                 },
-                onFailure = { updateFeed(topic) { it.copy(error = FeedError.Network) } },
+                onFailure = { cause -> updateFeed(topic) { it.copy(error = cause.toFeedError()) } },
             )
             _state.value = _state.value.copy(isRefreshing = false)
         }
@@ -184,7 +185,7 @@ class FeedViewModel(
                         it.copy(posts = page.items, nextCursor = page.nextCursor, isLoadingInitial = false, fetchedAt = timeSource.markNow())
                     }
                 },
-                onFailure = { updateFeed(topic) { it.copy(isLoadingInitial = false, error = FeedError.Network) } },
+                onFailure = { cause -> updateFeed(topic) { it.copy(isLoadingInitial = false, error = cause.toFeedError()) } },
             )
         }
     }
@@ -200,7 +201,7 @@ class FeedViewModel(
                         it.copy(posts = it.posts + page.items, nextCursor = page.nextCursor, isLoadingMore = false)
                     }
                 },
-                onFailure = { updateFeed(topic) { it.copy(isLoadingMore = false, error = FeedError.Network) } },
+                onFailure = { cause -> updateFeed(topic) { it.copy(isLoadingMore = false, error = cause.toFeedError()) } },
             )
         }
     }
@@ -209,6 +210,11 @@ class FeedViewModel(
         val current = _state.value.feeds[topic] ?: TopicFeed()
         _state.value = _state.value.copy(feeds = _state.value.feeds + (topic to transform(current)))
     }
+
+    // A failure we never reached the server for is a connectivity problem the reader can retry;
+    // a server error status ("our end") is surfaced distinctly.
+    private fun Throwable.toFeedError(): FeedError =
+        if (isNetworkError()) FeedError.Network else FeedError.Unknown
 
     private companion object {
         const val PREFETCH_THRESHOLD = 3
