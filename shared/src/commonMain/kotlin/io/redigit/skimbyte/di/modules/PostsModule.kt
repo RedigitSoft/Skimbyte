@@ -4,6 +4,8 @@ import io.redigit.skimbyte.data.remote.PostsApi
 import io.redigit.skimbyte.data.remote.KtorPostsApi
 import io.redigit.skimbyte.data.remote.KtorMeApi
 import io.redigit.skimbyte.data.remote.MeApi
+import io.redigit.skimbyte.data.local.FeedCache
+import io.redigit.skimbyte.data.local.SettingsFeedCache
 import io.redigit.skimbyte.data.repositories.BookmarkIdsStore
 import io.redigit.skimbyte.data.repositories.PostsRepository
 import io.redigit.skimbyte.data.repositories.PostsRepositoryImpl
@@ -18,5 +20,6 @@ val postsModule = module {
     single<MeApi> { KtorMeApi(get()) }
     single<UserDataRepository> { UserDataRepositoryImpl(get()) }
     single { BookmarkIdsStore(get()) }
-    single<PostsRepository> { PostsRepositoryImpl(get(), get()) }
+    single<FeedCache> { SettingsFeedCache(get()) }
+    single<PostsRepository> { PostsRepositoryImpl(get(), get(), get()) }
 }
