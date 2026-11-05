@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-Skimbyte is a Kotlin Multiplatform + Compose Multiplatform project targeting Android, iOS, Desktop (JVM), and Web (JS and Wasm). It is currently a freshly scaffolded template (`io.redigit.skimbyte` package) with no app-specific features implemented yet.
+Skimbyte is a Kotlin Multiplatform + Compose Multiplatform project (`io.redigit.skimbyte` package) targeting Android, iOS, Desktop (JVM), and Web (JS and Wasm). It turns developer-news feeds into a daily, skimmable brief.
+
+The app is built out, not a scaffold: onboarding/topic selection, the feed, post detail, bookmarks, account (Google/GitHub OAuth, avatar & banner upload), and settings all ship, with a `designsheet` component catalog alongside. Code lives almost entirely in `shared/commonMain`. A fresh clone runs in **demo mode** on bundled sample data when no backend URL is configured — Koin swaps in `network/DemoNetworkModule.kt` — so every target runs end to end without the (closed-source) backend.
 
 This is an open-source reference project — the bar is "code high-end developers learn from," not "code that just works." Before writing any feature code, read **CONTRIBUTING.md** in full; it is the source of truth for architecture, Compose conventions, testing requirements, and the `designsheet` module. The non-negotiables, repeated here because they apply to every single change:
 

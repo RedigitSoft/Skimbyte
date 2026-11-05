@@ -20,9 +20,8 @@
 ---
 
 Skimbyte turns the firehose of developer news (Kotlin, Android, AI, tooling release feeds) into a
-once-a-day brief of short, readable summaries. Pick your topics, skim the cards, bookmark what you
-want to keep, and track your reading streak — the same UI, rendered natively from one Kotlin
-codebase on every platform.
+once-a-day brief of short, readable summaries. Pick your topics, skim the cards, and bookmark what
+you want to keep — the same UI, rendered natively from one Kotlin codebase on every platform.
 
 It is also deliberately a **reference project**: a production-shaped Kotlin Multiplatform +
 Compose Multiplatform app with real architecture, real tests (unit + UI + screenshot), adaptive
