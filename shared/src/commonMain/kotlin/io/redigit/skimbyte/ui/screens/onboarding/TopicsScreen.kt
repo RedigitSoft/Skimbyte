@@ -8,14 +8,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,12 +32,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TopicsScreen(
     state: TopicsState,
@@ -37,37 +46,64 @@ fun TopicsScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        // Owns its insets: hosted both full-screen (onboarding, where the shell provides no
+        // padding) and as a nav detail pane, so the screen itself keeps content below the
+        // status bar. Scrolls so long server-fed topic lists never clip the confirm button.
+        modifier = modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = if (state.isEditing) "Edit your topics" else "Pick your topics",
-            style = MaterialTheme.typography.headlineSmall,
-        )
-        Text(
-            text = "Choose at least 3 topics to personalize your feed - follow as many as you like.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        Column(
+            modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth().padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            state.available.forEach { topic ->
-                TopicChip(
-                    topic = topic,
-                    isSelected = topic in state.selected,
-                    onClick = { onIntent(TopicsIntent.TopicToggled(topic)) },
+            Text(
+                text = if (state.isEditing) "Edit your topics" else "Pick your topics",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                text = "Choose at least 3 topics to personalize your feed - follow as many as you like.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (!state.isEditing) {
+                // Expressive onboarding affordance: a wavy progress line that fills as the
+                // reader approaches the three-topic minimum, then settles complete.
+                LinearWavyProgressIndicator(
+                    progress = { (state.selected.size / 3f).coerceAtMost(1f) },
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
-        }
-        Button(
-            onClick = { onIntent(TopicsIntent.Confirmed) },
-            enabled = state.canConfirm,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(if (state.isEditing) "Save" else "Get started")
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                state.available.forEach { topic ->
+                    TopicChip(
+                        topic = topic,
+                        isSelected = topic in state.selected,
+                        onClick = { onIntent(TopicsIntent.TopicToggled(topic)) },
+                    )
+                }
+            }
+            Button(
+                onClick = { onIntent(TopicsIntent.Confirmed) },
+                enabled = state.canConfirm,
+                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+            ) {
+                Text(
+                    text = when {
+                        state.isEditing -> "Save"
+                        state.canConfirm -> "Get started"
+                        else -> "Pick ${3 - state.selected.size} more"
+                    },
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
         }
     }
 }

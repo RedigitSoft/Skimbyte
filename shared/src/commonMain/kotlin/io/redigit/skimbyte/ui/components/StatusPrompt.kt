@@ -23,22 +23,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.Inbox
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
+/** The button on a [StatusPrompt] that recovers from the state the prompt describes. */
+data class StatusPromptAction(val label: String, val onClick: () -> Unit)
+
 /**
- * Shared empty-state for signed-out screens: an icon inside a tonal circle, a title, a short
- * explanation, and a prominent sign-in button. Used by the Account and Bookmarks tabs so the
- * signed-out experience looks and behaves the same everywhere — and always offers a way back
- * into the login flow (a dismissed login sheet must never be a dead end).
+ * The one composition for every terminal state in the app - empty, error, signed-out,
+ * nothing-selected: an icon inside a tonal circle, a title, a short explanation, and an optional
+ * button that gets the user out of the state.
+ *
+ * Every terminal state goes through here so they look and read the same everywhere, instead of
+ * each screen inventing its own centred sentence. Supply an [action] whenever the state is
+ * recoverable - a dismissed login sheet or a failed fetch must never be a dead end.
  */
 @Composable
-fun SignedOutPrompt(
+fun StatusPrompt(
     icon: ImageVector,
     title: String,
     message: String,
-    onSignInClick: () -> Unit,
     modifier: Modifier = Modifier,
+    action: StatusPromptAction? = null,
 ) {
     Column(
         modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 32.dp),
@@ -64,38 +71,53 @@ fun SignedOutPrompt(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = onSignInClick,
-            modifier = Modifier.widthIn(min = 200.dp).testTag("signedOutPromptSignIn"),
-        ) {
-            Text("Sign in")
+        if (action != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = action.onClick,
+                modifier = Modifier.widthIn(min = 200.dp).testTag("statusPromptAction"),
+            ) {
+                Text(action.label)
+            }
         }
     }
 }
 
 @Preview
 @Composable
-private fun SignedOutPromptPreview() {
+private fun StatusPromptPreview() {
     SkimbyteTheme {
-        SignedOutPrompt(
+        StatusPrompt(
             icon = Icons.Filled.AccountCircle,
             title = "You're not signed in",
             message = "Sign in to sync your profile, bookmarks, and reading stats across devices.",
-            onSignInClick = {},
+            action = StatusPromptAction("Sign in") {},
         )
     }
 }
 
 @Preview
 @Composable
-private fun SignedOutPromptLightPreview() {
+private fun StatusPromptErrorLightPreview() {
     SkimbyteTheme(darkTheme = false) {
-        SignedOutPrompt(
-            icon = Icons.Filled.Bookmark,
-            title = "Your bookmarks live here",
-            message = "Sign in to save stories and pick them up on any device.",
-            onSignInClick = {},
+        StatusPrompt(
+            icon = Icons.Filled.CloudOff,
+            title = "Couldn't load posts",
+            message = "Check your connection and try again.",
+            action = StatusPromptAction("Try again") {},
+        )
+    }
+}
+
+/** A terminal state with nothing to act on still gets an icon, a title, and an explanation. */
+@Preview
+@Composable
+private fun StatusPromptNoActionPreview() {
+    SkimbyteTheme {
+        StatusPrompt(
+            icon = Icons.Filled.Inbox,
+            title = "No posts yet",
+            message = "New stories for this topic will show up here.",
         )
     }
 }

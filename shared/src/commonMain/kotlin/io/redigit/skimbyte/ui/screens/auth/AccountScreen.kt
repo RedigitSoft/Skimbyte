@@ -58,7 +58,9 @@ import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.AvatarWithEditBadge
 import io.redigit.skimbyte.ui.components.BannerImage
-import io.redigit.skimbyte.ui.components.SignedOutPrompt
+import io.redigit.skimbyte.ui.components.StatusPrompt
+import io.redigit.skimbyte.ui.components.StatusPromptAction
+import io.redigit.skimbyte.ui.components.TopicChip
 import io.redigit.skimbyte.util.rememberImagePickerLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -138,11 +140,11 @@ fun AccountScreen(
                     FollowedTopicsSection(topics = state.followedTopics)
                 }
             } else {
-                SignedOutPrompt(
+                StatusPrompt(
                     icon = Icons.Filled.AccountCircle,
                     title = "You're not signed in",
                     message = "Sign in to sync your profile, bookmarks, and reading stats across devices.",
-                    onSignInClick = onSignInClick,
+                    action = StatusPromptAction("Sign in", onSignInClick),
                 )
             }
 
@@ -306,14 +308,9 @@ private fun FollowedTopicsSection(topics: List<Topic>, modifier: Modifier = Modi
         EyebrowText("Followed topics", modifier = Modifier.padding(start = 4.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             topics.forEach { topic ->
-                Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceVariant) {
-                    Text(
-                        text = topic.displayLabel,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    )
-                }
+                // Read-only: this section lists what the user follows, it is not a filter. Shares
+                // TopicChip with the feed's filter row so a topic reads the same in both places.
+                TopicChip(label = topic.displayLabel)
             }
         }
     }

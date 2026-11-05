@@ -349,7 +349,7 @@ class AccountScreenContentTest {
                 )
             }
         }
-        onNodeWithTag("signedOutPromptSignIn").performClick()
+        onNodeWithTag("statusPromptAction").performClick()
         assertEquals(true, signInClicked)
     }
 

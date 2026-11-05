@@ -13,11 +13,12 @@ import io.redigit.skimbyte.designsheet.components.ProfileImagesCatalogContent
 import io.redigit.skimbyte.designsheet.components.SavedPostRowCatalogContent
 import io.redigit.skimbyte.designsheet.components.SelectionControlsCatalogContent
 import io.redigit.skimbyte.designsheet.components.SettingsScreenCatalogContent
-import io.redigit.skimbyte.designsheet.components.SignedOutPromptCatalogContent
+import io.redigit.skimbyte.designsheet.components.StatusPromptCatalogContent
 import io.redigit.skimbyte.designsheet.components.SkimbyteBottomNavBarCatalogContent
 import io.redigit.skimbyte.designsheet.components.SkimbyteNavigationRailCatalogContent
 import io.redigit.skimbyte.designsheet.components.StackedCardBrowserCatalogContent
 import io.redigit.skimbyte.designsheet.components.TextFieldsCatalogContent
+import io.redigit.skimbyte.designsheet.components.TopicChipCatalogContent
 import io.redigit.skimbyte.designsheet.components.TopicFilterCatalogContent
 import io.redigit.skimbyte.designsheet.components.TopicImagePlaceholderCatalogContent
 import io.redigit.skimbyte.designsheet.components.TopicsScreenCatalogContent
@@ -39,8 +40,10 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("buttons", "Buttons", "Components") { ButtonsCatalogContent() },
     CatalogItem("selection-controls", "Selection controls", "Components") { SelectionControlsCatalogContent() },
     CatalogItem("text-fields", "Text fields", "Components") { TextFieldsCatalogContent() },
+    CatalogItem("status-prompt", "Status prompt", "Components") { StatusPromptCatalogContent() },
     CatalogItem("post-card", "Post card", "Feed") { PostCardCatalogContent() },
     CatalogItem("topic-image-placeholder", "Topic image placeholder", "Feed") { TopicImagePlaceholderCatalogContent() },
+    CatalogItem("topic-chip", "Topic chip", "Components") { TopicChipCatalogContent() },
     CatalogItem("topic-filter", "Topic filter", "Feed") { TopicFilterCatalogContent() },
     CatalogItem("bookmark-button", "Bookmark button", "Feed") { BookmarkButtonCatalogContent() },
     CatalogItem("stacked-card-browser", "Stacked card browser", "Feed") { StackedCardBrowserCatalogContent() },
@@ -49,7 +52,6 @@ val catalogItems: List<CatalogItem> = listOf(
     CatalogItem("navigation-rail", "Navigation rail", "Navigation") { SkimbyteNavigationRailCatalogContent() },
     CatalogItem("saved-post-row", "Saved post row", "Bookmarks") { SavedPostRowCatalogContent() },
     CatalogItem("login-sheet", "Login sheet", "Bookmarks") { LoginSheetCatalogContent() },
-    CatalogItem("signed-out-prompt", "Signed-out prompt", "Bookmarks") { SignedOutPromptCatalogContent() },
     CatalogItem("account-screen", "Account", "Bookmarks") { AccountScreenCatalogContent() },
     CatalogItem("profile-images", "Avatar & banner", "Account") { ProfileImagesCatalogContent() },
     CatalogItem("image-cropper", "Image cropper", "Account") { ImageCropScreenCatalogContent() },

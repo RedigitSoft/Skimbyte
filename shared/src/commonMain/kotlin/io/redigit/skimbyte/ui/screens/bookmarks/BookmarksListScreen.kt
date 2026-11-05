@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,7 +43,8 @@ import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.SavedPostRow
 import io.redigit.skimbyte.ui.components.SharedElementContext
-import io.redigit.skimbyte.ui.components.SignedOutPrompt
+import io.redigit.skimbyte.ui.components.StatusPrompt
+import io.redigit.skimbyte.ui.components.StatusPromptAction
 import io.redigit.skimbyte.ui.screens.auth.LoginSheet
 import kotlinx.coroutines.launch
 import kotlin.time.Instant
@@ -76,11 +78,11 @@ fun BookmarksListScreen(
                     )
                 }
                 Box(Modifier.padding(padding).fillMaxSize(), contentAlignment = Alignment.Center) {
-                    SignedOutPrompt(
+                    StatusPrompt(
                         icon = Icons.Filled.Bookmark,
                         title = "Your bookmarks live here",
                         message = "Sign in to save stories from the feed and pick them up on any device.",
-                        onSignInClick = { showLogin = true },
+                        action = StatusPromptAction("Sign in") { showLogin = true },
                     )
                 }
             }
@@ -101,7 +103,11 @@ fun BookmarksListScreen(
                         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text("No bookmarks yet.", style = MaterialTheme.typography.bodyLarge)
+                        StatusPrompt(
+                            icon = Icons.Outlined.BookmarkBorder,
+                            title = "No bookmarks yet",
+                            message = "Tap the bookmark icon on any story in the feed to save it here.",
+                        )
                     }
                 } else {
                     var pendingDelete by remember { mutableStateOf<Post?>(null) }

@@ -1,6 +1,8 @@
 package io.redigit.skimbyte.ui.components
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
@@ -23,5 +25,21 @@ class TopicFilterRowTest {
         onNodeWithText("Kotlin").performClick()
         waitForIdle()
         assertEquals(Topic.Kotlin, selected)
+    }
+
+    /**
+     * The row has to tell assistive technology *which* topic is active. The hand-rolled chips it
+     * replaced used a raw `clickable`, so a screen reader read the row as identical buttons.
+     */
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun selectedTopic_isAnnouncedAsSelected() = runComposeUiTest {
+        setContent {
+            SkimbyteTheme {
+                TopicFilterRow(topics = Topic.defaults, selectedTopic = Topic.Kotlin, onTopicSelected = {})
+            }
+        }
+        onNodeWithText(Topic.Kotlin.displayLabel).assertIsSelected()
+        onNodeWithText(Topic.All.displayLabel).assertIsNotSelected()
     }
 }

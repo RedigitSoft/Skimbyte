@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.theme.SkimbyteShapeTokens
 import io.redigit.skimbyte.util.toDisplayDate
 import kotlin.time.Instant
 
@@ -38,7 +39,7 @@ import kotlin.time.Instant
 @Composable
 internal fun TopicPill(topic: String, modifier: Modifier = Modifier) {
     Surface(
-        shape = MaterialTheme.shapes.extraLarge,
+        shape = SkimbyteShapeTokens.pill,
         color = MaterialTheme.colorScheme.primary,
         modifier = modifier,
     ) {

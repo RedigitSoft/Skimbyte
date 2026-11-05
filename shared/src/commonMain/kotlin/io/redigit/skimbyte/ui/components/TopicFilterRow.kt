@@ -1,15 +1,10 @@
 package io.redigit.skimbyte.ui.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -39,29 +34,11 @@ fun TopicFilterRow(
         modifier = modifier,
     ) {
         items(topics, key = { it.id }) { topic ->
-            if (topic == selectedTopic) {
-                Surface(
-                    shape = MaterialTheme.shapes.extraLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { onTopicSelected(topic) },
-                ) {
-                    Text(
-                        text = topic.displayLabel,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    )
-                }
-            } else {
-                Text(
-                    text = topic.displayLabel,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier
-                        .clickable { onTopicSelected(topic) }
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                )
-            }
+            TopicChip(
+                label = topic.displayLabel,
+                selected = topic == selectedTopic,
+                onClick = { onTopicSelected(topic) },
+            )
         }
     }
 }

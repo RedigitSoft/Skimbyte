@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -152,10 +153,15 @@ fun PostDetailScreen(
     }
 }
 
+/** The detail pane on wide layouts before the reader has picked a story. */
 @Composable
 fun PostDetailPlaceholder(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Select a post to see its details", style = MaterialTheme.typography.bodyLarge)
+        StatusPrompt(
+            icon = Icons.Filled.Description,
+            title = "No story selected",
+            message = "Pick a story from the list to read it here.",
+        )
     }
 }
 

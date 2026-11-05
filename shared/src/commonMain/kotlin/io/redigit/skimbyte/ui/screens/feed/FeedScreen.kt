@@ -16,6 +16,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +38,8 @@ import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.PostCard
 import io.redigit.skimbyte.ui.components.SharedElementContext
+import io.redigit.skimbyte.ui.components.StatusPrompt
+import io.redigit.skimbyte.ui.components.StatusPromptAction
 import io.redigit.skimbyte.ui.components.TopicFilterRow
 import io.redigit.skimbyte.ui.screens.auth.LoginSheet
 import kotlin.time.Instant
@@ -116,6 +122,10 @@ private fun TopicFeedPager(
             feed = state.feeds[topic] ?: TopicFeed(),
             isActive = topic == state.selectedTopic,
             onPageChanged = { onIntent(FeedIntent.PageChanged(it)) },
+            // Retry reuses the pull-to-refresh refetch: the gesture itself is unavailable in the
+            // error state (PullToRefreshBox needs a scrollable child), so the button is the only
+            // way back from a failed first load.
+            onRetry = { onIntent(FeedIntent.Refresh) },
             pendingBookmarkToggles = state.pendingBookmarkToggles,
             onBookmarkClick = { onIntent(FeedIntent.BookmarkTapped(it)) },
             onReadSourceClick = onReadSourceClick,
@@ -133,6 +143,7 @@ private fun TopicPostsList(
     feed: TopicFeed,
     isActive: Boolean,
     onPageChanged: (Int) -> Unit,
+    onRetry: () -> Unit,
     pendingBookmarkToggles: Set<String>,
     onBookmarkClick: (String) -> Unit,
     onReadSourceClick: (String) -> Unit,
@@ -142,7 +153,11 @@ private fun TopicPostsList(
 ) {
     when {
         feed.isLoadingInitial && feed.posts.isEmpty() -> LoadingState(modifier)
-        feed.error != null && feed.posts.isEmpty() -> ErrorState(modifier)
+        feed.error != null && feed.posts.isEmpty() -> ErrorState(
+            error = feed.error,
+            onRetry = onRetry,
+            modifier = modifier,
+        )
         feed.posts.isEmpty() -> EmptyState(modifier)
         else -> {
             val listState = rememberLazyListState(
@@ -189,17 +204,33 @@ private fun LoadingState(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * A failed first load, with the retry that gets the reader out of it. A transient network blip on
+ * app open used to be a dead end - the only recovery was relaunching or switching topics and back.
+ */
 @Composable
-private fun ErrorState(modifier: Modifier = Modifier) {
+private fun ErrorState(error: FeedError, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Something went wrong.", style = MaterialTheme.typography.bodyLarge)
+        StatusPrompt(
+            icon = if (error == FeedError.Network) Icons.Filled.CloudOff else Icons.Filled.ErrorOutline,
+            title = "Couldn't load posts",
+            message = when (error) {
+                FeedError.Network -> "Check your connection and try again."
+                FeedError.Unknown -> "Something went wrong on our end. Try again in a moment."
+            },
+            action = StatusPromptAction("Try again", onRetry),
+        )
     }
 }
 
 @Composable
 private fun EmptyState(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("No posts yet.", style = MaterialTheme.typography.bodyLarge)
+        StatusPrompt(
+            icon = Icons.Filled.Inbox,
+            title = "No posts yet",
+            message = "New stories for this topic will show up here as they're published.",
+        )
     }
 }
 
@@ -247,3 +278,7 @@ private fun FeedScreenLoadingPreview() = FeedScreenHarness(TopicFeed(isLoadingIn
 @Preview
 @Composable
 private fun FeedScreenEmptyPreview() = FeedScreenHarness(TopicFeed(posts = emptyList()))
+
+@Preview
+@Composable
+private fun FeedScreenErrorPreview() = FeedScreenHarness(TopicFeed(error = FeedError.Network))
