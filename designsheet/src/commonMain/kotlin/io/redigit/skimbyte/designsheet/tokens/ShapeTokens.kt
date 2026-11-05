@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.theme.SkimbyteShapeTokens
 
 private data class NamedShape(val name: String, val shape: Shape)
 
@@ -27,6 +28,8 @@ fun ShapeTokensContent() {
         NamedShape("medium", shapes.medium),
         NamedShape("large", shapes.large),
         NamedShape("extraLarge", shapes.extraLarge),
+        // Not an M3 Shapes slot — a true capsule for chips, which used to borrow extraLarge.
+        NamedShape("pill", SkimbyteShapeTokens.pill),
     )
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         named.forEach { entry ->
@@ -34,9 +37,11 @@ fun ShapeTokensContent() {
                 modifier = Modifier.padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // Wider than tall so `pill`'s 50% radius reads as the capsule it is rather than
+                // as a circle, which is all a square swatch could ever show.
                 Row(
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(width = 72.dp, height = 40.dp)
                         .background(color = MaterialTheme.colorScheme.primary, shape = entry.shape),
                 ) {}
                 Text(" ${entry.name}")
