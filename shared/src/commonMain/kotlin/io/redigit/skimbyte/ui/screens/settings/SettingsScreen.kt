@@ -215,8 +215,8 @@ fun SettingsScreen(
             text = {
                 Text(
                     "This permanently deletes your bookmarks and other Skimbyte data from our " +
-                        "servers, and signs you out. All your Skimbyte data is removed — see " +
-                        "the privacy policy. This can't be undone.",
+                        "servers and signs you out. All your data related to the Skimbyte app " +
+                        "will be removed. This can't be undone.",
                 )
             },
             confirmButton = {
