@@ -3,70 +3,21 @@ package io.redigit.skimbyte.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Palette primitives, per the design spec on RED-2 (`report` §2.1-2.2).
+ * Palette primitives: the five-stop Coolors palette
+ * (https://coolors.co/fffcf2-ccc5b9-403d39-252422-eb5e28), adopted as the entire color vocabulary
+ * by explicit decision — no derived ramps, no extra stops. Both schemes in [SkimbyteDarkColors]
+ * and [SkimbyteLightColors] map every M3 role onto these five values, which has two deliberate
+ * consequences:
  *
- * Three anchors, all of them Skimbyte's own work because all three already ship in
- * `docs/branding/`: the brand red `#762830` from the `S` glyph, the cream `#FAF9F5` light field,
- * and the `#181715` dark field. Every other value is generated from an anchor by a stated rule
- * rather than sampled, so the ramps stay re-derivable:
- *
- * - **Clay** - lightness ladder from the brand red, hue drifting 354 -> 6 as it lightens
- *   (lightening a 354 oxblood without the drift goes pink), saturation eased at the mid-steps.
- * - **Graphite** - hold the dark anchor's hue 40 / saturation 7%, step lightness up.
- * - **Cream** - hold the cream anchor's hue 48, step lightness down, taper saturation 33% -> 20%
- *   (holding saturation turns the darker steps khaki).
+ * - Roles that would normally sit on different ramp steps share a value (all `surfaceContainer*`
+ *   levels collapse onto one neutral per scheme; `error` shares [Flame] with `primary`).
+ * - Contrast: [RaisinBlack] on [Flame] clears AA at 4.57:1, which is why it is the on-color for
+ *   every Flame fill in both schemes. [Flame] used as *text* clears AA on [RaisinBlack] (4.57:1)
+ *   but reaches only 3.31:1 on [FloralWhite] — large-text/UI-component territory, same caveat the
+ *   previous accent carried on light surfaces.
  */
-
-// Brand ramp - anchored on the docs/branding app-icon "S" glyph.
-val Clay10 = Color(0xFF762830) // brand mark; light primary target
-val Clay20 = Color(0xFF8E333B)
-val Clay30 = Color(0xFFA94247)
-val Clay40 = Color(0xFFC15354)
-val Clay50 = Color(0xFFD46B68) // dark primary target
-val Clay60 = Color(0xFFE38D87)
-val Clay70 = Color(0xFFEFB5AF)
-val Clay80 = Color(0xFFF7D7D4)
-
-// Warm dark neutrals - hue 40, from the icon's dark field.
-val Graphite0 = Color(0xFF0E0D0C)
-val Graphite5 = Color(0xFF131211)
-val Graphite10 = Color(0xFF181715) // icon dark field; also the ink on cream
-val Graphite15 = Color(0xFF1E1D1B)
-val Graphite20 = Color(0xFF23221F)
-val Graphite30 = Color(0xFF2A2825)
-val Graphite40 = Color(0xFF32302C)
-val Graphite50 = Color(0xFF3C3A34)
-val Graphite60 = Color(0xFF948F84)
-
-// Warm light neutrals - hue 48, from the icon's light field.
-val Cream0 = Color(0xFFFFFFFF)
-val Cream5 = Color(0xFFFAF9F5) // icon light field
-val Cream10 = Color(0xFFF8F6F1)
-val Cream20 = Color(0xFFF3F1EA)
-val Cream30 = Color(0xFFEDEBE2)
-val Cream40 = Color(0xFFE6E3D8)
-val Cream50 = Color(0xFFDEDBCE)
-val Cream60 = Color(0xFF807960)
-
-val InkMid = Color(0xFF67645B) // light onSurfaceVariant
-// Two steps lighter than the spec's #A6A196. That value clears AA on every container level the
-// spec checked, but reaches only 4.42:1 on `surfaceBright` - a role the spec's role table defines
-// and its contrast pass did not cover. Same ramp rule (hue 40, saturation 8%), 4.64:1 there.
-val BoneMid = Color(0xFFAAA59B) // dark onSurfaceVariant
-
-// Semantic counterpoints - teal cool, ochre warm, crimson held apart from Clay by chroma.
-val TealDark = Color(0xFF75BCC7)
-val TealLight = Color(0xFF226977)
-val OchreDark = Color(0xFFDCAF6A)
-val OchreLight = Color(0xFF8F5819)
-val CrimsonDark = Color(0xFFE8738A)
-val CrimsonLight = Color(0xFFA31431)
-
-/**
- * The accent hue, carried over from the shipped theme while the board decides between keeping it
- * and moving `primary` onto the Clay ramp (RED-3). Everything drawn *on* it is already fixed:
- * white on this fill reached only 3.28:1 at the 12sp `TopicPill` label, so `onPrimary` is
- * [Graphite10] (5.47:1) in both schemes - the same ink the Clay ramp pairs with, so the hue swap
- * is a one-role change whichever way the board goes.
- */
-val SkimbyteAccent = Color(0xFFCC785C)
+val FloralWhite = Color(0xFFFFFCF2) // light field; dark scheme's on-colors
+val PaleSilver = Color(0xFFCCC5B9) // light containers / dark scheme's muted content
+val BlackOlive = Color(0xFF403D39) // dark containers / light scheme's muted content
+val RaisinBlack = Color(0xFF252422) // dark field; ink on cream and on Flame
+val Flame = Color(0xFFEB5E28) // the single accent: primary, surfaceTint, and error

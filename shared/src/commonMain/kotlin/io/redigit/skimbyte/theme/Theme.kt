@@ -9,85 +9,77 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.graphics.Color
 
 /**
- * Both M3 color schemes, specified in full, per the design spec on RED-2 (`report` §2.3).
+ * Both M3 color schemes, specified in full so no role inherits Material's violet baseline, mapped
+ * onto the five-stop palette in Color.kt and nothing else.
  *
- * Previously dark set nine roles and light was `expressiveLightColorScheme().copy(primary,
- * onPrimary)`. Every role neither of them named kept Material's baseline, which is seeded from a
- * violet palette - so the feed card drew its own container at `#36343B` on a warm `#181715` floor,
- * and light mode rendered lavender cards. A `.copy()` on a stock scheme is what produced that, so
- * both schemes now name every role and neither inherits a baseline value.
+ * Five values cannot give every role its own step, so the collapses are deliberate: all
+ * `surfaceContainer*` levels share one neutral per scheme ([PaleSilver] on light, [BlackOlive] on
+ * dark), `secondary`/`tertiary` are neutral rather than hued, and `error` shares [Flame] with
+ * `primary` — the error signal comes from copy and iconography, not a separate hue.
  *
- * The two shipped WCAG AA failures the RED-2 audit caught - white on the accent fill, and the dark
- * `error` red - are fixed here. The accent *hue* itself is still the shipped one while the board
- * decides on RED-3 - see [SkimbyteAccent] - and it still fails AA where `primary` is used as text
- * on light surfaces (3.11:1 on `surface`); moving the hue is what clears that.
+ * Contrast: every on-color pairing here clears WCAG AA for normal text (ink on Flame 4.57:1,
+ * muted-on-container 6.28:1, and field/ink pairs 9:1+), with one carried-over caveat — [Flame] as
+ * *text* on light surfaces reaches 3.31:1, large-text/UI territory only.
  */
 // M3's "fixed" accent roles hold the same value in both schemes by definition, so they are
-// declared once. The spec's role table omits them because nothing in the app references them yet -
-// but leaving them unset is what lets a violet value hide, which is the whole failure mode here
-// (and it would show through the designsheet catalog as soon as a component did reach for one).
-// These are read straight off the ramps the spec already fixed: `*Fixed` takes the light container
-// tone, `*FixedDim` the step below it, `on*Fixed` the light on-container, `on*FixedVariant` the
-// mid-ramp stop. Flagged for the Designer to confirm rather than quietly treat as spec.
-private val PrimaryFixed = Clay80
-private val PrimaryFixedDim = Clay70
-private val OnPrimaryFixed = Color(0xFF521E22)
-private val OnPrimaryFixedVariant = Clay10
-private val SecondaryFixed = Color(0xFFCDE8EC)
-private val SecondaryFixedDim = Color(0xFFA9DAE2)
-private val OnSecondaryFixed = Color(0xFF123C44)
-private val OnSecondaryFixedVariant = Color(0xFF1C5763)
-private val TertiaryFixed = Color(0xFFF6E2C2)
-private val TertiaryFixedDim = Color(0xFFF0D3A4)
-private val OnTertiaryFixed = Color(0xFF4A2E09)
-private val OnTertiaryFixedVariant = Color(0xFF7B4A13)
+// declared once. Nothing in the app references them yet, but leaving them unset is what lets a
+// baseline value hide (and it would show through the designsheet catalog as soon as a component
+// did reach for one).
+private val PrimaryFixed = Flame
+private val PrimaryFixedDim = Flame
+private val OnPrimaryFixed = RaisinBlack
+private val OnPrimaryFixedVariant = RaisinBlack
+private val SecondaryFixed = PaleSilver
+private val SecondaryFixedDim = PaleSilver
+private val OnSecondaryFixed = RaisinBlack
+private val OnSecondaryFixedVariant = BlackOlive
+private val TertiaryFixed = PaleSilver
+private val TertiaryFixedDim = PaleSilver
+private val OnTertiaryFixed = RaisinBlack
+private val OnTertiaryFixedVariant = BlackOlive
 
 internal val SkimbyteDarkColors = darkColorScheme(
-    primary = SkimbyteAccent,
-    // Ink, not white: the shipped white label reached 3.28:1 on this fill at 12sp (StoryMeta.kt
-    // TopicPill, TopicFilterRow, TopicsScreen chips). Graphite10 clears 5.47:1.
-    onPrimary = Graphite10,
-    primaryContainer = Color(0xFF4F2224),
-    onPrimaryContainer = Clay70,
-    inversePrimary = Clay10,
-    secondary = TealDark,
-    onSecondary = Graphite10,
-    secondaryContainer = Color(0xFF1C3B40),
-    onSecondaryContainer = Color(0xFFA9DAE2),
-    tertiary = OchreDark,
-    onTertiary = Graphite10,
-    tertiaryContainer = Color(0xFF4A3415),
-    onTertiaryContainer = Color(0xFFF0D3A4),
-    background = Graphite10,
-    onBackground = Cream5,
-    surface = Graphite10,
-    onSurface = Cream5,
-    surfaceDim = Graphite5,
-    surfaceBright = Graphite50,
-    surfaceContainerLowest = Graphite0,
-    surfaceContainerLow = Graphite15,
-    surfaceContainer = Graphite20,
-    surfaceContainerHigh = Graphite30,
-    surfaceContainerHighest = Graphite40,
-    surfaceVariant = Graphite15,
-    onSurfaceVariant = BoneMid,
-    surfaceTint = SkimbyteAccent,
-    inverseSurface = Cream5,
-    inverseOnSurface = Graphite10,
-    outline = Graphite60,
-    outlineVariant = Graphite50,
-    // The shipped `#C64545` was a validation red for a cream page (6.46:1 there) and reached only
-    // 3.70:1 on this floor and 3.04:1 on a dialog. CrimsonDark is the spec's stop, solved to clear
-    // 4.5:1 on every container level through surfaceContainerHighest (4.55:1 there, 6.19:1 here).
-    error = CrimsonDark,
-    // Ink on the lighter crimson (6.19:1); white reaches only 2.90:1 against it.
-    onError = Graphite10,
-    errorContainer = Color(0xFF59222D),
-    onErrorContainer = Color(0xFFF0A8B7),
-    scrim = Color.Black,
+    primary = Flame,
+    // Ink, not white: FloralWhite on Flame reaches only 3.31:1 at the 12sp TopicPill label;
+    // RaisinBlack clears 4.57:1.
+    onPrimary = RaisinBlack,
+    primaryContainer = Flame,
+    onPrimaryContainer = RaisinBlack,
+    inversePrimary = Flame,
+    secondary = PaleSilver,
+    onSecondary = RaisinBlack,
+    secondaryContainer = BlackOlive,
+    onSecondaryContainer = PaleSilver,
+    tertiary = PaleSilver,
+    onTertiary = RaisinBlack,
+    tertiaryContainer = BlackOlive,
+    onTertiaryContainer = PaleSilver,
+    background = RaisinBlack,
+    onBackground = FloralWhite,
+    surface = RaisinBlack,
+    onSurface = FloralWhite,
+    surfaceDim = RaisinBlack,
+    surfaceBright = BlackOlive,
+    surfaceContainerLowest = RaisinBlack,
+    surfaceContainerLow = BlackOlive,
+    surfaceContainer = BlackOlive,
+    surfaceContainerHigh = BlackOlive,
+    surfaceContainerHighest = BlackOlive,
+    surfaceVariant = BlackOlive,
+    onSurfaceVariant = PaleSilver,
+    surfaceTint = Flame,
+    inverseSurface = FloralWhite,
+    inverseOnSurface = RaisinBlack,
+    outline = PaleSilver,
+    outlineVariant = BlackOlive,
+    // Flame doubles as the error hue; as text on this floor it clears 4.57:1.
+    error = Flame,
+    onError = RaisinBlack,
+    errorContainer = Flame,
+    onErrorContainer = RaisinBlack,
+    scrim = RaisinBlack,
     primaryFixed = PrimaryFixed,
     primaryFixedDim = PrimaryFixedDim,
     onPrimaryFixed = OnPrimaryFixed,
@@ -103,43 +95,45 @@ internal val SkimbyteDarkColors = darkColorScheme(
 )
 
 internal val SkimbyteLightColors = lightColorScheme(
-    primary = SkimbyteAccent,
-    // Same 3.28:1 failure as dark - the fill is identical in both schemes.
-    onPrimary = Graphite10,
-    primaryContainer = Clay80,
-    onPrimaryContainer = Color(0xFF521E22),
-    inversePrimary = Clay60,
-    secondary = TealLight,
-    onSecondary = Cream0,
-    secondaryContainer = Color(0xFFCDE8EC),
-    onSecondaryContainer = Color(0xFF123C44),
-    tertiary = OchreLight,
-    onTertiary = Cream0,
-    tertiaryContainer = Color(0xFFF6E2C2),
-    onTertiaryContainer = Color(0xFF4A2E09),
-    background = Cream5,
-    onBackground = Graphite10,
-    surface = Cream5,
-    onSurface = Graphite10,
-    surfaceDim = Cream40,
-    surfaceBright = Cream0,
-    surfaceContainerLowest = Cream0,
-    surfaceContainerLow = Cream10,
-    surfaceContainer = Cream20,
-    surfaceContainerHigh = Cream30,
-    surfaceContainerHighest = Cream40,
-    surfaceVariant = Cream30,
-    onSurfaceVariant = InkMid,
-    surfaceTint = SkimbyteAccent,
-    inverseSurface = Graphite20,
-    inverseOnSurface = Cream5,
-    outline = Cream60,
-    outlineVariant = Cream50,
-    error = CrimsonLight,
-    onError = Cream0,
-    errorContainer = Color(0xFFF9DCE2),
-    onErrorContainer = Color(0xFF6A1B2A),
-    scrim = Color.Black,
+    primary = Flame,
+    // Same 3.31:1 failure as dark - the fill is identical in both schemes.
+    onPrimary = RaisinBlack,
+    primaryContainer = Flame,
+    onPrimaryContainer = RaisinBlack,
+    inversePrimary = Flame,
+    secondary = BlackOlive,
+    onSecondary = FloralWhite,
+    secondaryContainer = PaleSilver,
+    onSecondaryContainer = RaisinBlack,
+    tertiary = BlackOlive,
+    onTertiary = FloralWhite,
+    tertiaryContainer = PaleSilver,
+    onTertiaryContainer = RaisinBlack,
+    background = FloralWhite,
+    onBackground = RaisinBlack,
+    surface = FloralWhite,
+    onSurface = RaisinBlack,
+    surfaceDim = PaleSilver,
+    surfaceBright = FloralWhite,
+    surfaceContainerLowest = FloralWhite,
+    surfaceContainerLow = PaleSilver,
+    surfaceContainer = PaleSilver,
+    surfaceContainerHigh = PaleSilver,
+    surfaceContainerHighest = PaleSilver,
+    surfaceVariant = PaleSilver,
+    onSurfaceVariant = BlackOlive,
+    surfaceTint = Flame,
+    inverseSurface = RaisinBlack,
+    inverseOnSurface = FloralWhite,
+    outline = BlackOlive,
+    outlineVariant = PaleSilver,
+    // Flame doubles as the error hue; as a fill its ink clears AA, as text on this floor it is
+    // large-text only (3.31:1).
+    error = Flame,
+    onError = RaisinBlack,
+    errorContainer = Flame,
+    onErrorContainer = RaisinBlack,
+    scrim = RaisinBlack,
     primaryFixed = PrimaryFixed,
     primaryFixedDim = PrimaryFixedDim,
     onPrimaryFixed = OnPrimaryFixed,
