@@ -3,8 +3,6 @@ package io.redigit.skimbyte.ui.screens.settings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -23,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import skimbyte.shared.generated.resources.Res
@@ -48,7 +47,7 @@ fun LicensesScreen(
                 title = { Text("Open source licenses") },
                 navigationIcon = {
                     IconButton(onClick = onBack, modifier = Modifier.testTag("licensesBack")) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(SkimbyteIcons.Back, contentDescription = "Back")
                     }
                 },
                 scrollBehavior = scrollBehavior,

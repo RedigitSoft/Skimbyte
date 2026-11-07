@@ -8,11 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
@@ -27,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 /**
@@ -113,9 +109,9 @@ private fun NavDestinationItem(
 }
 
 internal fun TopLevelDestination.icon() = when (this) {
-    TopLevelDestination.Feed -> Icons.Filled.Home
-    TopLevelDestination.Bookmarks -> Icons.Filled.Bookmark
-    TopLevelDestination.Account -> Icons.Filled.Person
+    TopLevelDestination.Feed -> SkimbyteIcons.Home
+    TopLevelDestination.Bookmarks -> SkimbyteIcons.BookmarkFilled
+    TopLevelDestination.Account -> SkimbyteIcons.Profile
 }
 
 /** Human-readable Camel Case label for the destination (enum names already read this way). */

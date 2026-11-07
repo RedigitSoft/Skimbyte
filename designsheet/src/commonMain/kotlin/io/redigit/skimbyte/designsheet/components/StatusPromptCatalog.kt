@@ -2,19 +2,12 @@ package io.redigit.skimbyte.designsheet.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.CloudOff
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.Inbox
-import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.designsheet.catalog.CatalogPage
 import io.redigit.skimbyte.designsheet.catalog.CatalogSection
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.StatusPrompt
 import io.redigit.skimbyte.ui.components.StatusPromptAction
@@ -31,13 +24,13 @@ fun StatusPromptCatalogContent() {
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
                 StatusPrompt(
-                    icon = Icons.Filled.AccountCircle,
+                    icon = SkimbyteIcons.AccountCircle,
                     title = "You're not signed in",
                     message = "Sign in to sync your profile, bookmarks, and reading stats across devices.",
                     action = StatusPromptAction("Sign in") {},
                 )
                 StatusPrompt(
-                    icon = Icons.Filled.Bookmark,
+                    icon = SkimbyteIcons.BookmarkFilled,
                     title = "Your bookmarks live here",
                     message = "Sign in to save stories from the feed and pick them up on any device.",
                     action = StatusPromptAction("Sign in") {},
@@ -52,13 +45,13 @@ fun StatusPromptCatalogContent() {
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
                 StatusPrompt(
-                    icon = Icons.Filled.CloudOff,
+                    icon = SkimbyteIcons.Offline,
                     title = "Couldn't load posts",
                     message = "Check your connection and try again.",
                     action = StatusPromptAction("Try again") {},
                 )
                 StatusPrompt(
-                    icon = Icons.Filled.ErrorOutline,
+                    icon = SkimbyteIcons.Error,
                     title = "Couldn't load posts",
                     message = "Something went wrong on our end. Try again in a moment.",
                     action = StatusPromptAction("Try again") {},
@@ -72,17 +65,17 @@ fun StatusPromptCatalogContent() {
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
                 StatusPrompt(
-                    icon = Icons.Filled.Inbox,
+                    icon = SkimbyteIcons.EmptyInbox,
                     title = "No posts yet",
                     message = "New stories for this topic will show up here as they're published.",
                 )
                 StatusPrompt(
-                    icon = Icons.Outlined.BookmarkBorder,
+                    icon = SkimbyteIcons.BookmarkOutline,
                     title = "No bookmarks yet",
                     message = "Tap the bookmark icon on any story in the feed to save it here.",
                 )
                 StatusPrompt(
-                    icon = Icons.Filled.Description,
+                    icon = SkimbyteIcons.Document,
                     title = "No story selected",
                     message = "Pick a story from the list to read it here.",
                 )

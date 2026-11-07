@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +28,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
@@ -133,13 +131,13 @@ fun BannerImage(
                         strokeWidth = 2.dp,
                     )
                     isError -> Icon(
-                        Icons.Filled.ErrorOutline,
+                        SkimbyteIcons.Error,
                         contentDescription = "Upload failed",
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onError,
                     )
                     else -> Icon(
-                        Icons.Filled.PhotoCamera,
+                        SkimbyteIcons.Camera,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onPrimary,

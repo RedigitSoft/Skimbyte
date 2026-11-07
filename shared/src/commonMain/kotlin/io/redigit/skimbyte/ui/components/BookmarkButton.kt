@@ -1,9 +1,6 @@
 package io.redigit.skimbyte.ui.components
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -13,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 @Composable
@@ -26,9 +24,9 @@ fun BookmarkButton(
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
         } else if (isBookmarked) {
-            Icon(Icons.Filled.Bookmark, contentDescription = "Remove bookmark")
+            Icon(SkimbyteIcons.BookmarkFilled, contentDescription = "Remove bookmark")
         } else {
-            Icon(Icons.Outlined.BookmarkBorder, contentDescription = "Bookmark")
+            Icon(SkimbyteIcons.BookmarkOutline, contentDescription = "Bookmark")
         }
     }
 }

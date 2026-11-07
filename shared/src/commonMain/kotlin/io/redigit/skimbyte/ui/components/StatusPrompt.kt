@@ -21,10 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.CloudOff
-import androidx.compose.material.icons.filled.Inbox
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 /** The button on a [StatusPrompt] that recovers from the state the prompt describes. */
@@ -88,7 +85,7 @@ fun StatusPrompt(
 private fun StatusPromptPreview() {
     SkimbyteTheme {
         StatusPrompt(
-            icon = Icons.Filled.AccountCircle,
+            icon = SkimbyteIcons.AccountCircle,
             title = "You're not signed in",
             message = "Sign in to sync your profile, bookmarks, and reading stats across devices.",
             action = StatusPromptAction("Sign in") {},
@@ -101,7 +98,7 @@ private fun StatusPromptPreview() {
 private fun StatusPromptErrorLightPreview() {
     SkimbyteTheme(darkTheme = false) {
         StatusPrompt(
-            icon = Icons.Filled.CloudOff,
+            icon = SkimbyteIcons.Offline,
             title = "Couldn't load posts",
             message = "Check your connection and try again.",
             action = StatusPromptAction("Try again") {},
@@ -115,7 +112,7 @@ private fun StatusPromptErrorLightPreview() {
 private fun StatusPromptNoActionPreview() {
     SkimbyteTheme {
         StatusPrompt(
-            icon = Icons.Filled.Inbox,
+            icon = SkimbyteIcons.EmptyInbox,
             title = "No posts yet",
             message = "New stories for this topic will show up here.",
         )

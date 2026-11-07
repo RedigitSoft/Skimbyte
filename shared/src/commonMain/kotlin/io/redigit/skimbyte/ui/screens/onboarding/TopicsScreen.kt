@@ -18,9 +18,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -38,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Topic
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -59,7 +57,7 @@ fun TopicsScreen(
     ) {
         if (onBack != null) {
             IconButton(onClick = onBack, modifier = Modifier.align(Alignment.Start)) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(SkimbyteIcons.Back, contentDescription = "Back")
             }
         }
         Column(
@@ -158,7 +156,7 @@ private fun TopicChip(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             if (isSelected) {
-                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(SkimbyteIcons.Check, contentDescription = null, modifier = Modifier.size(16.dp))
             }
             Text(text = topic.displayLabel, style = MaterialTheme.typography.labelLarge)
         }

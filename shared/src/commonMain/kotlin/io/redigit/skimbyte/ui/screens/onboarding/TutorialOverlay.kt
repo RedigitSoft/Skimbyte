@@ -14,11 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,15 +33,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 private data class TutorialStep(val icon: ImageVector, val title: String, val description: String)
 
 private val tutorialSteps = listOf(
-    TutorialStep(Icons.Filled.KeyboardArrowUp, "Swipe up for the next story", "The feed shows one brief at a time - swipe up to move to the next."),
-    TutorialStep(Icons.Filled.SwapHoriz, "Swipe sideways for topics", "Swipe left or right, or tap a chip, to switch between your topics."),
-    TutorialStep(Icons.Filled.Bookmark, "Save what matters", "Tap the bookmark on a story to keep it in your Bookmarks."),
-    TutorialStep(Icons.Filled.Person, "Make it yours", "Open Profile to set your digest time, summary length and more."),
+    TutorialStep(SkimbyteIcons.SwipeUp, "Swipe up for the next story", "The feed shows one brief at a time - swipe up to move to the next."),
+    TutorialStep(SkimbyteIcons.SwipeSideways, "Swipe sideways for topics", "Swipe left or right, or tap a chip, to switch between your topics."),
+    TutorialStep(SkimbyteIcons.BookmarkFilled, "Save what matters", "Tap the bookmark on a story to keep it in your Bookmarks."),
+    TutorialStep(SkimbyteIcons.Profile, "Make it yours", "Open Profile to set your digest time, summary length and more."),
 )
 
 /**

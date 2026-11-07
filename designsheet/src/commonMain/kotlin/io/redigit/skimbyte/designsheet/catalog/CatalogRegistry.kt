@@ -24,6 +24,7 @@ import io.redigit.skimbyte.designsheet.components.TopicImagePlaceholderCatalogCo
 import io.redigit.skimbyte.designsheet.components.TopicsScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.TutorialOverlayCatalogContent
 import io.redigit.skimbyte.designsheet.tokens.ColorTokensContent
+import io.redigit.skimbyte.designsheet.tokens.IconTokensContent
 import io.redigit.skimbyte.designsheet.tokens.ShapeTokensContent
 import io.redigit.skimbyte.designsheet.tokens.SpacingTokensContent
 import io.redigit.skimbyte.designsheet.tokens.TypographyTokensContent
@@ -49,6 +50,10 @@ val catalogItems: List<CatalogItem> = listOf(
         "shape-tokens", "Shape", "Tokens",
         "Corner radii from the shared shape scale, including the chip capsule.",
     ) { ShapeTokensContent() },
+    CatalogItem(
+        "icon-tokens", "Icons", "Tokens",
+        "Every glyph in SkimbyteIcons, the single source of truth all UI icons are drawn from.",
+    ) { IconTokensContent() },
     CatalogItem(
         "buttons", "Buttons", "Components",
         "All five Material button emphases, enabled and disabled.",

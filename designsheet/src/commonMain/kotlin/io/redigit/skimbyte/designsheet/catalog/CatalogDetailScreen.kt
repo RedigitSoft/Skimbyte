@@ -4,10 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 @Composable
@@ -42,13 +39,13 @@ fun CatalogDetailScreen(item: CatalogItem, onBack: () -> Unit, modifier: Modifie
                 // back on desktop/web, which have no system back gesture.
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(SkimbyteIcons.Back, contentDescription = "Back")
                     }
                 },
                 actions = {
                     IconButton(onClick = { previewDark = !previewDark }) {
                         Icon(
-                            imageVector = if (previewDark) Icons.Outlined.LightMode else Icons.Outlined.DarkMode,
+                            imageVector = if (previewDark) SkimbyteIcons.ThemeLightOutline else SkimbyteIcons.ThemeDarkOutline,
                             contentDescription = if (previewDark) "Preview in light theme" else "Preview in dark theme",
                         )
                     }

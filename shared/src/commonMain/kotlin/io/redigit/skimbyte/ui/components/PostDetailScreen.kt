@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mikepenz.markdown.m3.Markdown
 import io.redigit.skimbyte.data.models.Post
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.util.estimateReadingMinutes
 import kotlin.time.Instant
@@ -148,7 +146,7 @@ fun PostDetailScreen(
             onClick = onBack,
             modifier = Modifier.statusBarsPadding().padding(start = 8.dp, top = 4.dp),
         ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            Icon(SkimbyteIcons.Back, contentDescription = "Back")
         }
     }
 }
@@ -158,7 +156,7 @@ fun PostDetailScreen(
 fun PostDetailPlaceholder(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         StatusPrompt(
-            icon = Icons.Filled.Description,
+            icon = SkimbyteIcons.Document,
             title = "No story selected",
             message = "Pick a story from the list to read it here.",
         )

@@ -11,10 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Post
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.SavedPostRow
 import io.redigit.skimbyte.ui.components.SharedElementContext
@@ -79,7 +76,7 @@ fun BookmarksListScreen(
                 }
                 Box(Modifier.padding(padding).fillMaxSize(), contentAlignment = Alignment.Center) {
                     StatusPrompt(
-                        icon = Icons.Filled.Bookmark,
+                        icon = SkimbyteIcons.BookmarkFilled,
                         title = "Your bookmarks live here",
                         message = "Sign in to save stories from the feed and pick them up on any device.",
                         action = StatusPromptAction("Sign in") { showLogin = true },
@@ -104,7 +101,7 @@ fun BookmarksListScreen(
                         contentAlignment = Alignment.Center,
                     ) {
                         StatusPrompt(
-                            icon = Icons.Outlined.BookmarkBorder,
+                            icon = SkimbyteIcons.BookmarkOutline,
                             title = "No bookmarks yet",
                             message = "Tap the bookmark icon on any story in the feed to save it here.",
                         )
@@ -186,7 +183,7 @@ private fun DismissibleBookmarkRow(
                 contentAlignment = Alignment.CenterEnd,
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Delete,
+                    imageVector = SkimbyteIcons.Delete,
                     contentDescription = "Delete bookmark",
                     tint = MaterialTheme.colorScheme.onErrorContainer,
                     modifier = Modifier.padding(end = 24.dp),

@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.redigit.skimbyte.data.models.Post
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import kotlin.time.Instant
 
@@ -118,7 +117,7 @@ fun SavedPostRow(
             if (onRemoveClick != null) {
                 IconButton(onClick = onRemoveClick) {
                     Icon(
-                        imageVector = Icons.Filled.Bookmark,
+                        imageVector = SkimbyteIcons.BookmarkFilled,
                         contentDescription = "Remove bookmark",
                         tint = MaterialTheme.colorScheme.primary,
                     )

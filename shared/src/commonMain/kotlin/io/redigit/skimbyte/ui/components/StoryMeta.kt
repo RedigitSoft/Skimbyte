@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.OpenInNew
-import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteShapeTokens
 import io.redigit.skimbyte.util.toDisplayDate
 import kotlin.time.Instant
@@ -72,7 +69,7 @@ internal fun ReadingTimeLabel(minutes: Int, modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = Icons.Outlined.Schedule,
+            imageVector = SkimbyteIcons.ReadingTime,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(14.dp),
@@ -94,7 +91,7 @@ internal fun SourceAttribution(sourceName: String, publishedAt: Instant, modifie
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = Icons.Filled.Verified,
+            imageVector = SkimbyteIcons.Verified,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(16.dp),
@@ -160,7 +157,7 @@ internal fun StoryActionBar(
                 Text(readSourceLabel)
                 Spacer(Modifier.size(6.dp))
                 Icon(
-                    imageVector = Icons.Filled.OpenInNew,
+                    imageVector = SkimbyteIcons.OpenInNew,
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
                 )

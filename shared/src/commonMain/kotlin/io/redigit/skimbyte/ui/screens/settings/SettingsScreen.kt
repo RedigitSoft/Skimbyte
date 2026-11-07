@@ -14,17 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Contrast
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Interests
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -53,6 +42,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.theme.EyebrowText
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.theme.ThemeMode
 
@@ -89,7 +79,7 @@ fun SettingsScreen(
                 title = { Text("Settings") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(SkimbyteIcons.Back, contentDescription = "Back")
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -126,7 +116,7 @@ fun SettingsScreen(
                 EyebrowText("Content", modifier = Modifier.padding(start = 4.dp))
                 Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                     SettingsActionRow(
-                        icon = Icons.Filled.Interests,
+                        icon = SkimbyteIcons.Interests,
                         label = "Edit interests",
                         supporting = "Choose the topics in your daily brief",
                         onClick = onEditInterestsClick,
@@ -137,14 +127,14 @@ fun SettingsScreen(
                 Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                     Column {
                         SettingsActionRow(
-                            icon = Icons.Filled.PrivacyTip,
+                            icon = SkimbyteIcons.Privacy,
                             label = "Privacy policy",
                             supporting = "How Skimbyte handles your data",
                             onClick = onPrivacyPolicyClick,
                         )
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         SettingsActionRow(
-                            icon = Icons.Filled.Description,
+                            icon = SkimbyteIcons.Document,
                             label = "Open source licenses",
                             supporting = "The libraries this app is built on",
                             onClick = onLicensesClick,
@@ -165,7 +155,7 @@ fun SettingsScreen(
                     Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                         Column {
                             SettingsActionRow(
-                                icon = Icons.AutoMirrored.Filled.Logout,
+                                icon = SkimbyteIcons.SignOut,
                                 label = "Log out",
                                 supporting = "Sign out of your account",
                                 onClick = { showLogoutConfirm = true },
@@ -175,7 +165,7 @@ fun SettingsScreen(
                             )
                             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                             SettingsActionRow(
-                                icon = Icons.Filled.DeleteForever,
+                                icon = SkimbyteIcons.DeleteForever,
                                 label = "Delete my data",
                                 supporting = "Permanently remove your Skimbyte data",
                                 onClick = { showDeleteConfirm = true },
@@ -309,7 +299,7 @@ private fun SettingsActionRow(
         }
         if (showChevron) {
             Icon(
-                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                SkimbyteIcons.ChevronRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -324,9 +314,9 @@ private fun ThemeMode.displayLabel(): String = when (this) {
 }
 
 private fun ThemeMode.icon(): ImageVector = when (this) {
-    ThemeMode.Light -> Icons.Filled.LightMode
-    ThemeMode.Dark -> Icons.Filled.DarkMode
-    ThemeMode.System -> Icons.Filled.Contrast
+    ThemeMode.Light -> SkimbyteIcons.ThemeLight
+    ThemeMode.Dark -> SkimbyteIcons.ThemeDark
+    ThemeMode.System -> SkimbyteIcons.ThemeSystem
 }
 
 @Preview

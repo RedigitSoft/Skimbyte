@@ -9,14 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Article
-import androidx.compose.material.icons.outlined.BookmarkBorder
-import androidx.compose.material.icons.outlined.Explore
-import androidx.compose.material.icons.outlined.Flag
-import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -35,16 +27,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.theme.EyebrowText
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 private fun categoryIcon(category: String): ImageVector = when (category) {
-    "Tokens" -> Icons.Outlined.Palette
-    "Components" -> Icons.Outlined.Widgets
-    "Feed" -> Icons.AutoMirrored.Outlined.Article
-    "Navigation" -> Icons.Outlined.Explore
-    "Bookmarks" -> Icons.Outlined.BookmarkBorder
-    "Account" -> Icons.Outlined.Person
-    else -> Icons.Outlined.Flag
+    "Tokens" -> SkimbyteIcons.CategoryTokens
+    "Components" -> SkimbyteIcons.CategoryComponents
+    "Feed" -> SkimbyteIcons.CategoryFeed
+    "Navigation" -> SkimbyteIcons.CategoryNavigation
+    "Bookmarks" -> SkimbyteIcons.BookmarkOutline
+    "Account" -> SkimbyteIcons.CategoryAccount
+    else -> SkimbyteIcons.CategoryOnboarding
 }
 
 @Composable

@@ -20,13 +20,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Topic
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteShapeTokens
@@ -134,7 +128,7 @@ fun AccountScreen(
                 }
             } else {
                 StatusPrompt(
-                    icon = Icons.Filled.AccountCircle,
+                    icon = SkimbyteIcons.AccountCircle,
                     title = "You're not signed in",
                     message = "Sign in to sync your profile, bookmarks, and reading stats across devices.",
                     action = StatusPromptAction("Sign in", onSignInClick),
@@ -146,7 +140,7 @@ fun AccountScreen(
             EyebrowText("Account", modifier = Modifier.padding(start = 4.dp))
             Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                 AccountActionRow(
-                    icon = Icons.Filled.Settings,
+                    icon = SkimbyteIcons.Settings,
                     label = "Settings",
                     supporting = "Theme, account, privacy & more",
                     onClick = onSettingsClick,
@@ -182,7 +176,7 @@ private fun ProfileHeader(
                 )
                 if (isVerified) {
                     Icon(
-                        Icons.Filled.Verified,
+                        SkimbyteIcons.Verified,
                         contentDescription = "Verified",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp),
@@ -222,7 +216,7 @@ private fun SavedStat(savedCount: Int, modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Icon(
-                Icons.Filled.Bookmark,
+                SkimbyteIcons.BookmarkFilled,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(18.dp),
@@ -300,7 +294,7 @@ private fun AccountActionRow(
             )
         }
         Icon(
-            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            SkimbyteIcons.ChevronRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -316,7 +310,7 @@ private fun AccountErrorBanner(message: String) {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Icon(
-                Icons.Filled.ErrorOutline,
+                SkimbyteIcons.Error,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onErrorContainer,
             )

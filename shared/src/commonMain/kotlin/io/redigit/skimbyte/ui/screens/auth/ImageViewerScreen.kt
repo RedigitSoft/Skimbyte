@@ -4,10 +4,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
@@ -59,7 +56,7 @@ fun ImageViewerScreen(
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(SkimbyteIcons.Back, contentDescription = "Back")
                     }
                 },
                 expandedHeight = 48.dp,
@@ -67,7 +64,7 @@ fun ImageViewerScreen(
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(onClick = onChangePhotoClick) {
-                Icon(Icons.Filled.PhotoCamera, contentDescription = null)
+                Icon(SkimbyteIcons.Camera, contentDescription = null)
                 Text("  Change photo")
             }
         },
@@ -77,7 +74,7 @@ fun ImageViewerScreen(
                 AsyncImage(model = imageUrl, contentDescription = null, contentScale = ContentScale.Fit, modifier = imageModifier)
             } else {
                 Icon(
-                    Icons.Filled.AccountCircle,
+                    SkimbyteIcons.AccountCircle,
                     contentDescription = null,
                     modifier = Modifier.padding(48.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -7,10 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
 /**
@@ -74,21 +71,21 @@ fun ImageEditSheetContent(
         // isCameraAvailable). Gallery/file picking is always available.
         if (cameraAvailable) {
             OptionRow(
-                icon = Icons.Filled.PhotoCamera,
+                icon = SkimbyteIcons.Camera,
                 title = "Take photo",
                 subtitle = "Use your camera",
                 onClick = onTakePhoto,
             )
         }
         OptionRow(
-            icon = Icons.Filled.Image,
+            icon = SkimbyteIcons.Gallery,
             title = "Choose from gallery",
             subtitle = "JPEG, PNG or WebP",
             onClick = onChooseFromGallery,
         )
         if (onRemove != null) {
             OptionRow(
-                icon = Icons.Filled.Delete,
+                icon = SkimbyteIcons.Delete,
                 title = "Remove current image",
                 subtitle = "Reset to the default",
                 onClick = onRemove,

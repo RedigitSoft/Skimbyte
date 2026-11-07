@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -40,6 +37,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import androidx.compose.ui.tooling.preview.Preview
+import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.util.AVATAR_ASPECT
 import io.redigit.skimbyte.util.BANNER_ASPECT
@@ -149,7 +147,7 @@ fun ImageCropScreen(
                 onClick = onCancel,
                 modifier = Modifier.align(Alignment.TopStart).padding(8.dp),
             ) {
-                Icon(Icons.Filled.Close, contentDescription = "Cancel", tint = Color.White)
+                Icon(SkimbyteIcons.Close, contentDescription = "Cancel", tint = Color.White)
             }
 
             Text(
@@ -180,7 +178,7 @@ fun ImageCropScreen(
                 if (processing) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
                 } else {
-                    Icon(Icons.Filled.Check, contentDescription = "Use photo")
+                    Icon(SkimbyteIcons.Check, contentDescription = "Use photo")
                 }
             }
         }
