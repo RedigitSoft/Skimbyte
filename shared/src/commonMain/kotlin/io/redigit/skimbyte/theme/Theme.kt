@@ -7,6 +7,8 @@ import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -161,12 +163,21 @@ internal val SkimbyteLightColors = lightColorScheme(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SkimbyteTheme(darkTheme: Boolean = true, content: @Composable () -> Unit) {
-    MaterialExpressiveTheme(
-        colorScheme = if (darkTheme) SkimbyteDarkColors else SkimbyteLightColors,
-        shapes = SkimbyteShapes,
-        motionScheme = MotionScheme.expressive(),
-        content = content,
-    )
+    val colorScheme = if (darkTheme) SkimbyteDarkColors else SkimbyteLightColors
+    val windowChrome = LocalWindowChromeListener.current
+    LaunchedEffect(windowChrome, darkTheme) {
+        windowChrome.onThemeResolved(darkTheme, colorScheme.surface)
+    }
+    // Consume the listener so nested themes (light/dark preview sections in the designsheet
+    // catalog) don't also report and fight over the host window's chrome.
+    CompositionLocalProvider(LocalWindowChromeListener provides NoOpWindowChromeListener) {
+        MaterialExpressiveTheme(
+            colorScheme = colorScheme,
+            shapes = SkimbyteShapes,
+            motionScheme = MotionScheme.expressive(),
+            content = content,
+        )
+    }
 }
 
 @Composable
