@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.redigit.skimbyte.theme.SkimbyteIcons
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
@@ -84,7 +85,7 @@ fun BannerImage(
                     if (editable) {
                         Modifier
                             .clickable(enabled = !busy, onClick = onBannerClick)
-                            .semantics { contentDescription = "View banner" }
+                            .semantics { contentDescription = SkimbyteStrings.Account.VIEW_BANNER }
                     } else {
                         Modifier
                     },
@@ -121,7 +122,7 @@ fun BannerImage(
                     .background(if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary, CircleShape)
                     .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
                     .clickable(enabled = !busy, onClick = onEditClick)
-                    .semantics { contentDescription = "Change banner" },
+                    .semantics { contentDescription = SkimbyteStrings.Account.CHANGE_BANNER },
                 contentAlignment = Alignment.Center,
             ) {
                 when {
@@ -132,7 +133,7 @@ fun BannerImage(
                     )
                     isError -> Icon(
                         SkimbyteIcons.Error,
-                        contentDescription = "Upload failed",
+                        contentDescription = SkimbyteStrings.Common.UPLOAD_FAILED,
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onError,
                     )

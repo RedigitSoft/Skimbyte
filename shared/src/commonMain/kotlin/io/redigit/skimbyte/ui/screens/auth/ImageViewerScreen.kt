@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.redigit.skimbyte.theme.SkimbyteIcons
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
@@ -56,7 +57,7 @@ fun ImageViewerScreen(
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(SkimbyteIcons.Back, contentDescription = "Back")
+                        Icon(SkimbyteIcons.Back, contentDescription = SkimbyteStrings.Common.BACK)
                     }
                 },
                 expandedHeight = 48.dp,
@@ -65,7 +66,7 @@ fun ImageViewerScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(onClick = onChangePhotoClick) {
                 Icon(SkimbyteIcons.Camera, contentDescription = null)
-                Text("  Change photo")
+                Text("  " + SkimbyteStrings.Account.CHANGE_PHOTO)
             }
         },
     ) { padding ->

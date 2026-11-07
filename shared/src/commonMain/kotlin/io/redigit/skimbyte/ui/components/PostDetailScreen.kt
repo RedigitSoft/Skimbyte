@@ -32,6 +32,7 @@ import com.mikepenz.markdown.m3.Markdown
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.util.estimateReadingMinutes
 import kotlin.time.Instant
 
@@ -125,7 +126,7 @@ fun PostDetailScreen(
                     isBookmarkLoading = isBookmarkLoading,
                     onBookmarkClick = onBookmarkClick,
                     onReadSourceClick = { onReadSourceClick(post.sourceUrl) },
-                    readSourceLabel = "View source",
+                    readSourceLabel = SkimbyteStrings.Story.VIEW_SOURCE,
                 )
             }
         }
@@ -146,7 +147,7 @@ fun PostDetailScreen(
             onClick = onBack,
             modifier = Modifier.statusBarsPadding().padding(start = 8.dp, top = 4.dp),
         ) {
-            Icon(SkimbyteIcons.Back, contentDescription = "Back")
+            Icon(SkimbyteIcons.Back, contentDescription = SkimbyteStrings.Common.BACK)
         }
     }
 }
@@ -157,8 +158,8 @@ fun PostDetailPlaceholder(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         StatusPrompt(
             icon = SkimbyteIcons.Document,
-            title = "No story selected",
-            message = "Pick a story from the list to read it here.",
+            title = SkimbyteStrings.Story.NO_STORY_SELECTED_TITLE,
+            message = SkimbyteStrings.Story.NO_STORY_SELECTED_MESSAGE,
         )
     }
 }

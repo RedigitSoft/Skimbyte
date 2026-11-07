@@ -45,6 +45,7 @@ import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.theme.ThemeMode
+import io.redigit.skimbyte.ui.SkimbyteStrings
 
 /**
  * M3 Expressive settings: a large flexible top bar that collapses on scroll, and the theme choice
@@ -76,10 +77,10 @@ fun SettingsScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeFlexibleTopAppBar(
-                title = { Text("Settings") },
+                title = { Text(SkimbyteStrings.Settings.TITLE) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(SkimbyteIcons.Back, contentDescription = "Back")
+                        Icon(SkimbyteIcons.Back, contentDescription = SkimbyteStrings.Common.BACK)
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -99,13 +100,13 @@ fun SettingsScreen(
                     .padding(top = 16.dp, bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                EyebrowText("Appearance", modifier = Modifier.padding(start = 4.dp))
+                EyebrowText(SkimbyteStrings.Settings.SECTION_APPEARANCE, modifier = Modifier.padding(start = 4.dp))
                 Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                     Column(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        Text("Theme", style = MaterialTheme.typography.titleMedium)
+                        Text(SkimbyteStrings.Settings.THEME, style = MaterialTheme.typography.titleMedium)
                         ThemeModeToggleGroup(
                             selected = state.themeMode,
                             onSelected = { onIntent(SettingsIntent.ThemeModeSelected(it)) },
@@ -113,37 +114,37 @@ fun SettingsScreen(
                     }
                 }
 
-                EyebrowText("Content", modifier = Modifier.padding(start = 4.dp))
+                EyebrowText(SkimbyteStrings.Settings.SECTION_CONTENT, modifier = Modifier.padding(start = 4.dp))
                 Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                     SettingsActionRow(
                         icon = SkimbyteIcons.Interests,
-                        label = "Edit interests",
-                        supporting = "Choose the topics in your daily brief",
+                        label = SkimbyteStrings.Settings.EDIT_INTERESTS,
+                        supporting = SkimbyteStrings.Settings.EDIT_INTERESTS_SUPPORTING,
                         onClick = onEditInterestsClick,
                     )
                 }
 
-                EyebrowText("About", modifier = Modifier.padding(start = 4.dp))
+                EyebrowText(SkimbyteStrings.Settings.SECTION_ABOUT, modifier = Modifier.padding(start = 4.dp))
                 Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                     Column {
                         SettingsActionRow(
                             icon = SkimbyteIcons.Privacy,
-                            label = "Privacy policy",
-                            supporting = "How Skimbyte handles your data",
+                            label = SkimbyteStrings.Settings.PRIVACY_POLICY,
+                            supporting = SkimbyteStrings.Settings.PRIVACY_POLICY_SUPPORTING,
                             onClick = onPrivacyPolicyClick,
                         )
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         SettingsActionRow(
                             icon = SkimbyteIcons.Document,
-                            label = "Open source licenses",
-                            supporting = "The libraries this app is built on",
+                            label = SkimbyteStrings.Settings.LICENSES,
+                            supporting = SkimbyteStrings.Settings.LICENSES_SUPPORTING,
                             onClick = onLicensesClick,
                         )
                     }
                 }
 
                 if (isLoggedIn) {
-                    EyebrowText("Account", modifier = Modifier.padding(start = 4.dp))
+                    EyebrowText(SkimbyteStrings.Settings.SECTION_ACCOUNT, modifier = Modifier.padding(start = 4.dp))
                     deleteError?.let {
                         Text(
                             it,
@@ -156,8 +157,8 @@ fun SettingsScreen(
                         Column {
                             SettingsActionRow(
                                 icon = SkimbyteIcons.SignOut,
-                                label = "Log out",
-                                supporting = "Sign out of your account",
+                                label = SkimbyteStrings.Settings.LOG_OUT,
+                                supporting = SkimbyteStrings.Settings.LOG_OUT_SUPPORTING,
                                 onClick = { showLogoutConfirm = true },
                                 tint = MaterialTheme.colorScheme.error,
                                 showChevron = false,
@@ -166,8 +167,8 @@ fun SettingsScreen(
                             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                             SettingsActionRow(
                                 icon = SkimbyteIcons.DeleteForever,
-                                label = "Delete my data",
-                                supporting = "Permanently remove your Skimbyte data",
+                                label = SkimbyteStrings.Settings.DELETE_DATA,
+                                supporting = SkimbyteStrings.Settings.DELETE_DATA_SUPPORTING,
                                 onClick = { showDeleteConfirm = true },
                                 tint = MaterialTheme.colorScheme.error,
                                 showChevron = false,
@@ -183,8 +184,8 @@ fun SettingsScreen(
     if (showLogoutConfirm) {
         AlertDialog(
             onDismissRequest = { showLogoutConfirm = false },
-            title = { Text("Log out?") },
-            text = { Text("You'll need to sign in again to access your account.") },
+            title = { Text(SkimbyteStrings.Settings.LOG_OUT_DIALOG_TITLE) },
+            text = { Text(SkimbyteStrings.Settings.LOG_OUT_DIALOG_TEXT) },
             confirmButton = {
                 TextButton(
                     modifier = Modifier.testTag("confirmLogout"),
@@ -192,21 +193,19 @@ fun SettingsScreen(
                         showLogoutConfirm = false
                         onLogout()
                     },
-                ) { Text("Log out") }
+                ) { Text(SkimbyteStrings.Settings.LOG_OUT) }
             },
-            dismissButton = { TextButton(onClick = { showLogoutConfirm = false }) { Text("Cancel") } },
+            dismissButton = { TextButton(onClick = { showLogoutConfirm = false }) { Text(SkimbyteStrings.Common.CANCEL) } },
         )
     }
 
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { if (!deleteInProgress) showDeleteConfirm = false },
-            title = { Text("Delete my data?") },
+            title = { Text(SkimbyteStrings.Settings.DELETE_DATA_DIALOG_TITLE) },
             text = {
                 Text(
-                    "This permanently deletes your bookmarks and other Skimbyte data from our " +
-                        "servers and signs you out. All your data related to the Skimbyte app " +
-                        "will be removed. This can't be undone.",
+                    SkimbyteStrings.Settings.DELETE_DATA_DIALOG_TEXT,
                 )
             },
             confirmButton = {
@@ -217,10 +216,10 @@ fun SettingsScreen(
                         showDeleteConfirm = false
                         onDeleteData()
                     },
-                ) { Text("Delete", color = MaterialTheme.colorScheme.error) }
+                ) { Text(SkimbyteStrings.Common.DELETE, color = MaterialTheme.colorScheme.error) }
             },
             dismissButton = {
-                TextButton(enabled = !deleteInProgress, onClick = { showDeleteConfirm = false }) { Text("Cancel") }
+                TextButton(enabled = !deleteInProgress, onClick = { showDeleteConfirm = false }) { Text(SkimbyteStrings.Common.CANCEL) }
             },
         )
     }
@@ -308,9 +307,9 @@ private fun SettingsActionRow(
 }
 
 private fun ThemeMode.displayLabel(): String = when (this) {
-    ThemeMode.Light -> "Light"
-    ThemeMode.Dark -> "Dark"
-    ThemeMode.System -> "System"
+    ThemeMode.Light -> SkimbyteStrings.Settings.THEME_LIGHT
+    ThemeMode.Dark -> SkimbyteStrings.Settings.THEME_DARK
+    ThemeMode.System -> SkimbyteStrings.Settings.THEME_SYSTEM
 }
 
 private fun ThemeMode.icon(): ImageVector = when (this) {

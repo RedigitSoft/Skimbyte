@@ -21,6 +21,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.navigation.AccountHome
 import io.redigit.skimbyte.ui.navigation.AvatarViewer
@@ -171,6 +172,6 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
 @Composable
 private fun AccountDetailPlaceholder(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Select an option to see its details", style = MaterialTheme.typography.bodyLarge)
+        Text(SkimbyteStrings.Account.SELECT_OPTION_PLACEHOLDER, style = MaterialTheme.typography.bodyLarge)
     }
 }

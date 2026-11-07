@@ -33,6 +33,7 @@ import io.ktor.http.URLBuilder
 import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.data.remote.GoogleAuthCallback
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.util.authRedirectUri
 import io.redigit.skimbyte.util.openUrl
 import org.koin.compose.viewmodel.koinViewModel
@@ -133,12 +134,12 @@ fun LoginSheetContent(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            "Sign in to save stories",
+            SkimbyteStrings.Login.TITLE,
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
         )
         Text(
-            "Sync your bookmarks across devices and personalize your daily feed.",
+            SkimbyteStrings.Login.SUBTITLE,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -157,7 +158,7 @@ fun LoginSheetContent(
         ) {
             Icon(ProviderLogos.GitHub, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(10.dp))
-            Text("Continue with GitHub")
+            Text(SkimbyteStrings.Login.CONTINUE_WITH_GITHUB)
         }
         OutlinedButton(
             onClick = onGoogleSignInClick,
@@ -169,7 +170,7 @@ fun LoginSheetContent(
             } else {
                 Image(ProviderLogos.Google, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(10.dp))
-                Text("Continue with Google")
+                Text(SkimbyteStrings.Login.CONTINUE_WITH_GOOGLE)
             }
         }
         if (isAppleSignInAvailable) {
@@ -179,17 +180,17 @@ fun LoginSheetContent(
             ) {
                 Icon(ProviderLogos.Apple, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(10.dp))
-                Text("Continue with Apple")
+                Text(SkimbyteStrings.Login.CONTINUE_WITH_APPLE)
             }
         }
         state.error?.let { error ->
             Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
         }
         TextButton(onClick = onNotNowClick, modifier = Modifier.fillMaxWidth()) {
-            Text("Not now")
+            Text(SkimbyteStrings.Login.NOT_NOW)
         }
         Text(
-            "Developer-first privacy. No tracking.",
+            SkimbyteStrings.Login.PRIVACY_NOTE,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -230,7 +231,7 @@ private fun LoginSheetContentLightPreview() {
 private fun LoginSheetContentErrorPreview() {
     SkimbyteTheme {
         LoginSheetContent(
-            state = LoginSheetState(error = "Google sign-in failed"),
+            state = LoginSheetState(error = SkimbyteStrings.Login.GOOGLE_FAILED),
             onAppleSignInClick = {},
             onGithubSignInClick = {},
             onGoogleSignInClick = {},

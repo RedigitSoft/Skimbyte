@@ -23,6 +23,7 @@ import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import skimbyte.shared.generated.resources.Res
 
@@ -44,10 +45,10 @@ fun LicensesScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeFlexibleTopAppBar(
-                title = { Text("Open source licenses") },
+                title = { Text(SkimbyteStrings.Settings.LICENSES) },
                 navigationIcon = {
                     IconButton(onClick = onBack, modifier = Modifier.testTag("licensesBack")) {
-                        Icon(SkimbyteIcons.Back, contentDescription = "Back")
+                        Icon(SkimbyteIcons.Back, contentDescription = SkimbyteStrings.Common.BACK)
                     }
                 },
                 scrollBehavior = scrollBehavior,

@@ -35,14 +35,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 
 private data class TutorialStep(val icon: ImageVector, val title: String, val description: String)
 
 private val tutorialSteps = listOf(
-    TutorialStep(SkimbyteIcons.SwipeUp, "Swipe up for the next story", "The feed shows one brief at a time - swipe up to move to the next."),
-    TutorialStep(SkimbyteIcons.SwipeSideways, "Swipe sideways for topics", "Swipe left or right, or tap a chip, to switch between your topics."),
-    TutorialStep(SkimbyteIcons.BookmarkFilled, "Save what matters", "Tap the bookmark on a story to keep it in your Bookmarks."),
-    TutorialStep(SkimbyteIcons.Profile, "Make it yours", "Open Profile to set your digest time, summary length and more."),
+    TutorialStep(SkimbyteIcons.SwipeUp, SkimbyteStrings.Onboarding.TUTORIAL_SWIPE_UP_TITLE, SkimbyteStrings.Onboarding.TUTORIAL_SWIPE_UP_BODY),
+    TutorialStep(SkimbyteIcons.SwipeSideways, SkimbyteStrings.Onboarding.TUTORIAL_SWIPE_SIDEWAYS_TITLE, SkimbyteStrings.Onboarding.TUTORIAL_SWIPE_SIDEWAYS_BODY),
+    TutorialStep(SkimbyteIcons.BookmarkFilled, SkimbyteStrings.Onboarding.TUTORIAL_SAVE_TITLE, SkimbyteStrings.Onboarding.TUTORIAL_SAVE_BODY),
+    TutorialStep(SkimbyteIcons.Profile, SkimbyteStrings.Onboarding.TUTORIAL_PROFILE_TITLE, SkimbyteStrings.Onboarding.TUTORIAL_PROFILE_BODY),
 )
 
 /**
@@ -110,9 +111,9 @@ fun TutorialOverlay(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    TextButton(onClick = onDismiss) { Text("Skip") }
+                    TextButton(onClick = onDismiss) { Text(SkimbyteStrings.Onboarding.SKIP) }
                     Button(onClick = { if (isLast) onDismiss() else stepIndex++ }) {
-                        Text(if (isLast) "Got it" else "Next")
+                        Text(if (isLast) SkimbyteStrings.Common.GOT_IT else SkimbyteStrings.Onboarding.NEXT)
                     }
                 }
             }

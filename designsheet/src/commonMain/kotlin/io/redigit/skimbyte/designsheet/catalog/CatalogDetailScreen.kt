@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 
 @Composable
 fun CatalogDetailScreen(item: CatalogItem, onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -39,14 +40,14 @@ fun CatalogDetailScreen(item: CatalogItem, onBack: () -> Unit, modifier: Modifie
                 // back on desktop/web, which have no system back gesture.
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(SkimbyteIcons.Back, contentDescription = "Back")
+                        Icon(SkimbyteIcons.Back, contentDescription = SkimbyteStrings.Common.BACK)
                     }
                 },
                 actions = {
                     IconButton(onClick = { previewDark = !previewDark }) {
                         Icon(
                             imageVector = if (previewDark) SkimbyteIcons.ThemeLightOutline else SkimbyteIcons.ThemeDarkOutline,
-                            contentDescription = if (previewDark) "Preview in light theme" else "Preview in dark theme",
+                            contentDescription = if (previewDark) DesignSheetStrings.PREVIEW_LIGHT else DesignSheetStrings.PREVIEW_DARK,
                         )
                     }
                 },
@@ -79,7 +80,7 @@ fun CatalogDetailScreen(item: CatalogItem, onBack: () -> Unit, modifier: Modifie
 @Composable
 fun CatalogDetailPlaceholder(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Select an item from the list", style = MaterialTheme.typography.bodyLarge)
+        Text(DesignSheetStrings.SELECT_ITEM, style = MaterialTheme.typography.bodyLarge)
     }
 }
 

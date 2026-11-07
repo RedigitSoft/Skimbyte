@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.ui.components.SavedPostRow
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.components.StatusPrompt
@@ -57,7 +58,7 @@ fun BookmarksListScreen(
 ) {
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text("Bookmarks") }, expandedHeight = 48.dp) },
+        topBar = { TopAppBar(title = { Text(SkimbyteStrings.Bookmarks.TITLE) }, expandedHeight = 48.dp) },
     ) { padding ->
         when {
             state.isLoggedOut -> {
@@ -77,9 +78,9 @@ fun BookmarksListScreen(
                 Box(Modifier.padding(padding).fillMaxSize(), contentAlignment = Alignment.Center) {
                     StatusPrompt(
                         icon = SkimbyteIcons.BookmarkFilled,
-                        title = "Your bookmarks live here",
-                        message = "Sign in to save stories from the feed and pick them up on any device.",
-                        action = StatusPromptAction("Sign in") { showLogin = true },
+                        title = SkimbyteStrings.Bookmarks.SIGNED_OUT_TITLE,
+                        message = SkimbyteStrings.Bookmarks.SIGNED_OUT_MESSAGE,
+                        action = StatusPromptAction(SkimbyteStrings.Common.SIGN_IN) { showLogin = true },
                     )
                 }
             }
@@ -102,8 +103,8 @@ fun BookmarksListScreen(
                     ) {
                         StatusPrompt(
                             icon = SkimbyteIcons.BookmarkOutline,
-                            title = "No bookmarks yet",
-                            message = "Tap the bookmark icon on any story in the feed to save it here.",
+                            title = SkimbyteStrings.Bookmarks.EMPTY_TITLE,
+                            message = SkimbyteStrings.Bookmarks.EMPTY_MESSAGE,
                         )
                     }
                 } else {
@@ -126,18 +127,18 @@ fun BookmarksListScreen(
                     pendingDelete?.let { post ->
                         AlertDialog(
                             onDismissRequest = { pendingDelete = null },
-                            title = { Text("Delete bookmark?") },
-                            text = { Text("Do you want to delete “${post.title}” from your bookmarks?") },
+                            title = { Text(SkimbyteStrings.Bookmarks.DELETE_DIALOG_TITLE) },
+                            text = { Text(SkimbyteStrings.Bookmarks.deleteDialogText(post.title)) },
                             confirmButton = {
                                 TextButton(
                                     onClick = {
                                         onIntent(BookmarksIntent.Unbookmark(post.id))
                                         pendingDelete = null
                                     },
-                                ) { Text("Delete") }
+                                ) { Text(SkimbyteStrings.Common.DELETE) }
                             },
                             dismissButton = {
-                                TextButton(onClick = { pendingDelete = null }) { Text("Cancel") }
+                                TextButton(onClick = { pendingDelete = null }) { Text(SkimbyteStrings.Common.CANCEL) }
                             },
                         )
                     }
@@ -184,7 +185,7 @@ private fun DismissibleBookmarkRow(
             ) {
                 Icon(
                     imageVector = SkimbyteIcons.Delete,
-                    contentDescription = "Delete bookmark",
+                    contentDescription = SkimbyteStrings.Bookmarks.DELETE_BOOKMARK,
                     tint = MaterialTheme.colorScheme.onErrorContainer,
                     modifier = Modifier.padding(end = 24.dp),
                 )

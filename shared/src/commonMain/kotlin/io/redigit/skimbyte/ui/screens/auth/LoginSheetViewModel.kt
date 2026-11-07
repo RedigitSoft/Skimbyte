@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redigit.skimbyte.data.remote.ApiConfig
 import io.redigit.skimbyte.data.repositories.AuthRepository
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,7 +30,7 @@ class LoginSheetViewModel(private val authRepository: AuthRepository) : ViewMode
                 _state.value = if (ApiConfig.GITHUB_SIGN_IN_ENABLED) {
                     _state.value.copy(isSubmitting = true, error = null)
                 } else {
-                    _state.value.copy(error = "GitHub sign-in is coming soon")
+                    _state.value.copy(error = SkimbyteStrings.Login.GITHUB_COMING_SOON)
                 }
             // Apple is gated exactly like GitHub: same provider-/start URL shape on the server,
             // same shared redirect completion. See ApiConfig.APPLE_SIGN_IN_ENABLED.
@@ -37,7 +38,7 @@ class LoginSheetViewModel(private val authRepository: AuthRepository) : ViewMode
                 _state.value = if (ApiConfig.APPLE_SIGN_IN_ENABLED) {
                     _state.value.copy(isSubmitting = true, error = null)
                 } else {
-                    _state.value.copy(error = "Apple sign-in is coming soon")
+                    _state.value.copy(error = SkimbyteStrings.Login.APPLE_COMING_SOON)
                 }
             LoginSheetIntent.GoogleSignInStarted -> _state.value = _state.value.copy(isSubmitting = true, error = null)
             // Shared by both providers: the auth server redirects back to the same mobile deep link
@@ -56,7 +57,7 @@ class LoginSheetViewModel(private val authRepository: AuthRepository) : ViewMode
                     _effects.emit(LoginSheetEffect.LoginSucceeded)
                 },
                 onFailure = {
-                    _state.value = _state.value.copy(isSubmitting = false, error = "Google sign-in failed")
+                    _state.value = _state.value.copy(isSubmitting = false, error = SkimbyteStrings.Login.GOOGLE_FAILED)
                 },
             )
         }

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteShapeTokens
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.util.toDisplayDate
 import kotlin.time.Instant
 
@@ -75,7 +76,7 @@ internal fun ReadingTimeLabel(minutes: Int, modifier: Modifier = Modifier) {
             modifier = Modifier.size(14.dp),
         )
         Text(
-            text = "$minutes min read",
+            text = SkimbyteStrings.Story.minRead(minutes),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -105,7 +106,7 @@ internal fun SourceAttribution(sourceName: String, publishedAt: Instant, modifie
             modifier = Modifier.weight(1f, fill = false),
         )
         Text(
-            text = "·",
+            text = SkimbyteStrings.Story.META_SEPARATOR,
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -125,7 +126,7 @@ internal fun StoryActionBar(
     onBookmarkClick: () -> Unit,
     onReadSourceClick: () -> Unit,
     modifier: Modifier = Modifier,
-    readSourceLabel: String = "Read full source",
+    readSourceLabel: String = SkimbyteStrings.Story.READ_FULL_SOURCE,
 ) {
     Surface(
         shape = MaterialTheme.shapes.large,
@@ -144,7 +145,7 @@ internal fun StoryActionBar(
                     onClick = onBookmarkClick,
                 )
                 Text(
-                    text = if (isBookmarked) "Saved" else "Save",
+                    text = if (isBookmarked) SkimbyteStrings.Story.SAVED else SkimbyteStrings.Story.SAVE,
                     style = MaterialTheme.typography.labelMedium,
                     color = if (isBookmarked) {
                         MaterialTheme.colorScheme.primary

@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 
 /**
  * Bottom sheet of actions for the avatar/banner edit badge: take a photo, choose from the gallery,
@@ -63,7 +64,7 @@ fun ImageEditSheetContent(
 ) {
     Column(modifier = modifier.fillMaxWidth().padding(bottom = 24.dp)) {
         Text(
-            "Edit photo",
+            SkimbyteStrings.ImageEdit.SHEET_TITLE,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 8.dp),
         )
@@ -72,22 +73,22 @@ fun ImageEditSheetContent(
         if (cameraAvailable) {
             OptionRow(
                 icon = SkimbyteIcons.Camera,
-                title = "Take photo",
-                subtitle = "Use your camera",
+                title = SkimbyteStrings.ImageEdit.TAKE_PHOTO,
+                subtitle = SkimbyteStrings.ImageEdit.TAKE_PHOTO_SUBTITLE,
                 onClick = onTakePhoto,
             )
         }
         OptionRow(
             icon = SkimbyteIcons.Gallery,
-            title = "Choose from gallery",
-            subtitle = "JPEG, PNG or WebP",
+            title = SkimbyteStrings.ImageEdit.CHOOSE_FROM_GALLERY,
+            subtitle = SkimbyteStrings.ImageEdit.CHOOSE_FROM_GALLERY_SUBTITLE,
             onClick = onChooseFromGallery,
         )
         if (onRemove != null) {
             OptionRow(
                 icon = SkimbyteIcons.Delete,
-                title = "Remove current image",
-                subtitle = "Reset to the default",
+                title = SkimbyteStrings.ImageEdit.REMOVE_IMAGE,
+                subtitle = SkimbyteStrings.ImageEdit.REMOVE_IMAGE_SUBTITLE,
                 onClick = onRemove,
                 tint = MaterialTheme.colorScheme.error,
                 iconTint = MaterialTheme.colorScheme.error,
@@ -140,7 +141,7 @@ private fun ImageEditSheetContentNoRemovePreview() {
     }
 }
 
-/** No camera (e.g. a desktop without a webcam): the "Take photo" row is omitted. */
+/** No camera (e.g. a desktop without a webcam): the SkimbyteStrings.ImageEdit.TAKE_PHOTO row is omitted. */
 @Preview
 @Composable
 private fun ImageEditSheetContentNoCameraPreview() {

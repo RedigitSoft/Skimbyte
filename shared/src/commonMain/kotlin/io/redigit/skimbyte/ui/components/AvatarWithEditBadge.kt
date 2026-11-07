@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.redigit.skimbyte.theme.SkimbyteIcons
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.theme.SkimbyteTheme
 
@@ -73,7 +74,7 @@ fun AvatarWithEditBadge(
                     if (editable) {
                         Modifier
                             .clickable(enabled = !busy, onClick = onAvatarClick)
-                            .semantics { contentDescription = "View avatar" }
+                            .semantics { contentDescription = SkimbyteStrings.Account.VIEW_AVATAR }
                     } else {
                         Modifier
                     },
@@ -117,7 +118,7 @@ fun AvatarWithEditBadge(
                     .background(if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
                     .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
                     .clickable(enabled = !busy, onClick = onEditClick)
-                    .semantics { contentDescription = "Change avatar" },
+                    .semantics { contentDescription = SkimbyteStrings.Account.CHANGE_AVATAR },
                 contentAlignment = Alignment.Center,
             ) {
                 when {
@@ -128,7 +129,7 @@ fun AvatarWithEditBadge(
                     )
                     isError -> Icon(
                         SkimbyteIcons.Error,
-                        contentDescription = "Upload failed",
+                        contentDescription = SkimbyteStrings.Common.UPLOAD_FAILED,
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onError,
                     )

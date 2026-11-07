@@ -7,6 +7,7 @@ import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.ProfileRepository
 import io.redigit.skimbyte.data.repositories.UploadStage
 import io.redigit.skimbyte.data.repositories.UserDataRepository
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.ui.components.ImageUploadState
 import io.redigit.skimbyte.ui.components.isBusy
 import io.redigit.skimbyte.util.PickedImage
@@ -100,7 +101,7 @@ class AccountViewModel(
             val result = userDataRepository.deleteAll()
             _state.value = _state.value.copy(
                 deleteDataInProgress = false,
-                deleteDataError = result.exceptionOrNull()?.let { "Could not delete your data" },
+                deleteDataError = result.exceptionOrNull()?.let { SkimbyteStrings.Account.DELETE_DATA_FAILED },
             )
             // Sign out only once the server confirms the delete; the session flow then flips to
             // signed-out and the combine block re-renders the screen.
@@ -137,7 +138,7 @@ class AccountViewModel(
             }
             _state.value = _state.value.copy(
                 avatarUpload = if (result.isSuccess) ImageUploadState.Idle else ImageUploadState.Error,
-                avatarError = result.exceptionOrNull()?.let { "Could not update avatar" },
+                avatarError = result.exceptionOrNull()?.let { SkimbyteStrings.Account.AVATAR_UPDATE_FAILED },
             )
         }
     }
@@ -151,7 +152,7 @@ class AccountViewModel(
             }
             _state.value = _state.value.copy(
                 bannerUpload = if (result.isSuccess) ImageUploadState.Idle else ImageUploadState.Error,
-                bannerError = result.exceptionOrNull()?.let { "Could not update banner" },
+                bannerError = result.exceptionOrNull()?.let { SkimbyteStrings.Account.BANNER_UPDATE_FAILED },
             )
         }
     }

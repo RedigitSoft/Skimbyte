@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.SkimbyteIcons
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteShapeTokens
@@ -129,20 +130,20 @@ fun AccountScreen(
             } else {
                 StatusPrompt(
                     icon = SkimbyteIcons.AccountCircle,
-                    title = "You're not signed in",
-                    message = "Sign in to sync your profile, bookmarks, and reading stats across devices.",
-                    action = StatusPromptAction("Sign in", onSignInClick),
+                    title = SkimbyteStrings.Account.SIGNED_OUT_TITLE,
+                    message = SkimbyteStrings.Account.SIGNED_OUT_MESSAGE,
+                    action = StatusPromptAction(SkimbyteStrings.Common.SIGN_IN, onSignInClick),
                 )
             }
 
             // Settings (theme, account actions, privacy) are reachable here; they stay available
             // signed out since they're device-local — only the profile itself needs an account.
-            EyebrowText("Account", modifier = Modifier.padding(start = 4.dp))
+            EyebrowText(SkimbyteStrings.Account.SECTION, modifier = Modifier.padding(start = 4.dp))
             Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                 AccountActionRow(
                     icon = SkimbyteIcons.Settings,
-                    label = "Settings",
-                    supporting = "Theme, account, privacy & more",
+                    label = SkimbyteStrings.Account.SETTINGS_LABEL,
+                    supporting = SkimbyteStrings.Account.SETTINGS_SUPPORTING,
                     onClick = onSettingsClick,
                 )
             }
@@ -177,7 +178,7 @@ private fun ProfileHeader(
                 if (isVerified) {
                     Icon(
                         SkimbyteIcons.Verified,
-                        contentDescription = "Verified",
+                        contentDescription = SkimbyteStrings.Account.VERIFIED,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp),
                     )
@@ -239,7 +240,7 @@ private fun SavedStat(savedCount: Int, modifier: Modifier = Modifier) {
 @Composable
 private fun FollowedTopicsSection(topics: List<Topic>, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        EyebrowText("Followed topics · ${topics.size}", modifier = Modifier.padding(start = 4.dp))
+        EyebrowText(SkimbyteStrings.Account.followedTopics(topics.size), modifier = Modifier.padding(start = 4.dp))
         Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
             FlowRow(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -488,7 +489,7 @@ private fun AccountScreenWithImagesPreview() {
 private fun AccountScreenWithErrorPreview() {
     SkimbyteTheme {
         AccountScreen(
-            state = richAccountState.copy(avatarError = "Could not update avatar"),
+            state = richAccountState.copy(avatarError = SkimbyteStrings.Account.AVATAR_UPDATE_FAILED),
             onIntent = {},
             onSignInClick = {},
             onSettingsClick = {},

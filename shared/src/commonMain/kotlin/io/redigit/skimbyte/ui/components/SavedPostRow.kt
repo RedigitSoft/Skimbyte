@@ -29,6 +29,7 @@ import coil3.compose.AsyncImage
 import io.redigit.skimbyte.data.models.Post
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import kotlin.time.Instant
 
 /**
@@ -118,7 +119,7 @@ fun SavedPostRow(
                 IconButton(onClick = onRemoveClick) {
                     Icon(
                         imageVector = SkimbyteIcons.BookmarkFilled,
-                        contentDescription = "Remove bookmark",
+                        contentDescription = SkimbyteStrings.Story.REMOVE_BOOKMARK,
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 }

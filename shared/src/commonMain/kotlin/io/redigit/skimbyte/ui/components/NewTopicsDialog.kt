@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 
 /**
  * Announces topics newly discovered by the catalogue sync (see `TopicsRepository.pendingNewTopics`).
@@ -23,16 +24,15 @@ fun NewTopicsDialog(
     val labels = topics.joinToString { it.displayLabel }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (topics.size == 1) "New topic added" else "New topics added") },
+        title = { Text(if (topics.size == 1) SkimbyteStrings.Onboarding.NEW_TOPIC_ADDED else SkimbyteStrings.Onboarding.NEW_TOPICS_ADDED) },
         text = {
             Text(
-                text = "Skimbyte now covers $labels. Follow ${if (topics.size == 1) "it" else "them"} " +
-                    "from Interests in your Account tab to see ${if (topics.size == 1) "its" else "their"} posts in your feed.",
+                text = SkimbyteStrings.Onboarding.newTopicsBody(labels, plural = topics.size > 1),
                 style = MaterialTheme.typography.bodyMedium,
             )
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Got it") }
+            TextButton(onClick = onDismiss) { Text(SkimbyteStrings.Common.GOT_IT) }
         },
         modifier = modifier,
     )

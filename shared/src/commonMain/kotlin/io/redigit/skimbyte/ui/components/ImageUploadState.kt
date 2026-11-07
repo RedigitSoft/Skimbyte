@@ -1,5 +1,7 @@
 package io.redigit.skimbyte.ui.components
 
+import io.redigit.skimbyte.ui.SkimbyteStrings
+
 /**
  * The avatar/banner upload lifecycle, surfaced on the profile so each phase gets its own feedback:
  * a spinner while [Compressing] or [Uploading], an error indicator on [Error], and the normal edit
@@ -13,7 +15,7 @@ val ImageUploadState.isBusy: Boolean
 
 /** The short caption shown beside the spinner for the two in-flight phases; null otherwise. */
 internal fun ImageUploadState.caption(): String? = when (this) {
-    ImageUploadState.Compressing -> "Compressing…"
-    ImageUploadState.Uploading -> "Uploading…"
+    ImageUploadState.Compressing -> SkimbyteStrings.ImageEdit.COMPRESSING
+    ImageUploadState.Uploading -> SkimbyteStrings.ImageEdit.UPLOADING
     ImageUploadState.Idle, ImageUploadState.Error -> null
 }

@@ -48,7 +48,7 @@ fun CatalogListScreen(
 ) {
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text("Design sheet") }) },
+        topBar = { TopAppBar(title = { Text(DesignSheetStrings.TITLE) }) },
     ) { padding ->
         LazyColumn(
             modifier = Modifier.padding(padding),

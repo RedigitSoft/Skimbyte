@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -57,7 +58,7 @@ fun TopicsScreen(
     ) {
         if (onBack != null) {
             IconButton(onClick = onBack, modifier = Modifier.align(Alignment.Start)) {
-                Icon(SkimbyteIcons.Back, contentDescription = "Back")
+                Icon(SkimbyteIcons.Back, contentDescription = SkimbyteStrings.Common.BACK)
             }
         }
         Column(
@@ -71,12 +72,12 @@ fun TopicsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = if (state.isEditing) "Edit your topics" else "Pick your topics",
+                text = if (state.isEditing) SkimbyteStrings.Onboarding.EDIT_TOPICS_TITLE else SkimbyteStrings.Onboarding.PICK_TOPICS_TITLE,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = "Choose at least 3 topics to personalize your feed - follow as many as you like.",
+                text = SkimbyteStrings.Onboarding.PICK_TOPICS_SUBTITLE,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -108,9 +109,9 @@ fun TopicsScreen(
             ) {
                 Text(
                     text = when {
-                        state.isEditing -> "Save"
-                        state.canConfirm -> "Get started"
-                        else -> "Pick ${3 - state.selected.size} more"
+                        state.isEditing -> SkimbyteStrings.Onboarding.SAVE
+                        state.canConfirm -> SkimbyteStrings.Onboarding.GET_STARTED
+                        else -> SkimbyteStrings.Onboarding.pickMore(3 - state.selected.size)
                     },
                     style = MaterialTheme.typography.titleMedium,
                 )

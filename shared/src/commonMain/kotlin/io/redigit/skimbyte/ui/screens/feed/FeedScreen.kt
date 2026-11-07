@@ -33,6 +33,7 @@ import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.EyebrowText
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.ui.components.PostCard
 import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.components.StatusPrompt
@@ -61,7 +62,7 @@ fun FeedScreen(
     Column(modifier = modifier.fillMaxSize().statusBarsPadding()) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
 //            EyebrowText("Feed")
-            Text("For You", style = MaterialTheme.typography.titleLarge)
+            Text(SkimbyteStrings.Feed.TITLE, style = MaterialTheme.typography.titleLarge)
         }
         TopicFilterRow(
             topics = state.availableTopics,
@@ -210,12 +211,12 @@ private fun ErrorState(error: FeedError, onRetry: () -> Unit, modifier: Modifier
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         StatusPrompt(
             icon = if (error == FeedError.Network) SkimbyteIcons.Offline else SkimbyteIcons.Error,
-            title = "Couldn't load posts",
+            title = SkimbyteStrings.Feed.LOAD_FAILED_TITLE,
             message = when (error) {
-                FeedError.Network -> "Check your connection and try again."
-                FeedError.Unknown -> "Something went wrong on our end. Try again in a moment."
+                FeedError.Network -> SkimbyteStrings.Feed.LOAD_FAILED_NETWORK
+                FeedError.Unknown -> SkimbyteStrings.Feed.LOAD_FAILED_UNKNOWN
             },
-            action = StatusPromptAction("Try again", onRetry),
+            action = StatusPromptAction(SkimbyteStrings.Common.TRY_AGAIN, onRetry),
         )
     }
 }
@@ -225,8 +226,8 @@ private fun EmptyState(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         StatusPrompt(
             icon = SkimbyteIcons.EmptyInbox,
-            title = "No posts yet",
-            message = "New stories for this topic will show up here as they're published.",
+            title = SkimbyteStrings.Feed.EMPTY_TITLE,
+            message = SkimbyteStrings.Feed.EMPTY_MESSAGE,
         )
     }
 }

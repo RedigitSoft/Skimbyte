@@ -39,6 +39,7 @@ import coil3.compose.AsyncImage
 import androidx.compose.ui.tooling.preview.Preview
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.util.AVATAR_ASPECT
 import io.redigit.skimbyte.util.BANNER_ASPECT
 import io.redigit.skimbyte.util.PickedImage
@@ -147,11 +148,11 @@ fun ImageCropScreen(
                 onClick = onCancel,
                 modifier = Modifier.align(Alignment.TopStart).padding(8.dp),
             ) {
-                Icon(SkimbyteIcons.Close, contentDescription = "Cancel", tint = Color.White)
+                Icon(SkimbyteIcons.Close, contentDescription = SkimbyteStrings.Common.CANCEL, tint = Color.White)
             }
 
             Text(
-                text = "Drag to reposition · pinch to zoom",
+                text = SkimbyteStrings.ImageEdit.CROP_HINT,
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White.copy(alpha = 0.7f),
                 modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp),
@@ -178,7 +179,7 @@ fun ImageCropScreen(
                 if (processing) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
                 } else {
-                    Icon(SkimbyteIcons.Check, contentDescription = "Use photo")
+                    Icon(SkimbyteIcons.Check, contentDescription = SkimbyteStrings.ImageEdit.USE_PHOTO)
                 }
             }
         }
