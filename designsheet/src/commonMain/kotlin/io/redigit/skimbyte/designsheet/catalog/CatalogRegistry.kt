@@ -33,31 +33,112 @@ import io.redigit.skimbyte.designsheet.tokens.TypographyTokensContent
  * added or changed in `shared`, add/update its entry here in the same change (see CONTRIBUTING.md).
  */
 val catalogItems: List<CatalogItem> = listOf(
-    CatalogItem("color-tokens", "Color", "Tokens") { ColorTokensContent() },
-    CatalogItem("typography-tokens", "Typography", "Tokens") { TypographyTokensContent() },
-    CatalogItem("spacing-tokens", "Spacing", "Tokens") { SpacingTokensContent() },
-    CatalogItem("shape-tokens", "Shape", "Tokens") { ShapeTokensContent() },
-    CatalogItem("buttons", "Buttons", "Components") { ButtonsCatalogContent() },
-    CatalogItem("selection-controls", "Selection controls", "Components") { SelectionControlsCatalogContent() },
-    CatalogItem("text-fields", "Text fields", "Components") { TextFieldsCatalogContent() },
-    CatalogItem("status-prompt", "Status prompt", "Components") { StatusPromptCatalogContent() },
-    CatalogItem("post-card", "Post card", "Feed") { PostCardCatalogContent() },
-    CatalogItem("topic-image-placeholder", "Topic image placeholder", "Feed") { TopicImagePlaceholderCatalogContent() },
-    CatalogItem("topic-chip", "Topic chip", "Components") { TopicChipCatalogContent() },
-    CatalogItem("topic-filter", "Topic filter", "Feed") { TopicFilterCatalogContent() },
-    CatalogItem("bookmark-button", "Bookmark button", "Feed") { BookmarkButtonCatalogContent() },
-    CatalogItem("stacked-card-browser", "Stacked card browser", "Feed") { StackedCardBrowserCatalogContent() },
-    CatalogItem("post-detail", "Post detail", "Feed") { PostDetailScreenCatalogContent() },
-    CatalogItem("bottom-nav-bar", "Bottom nav bar", "Navigation") { SkimbyteBottomNavBarCatalogContent() },
-    CatalogItem("navigation-rail", "Navigation rail", "Navigation") { SkimbyteNavigationRailCatalogContent() },
-    CatalogItem("saved-post-row", "Saved post row", "Bookmarks") { SavedPostRowCatalogContent() },
-    CatalogItem("login-sheet", "Login sheet", "Bookmarks") { LoginSheetCatalogContent() },
-    CatalogItem("account-screen", "Account", "Bookmarks") { AccountScreenCatalogContent() },
-    CatalogItem("profile-images", "Avatar & banner", "Account") { ProfileImagesCatalogContent() },
-    CatalogItem("image-cropper", "Image cropper", "Account") { ImageCropScreenCatalogContent() },
-    CatalogItem("image-edit-sheet", "Image edit sheet", "Account") { ImageEditSheetCatalogContent() },
-    CatalogItem("topics-screen", "Topics", "Onboarding") { TopicsScreenCatalogContent() },
-    CatalogItem("new-topics-dialog", "New topics dialog", "Onboarding") { NewTopicsDialogCatalogContent() },
-    CatalogItem("tutorial-overlay", "Tutorial overlay", "Onboarding") { TutorialOverlayCatalogContent() },
-    CatalogItem("settings-screen", "Settings", "Account") { SettingsScreenCatalogContent() },
+    CatalogItem(
+        "color-tokens", "Color", "Tokens",
+        "Every role in both M3 schemes, paired with its on-color and hex value.",
+    ) { ColorTokensContent() },
+    CatalogItem(
+        "typography-tokens", "Typography", "Tokens",
+        "The M3 type scale as the app actually renders it, one specimen per style.",
+    ) { TypographyTokensContent() },
+    CatalogItem(
+        "spacing-tokens", "Spacing", "Tokens",
+        "The named spacing scale behind paddings and gaps, drawn to size.",
+    ) { SpacingTokensContent() },
+    CatalogItem(
+        "shape-tokens", "Shape", "Tokens",
+        "Corner radii from the shared shape scale, including the chip capsule.",
+    ) { ShapeTokensContent() },
+    CatalogItem(
+        "buttons", "Buttons", "Components",
+        "All five Material button emphases, enabled and disabled.",
+    ) { ButtonsCatalogContent() },
+    CatalogItem(
+        "selection-controls", "Selection controls", "Components",
+        "Checkbox, switch, and radio buttons — live and toggleable.",
+    ) { SelectionControlsCatalogContent() },
+    CatalogItem(
+        "text-fields", "Text fields", "Components",
+        "Filled and outlined text fields with floating labels.",
+    ) { TextFieldsCatalogContent() },
+    CatalogItem(
+        "status-prompt", "Status prompt", "Components",
+        "The one composition behind every empty, error, and signed-out terminal state.",
+    ) { StatusPromptCatalogContent() },
+    CatalogItem(
+        "topic-chip", "Topic chip", "Components",
+        "Topic pill in its interactive (filtering) and read-only (listing) forms.",
+    ) { TopicChipCatalogContent() },
+    CatalogItem(
+        "post-card", "Post card", "Feed",
+        "The feed's story card across bookmark, headline-length, reading-time, and image variants.",
+    ) { PostCardCatalogContent() },
+    CatalogItem(
+        "topic-image-placeholder", "Topic image placeholder", "Feed",
+        "Branded stand-in under every story image: a stable per-topic tint plus the topic initial.",
+    ) { TopicImagePlaceholderCatalogContent() },
+    CatalogItem(
+        "topic-filter", "Topic filter", "Feed",
+        "The feed's horizontally scrolling topic selector row.",
+    ) { TopicFilterCatalogContent() },
+    CatalogItem(
+        "bookmark-button", "Bookmark button", "Feed",
+        "Bookmark toggle with idle, saved, and in-flight states.",
+    ) { BookmarkButtonCatalogContent() },
+    CatalogItem(
+        "stacked-card-browser", "Stacked card browser", "Feed",
+        "Swipeable stacked-deck container the feed uses to page through the daily brief.",
+    ) { StackedCardBrowserCatalogContent() },
+    CatalogItem(
+        "post-detail", "Post detail", "Feed",
+        "The full story screen: hero image, markdown summary, bookmark, and source link.",
+    ) { PostDetailScreenCatalogContent() },
+    CatalogItem(
+        "bottom-nav-bar", "Bottom nav bar", "Navigation",
+        "Floating pill navigation dock shown at compact width; the active item's pill expands.",
+    ) { SkimbyteBottomNavBarCatalogContent() },
+    CatalogItem(
+        "navigation-rail", "Navigation rail", "Navigation",
+        "Side rail that replaces the dock at medium and expanded widths.",
+    ) { SkimbyteNavigationRailCatalogContent() },
+    CatalogItem(
+        "saved-post-row", "Saved post row", "Bookmarks",
+        "Bookmarks list row with optional removal and two-line headline ellipsis.",
+    ) { SavedPostRowCatalogContent() },
+    CatalogItem(
+        "login-sheet", "Login sheet", "Account",
+        "OAuth sign-in sheet content with its provider buttons and error state.",
+    ) { LoginSheetCatalogContent() },
+    CatalogItem(
+        "account-screen", "Account", "Account",
+        "The signed-in profile: banner, avatar, bio, saved count, and followed topics.",
+    ) { AccountScreenCatalogContent() },
+    CatalogItem(
+        "profile-images", "Avatar & banner", "Account",
+        "Profile avatar and banner with edit badges, across every upload state.",
+    ) { ProfileImagesCatalogContent() },
+    CatalogItem(
+        "image-cropper", "Image cropper", "Account",
+        "Drag-and-pinch cropper chrome for circular avatar and wide banner crops.",
+    ) { ImageCropScreenCatalogContent() },
+    CatalogItem(
+        "image-edit-sheet", "Image edit sheet", "Account",
+        "Photo source picker; the remove action appears only when an image is already set.",
+    ) { ImageEditSheetCatalogContent() },
+    CatalogItem(
+        "settings-screen", "Settings", "Account",
+        "Settings with theme mode, interests, legal links, and account deletion.",
+    ) { SettingsScreenCatalogContent() },
+    CatalogItem(
+        "topics-screen", "Topics", "Onboarding",
+        "Onboarding topic picker with live selection.",
+    ) { TopicsScreenCatalogContent() },
+    CatalogItem(
+        "new-topics-dialog", "New topics dialog", "Onboarding",
+        "Announcement dialog for topics a catalogue sync discovers after onboarding.",
+    ) { NewTopicsDialogCatalogContent() },
+    CatalogItem(
+        "tutorial-overlay", "Tutorial overlay", "Onboarding",
+        "First-run gesture tutorial drawn over the feed.",
+    ) { TutorialOverlayCatalogContent() },
 )

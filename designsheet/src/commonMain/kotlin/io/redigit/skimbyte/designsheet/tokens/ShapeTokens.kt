@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,7 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.designsheet.catalog.CatalogPage
+import io.redigit.skimbyte.designsheet.catalog.CatalogSection
 import io.redigit.skimbyte.theme.SkimbyteShapeTokens
+import io.redigit.skimbyte.theme.SkimbyteTheme
 
 private data class NamedShape(val name: String, val shape: Shape)
 
@@ -31,20 +32,24 @@ fun ShapeTokensContent() {
         // Not an M3 Shapes slot — a true capsule for chips, which used to borrow extraLarge.
         NamedShape("pill", SkimbyteShapeTokens.pill),
     )
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-        named.forEach { entry ->
-            Row(
-                modifier = Modifier.padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                // Wider than tall so `pill`'s 50% radius reads as the capsule it is rather than
-                // as a circle, which is all a square swatch could ever show.
-                Row(
-                    modifier = Modifier
-                        .size(width = 72.dp, height = 40.dp)
-                        .background(color = MaterialTheme.colorScheme.primary, shape = entry.shape),
-                ) {}
-                Text(" ${entry.name}")
+    CatalogPage {
+        CatalogSection(title = "Shape scale") {
+            Column {
+                named.forEach { entry ->
+                    Row(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        // Wider than tall so `pill`'s 50% radius reads as the capsule it is rather
+                        // than as a circle, which is all a square swatch could ever show.
+                        Row(
+                            modifier = Modifier
+                                .size(width = 72.dp, height = 40.dp)
+                                .background(color = MaterialTheme.colorScheme.primary, shape = entry.shape),
+                        ) {}
+                        Text(" ${entry.name}")
+                    }
+                }
             }
         }
     }
@@ -53,7 +58,15 @@ fun ShapeTokensContent() {
 @Preview
 @Composable
 private fun ShapeTokensPreview() {
-    MaterialTheme {
+    SkimbyteTheme {
+        ShapeTokensContent()
+    }
+}
+
+@Preview
+@Composable
+private fun ShapeTokensLightPreview() {
+    SkimbyteTheme(darkTheme = false) {
         ShapeTokensContent()
     }
 }

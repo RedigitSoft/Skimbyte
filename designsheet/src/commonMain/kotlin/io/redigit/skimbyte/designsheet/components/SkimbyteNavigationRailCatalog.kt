@@ -2,30 +2,31 @@ package io.redigit.skimbyte.designsheet.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.ui.navigation.TopLevelDestination
-import io.redigit.skimbyte.ui.navigation.SkimbyteNavigationRail
+import io.redigit.skimbyte.designsheet.catalog.CatalogPage
+import io.redigit.skimbyte.designsheet.catalog.CatalogSection
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.navigation.SkimbyteNavigationRail
+import io.redigit.skimbyte.ui.navigation.TopLevelDestination
 
 @Composable
 fun SkimbyteNavigationRailCatalogContent() {
-    Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        SkimbyteNavigationRail(
-            selected = TopLevelDestination.Feed,
-            onDestinationSelected = {},
-        )
-        SkimbyteNavigationRail(
-            selected = TopLevelDestination.Bookmarks,
-            onDestinationSelected = {},
-        )
-        SkimbyteNavigationRail(
-            selected = TopLevelDestination.Account,
-            onDestinationSelected = {},
-        )
+    CatalogPage {
+        CatalogSection(
+            title = "Selected states",
+            description = "One rail per destination.",
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                TopLevelDestination.entries.forEach { destination ->
+                    SkimbyteNavigationRail(
+                        selected = destination,
+                        onDestinationSelected = {},
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -33,6 +34,14 @@ fun SkimbyteNavigationRailCatalogContent() {
 @Composable
 private fun SkimbyteNavigationRailCatalogPreview() {
     SkimbyteTheme {
+        SkimbyteNavigationRailCatalogContent()
+    }
+}
+
+@Preview
+@Composable
+private fun SkimbyteNavigationRailCatalogLightPreview() {
+    SkimbyteTheme(darkTheme = false) {
         SkimbyteNavigationRailCatalogContent()
     }
 }

@@ -6,9 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.ui.components.PostDetailScreen
 import io.redigit.skimbyte.data.models.Post
+import io.redigit.skimbyte.designsheet.catalog.CatalogPage
+import io.redigit.skimbyte.designsheet.catalog.ScreenFrame
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.components.PostDetailScreen
 import kotlin.time.Instant
 
 private val catalogPost = Post(
@@ -27,20 +29,32 @@ private val catalogPost = Post(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PostDetailScreenCatalogContent() {
-    PostDetailScreen(
-        post = catalogPost,
-        isBookmarkLoading = false,
-        onBookmarkClick = {},
-        onReadSourceClick = {},
-        onBack = {},
-        modifier = Modifier.height(700.dp),
-    )
+    CatalogPage {
+        ScreenFrame {
+            PostDetailScreen(
+                post = catalogPost,
+                isBookmarkLoading = false,
+                onBookmarkClick = {},
+                onReadSourceClick = {},
+                onBack = {},
+                modifier = Modifier.height(700.dp),
+            )
+        }
+    }
 }
 
 @Preview
 @Composable
 private fun PostDetailScreenCatalogPreview() {
     SkimbyteTheme {
+        PostDetailScreenCatalogContent()
+    }
+}
+
+@Preview
+@Composable
+private fun PostDetailScreenCatalogLightPreview() {
+    SkimbyteTheme(darkTheme = false) {
         PostDetailScreenCatalogContent()
     }
 }

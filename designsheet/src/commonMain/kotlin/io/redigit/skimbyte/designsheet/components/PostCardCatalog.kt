@@ -1,18 +1,13 @@
 package io.redigit.skimbyte.designsheet.components
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.ui.components.PostCard
 import io.redigit.skimbyte.data.models.Post
+import io.redigit.skimbyte.designsheet.catalog.CatalogPage
+import io.redigit.skimbyte.designsheet.catalog.CatalogSection
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.components.PostCard
 import kotlin.time.Instant
 
 private val shortPost = Post(
@@ -44,18 +39,31 @@ private val longReadPost = shortPost.copy(
         List(240) { "word" }.joinToString(" "),
 )
 
+private data class CardVariant(val title: String, val description: String?, val post: Post)
+
+private val variants = listOf(
+    CardVariant("Default", "Short headline, no image, not bookmarked.", shortPost),
+    CardVariant("Bookmarked", "The filled bookmark marks a saved story.", bookmarkedPost),
+    CardVariant("Long headline", "Wrapping across multiple lines to check card layout behavior.", longTitlePost),
+    CardVariant("Long read", "A summary long enough to push the reading-time estimate past a minute.", longReadPost),
+    CardVariant("With image", "A story image replaces the per-topic placeholder once it loads.", imagePost),
+)
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PostCardCatalogContent() {
-    Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        PostCard(post = shortPost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
-        PostCard(post = bookmarkedPost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
-        PostCard(post = longTitlePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
-        PostCard(post = longReadPost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
-        PostCard(post = imagePost, isBookmarkLoading = false, onBookmarkClick = {}, onReadSourceClick = {}, onCardClick = {})
+    CatalogPage {
+        variants.forEach { variant ->
+            CatalogSection(title = variant.title, description = variant.description) {
+                PostCard(
+                    post = variant.post,
+                    isBookmarkLoading = false,
+                    onBookmarkClick = {},
+                    onReadSourceClick = {},
+                    onCardClick = {},
+                )
+            }
+        }
     }
 }
 
@@ -63,6 +71,14 @@ fun PostCardCatalogContent() {
 @Composable
 private fun PostCardCatalogPreview() {
     SkimbyteTheme {
+        PostCardCatalogContent()
+    }
+}
+
+@Preview
+@Composable
+private fun PostCardCatalogLightPreview() {
+    SkimbyteTheme(darkTheme = false) {
         PostCardCatalogContent()
     }
 }

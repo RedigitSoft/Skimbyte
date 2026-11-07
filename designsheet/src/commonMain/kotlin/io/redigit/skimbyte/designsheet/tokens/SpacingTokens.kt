@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,6 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.designsheet.catalog.CatalogPage
+import io.redigit.skimbyte.designsheet.catalog.CatalogSection
+import io.redigit.skimbyte.theme.SkimbyteTheme
 
 data object Spacing {
     val none = 0.dp
@@ -36,19 +37,23 @@ private val namedSpacing = listOf(
 
 @Composable
 fun SpacingTokensContent() {
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-        namedSpacing.forEach { (name, value) ->
-            Row(
-                modifier = Modifier.padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .width(value.coerceAtLeast(2.dp))
-                        .height(16.dp)
-                        .background(MaterialTheme.colorScheme.primary),
-                ) {}
-                Text(" $name = $value")
+    CatalogPage {
+        CatalogSection(title = "Spacing scale") {
+            Column {
+                namedSpacing.forEach { (name, value) ->
+                    Row(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .width(value.coerceAtLeast(2.dp))
+                                .height(16.dp)
+                                .background(MaterialTheme.colorScheme.primary),
+                        ) {}
+                        Text(" $name = $value")
+                    }
+                }
             }
         }
     }
@@ -57,7 +62,15 @@ fun SpacingTokensContent() {
 @Preview
 @Composable
 private fun SpacingTokensPreview() {
-    MaterialTheme {
+    SkimbyteTheme {
+        SpacingTokensContent()
+    }
+}
+
+@Preview
+@Composable
+private fun SpacingTokensLightPreview() {
+    SkimbyteTheme(darkTheme = false) {
         SpacingTokensContent()
     }
 }

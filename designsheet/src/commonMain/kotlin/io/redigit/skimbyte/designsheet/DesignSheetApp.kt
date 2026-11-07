@@ -70,7 +70,10 @@ fun DesignSheetApp() {
                         metadata = ListDetailSceneStrategy.detailPane(),
                     ) { key ->
                         val item = catalogItems.first { it.id == key.itemId }
-                        CatalogDetailScreen(item = item)
+                        CatalogDetailScreen(
+                            item = item,
+                            onBack = { backStack.removeLastOrNull() },
+                        )
                     }
                 },
             )

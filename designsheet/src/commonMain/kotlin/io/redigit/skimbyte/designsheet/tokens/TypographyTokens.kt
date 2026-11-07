@@ -2,17 +2,15 @@ package io.redigit.skimbyte.designsheet.tokens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.designsheet.catalog.CatalogPage
+import io.redigit.skimbyte.designsheet.catalog.CatalogSection
+import io.redigit.skimbyte.theme.SkimbyteTheme
 
 private data class NamedStyle(val name: String, val style: TextStyle)
 
@@ -31,12 +29,20 @@ fun TypographyTokensContent() {
         NamedStyle("labelLarge", typography.labelLarge),
         NamedStyle("labelMedium", typography.labelMedium),
     )
-    Column(
-        modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        styles.forEach { named ->
-            Text("${named.name}: Design, meet code.", style = named.style)
+    CatalogPage {
+        CatalogSection(title = "Type scale") {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                styles.forEach { named ->
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(
+                            text = "${named.name} · ${named.style.fontSize}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text("Design, meet code.", style = named.style)
+                    }
+                }
+            }
         }
     }
 }
@@ -44,7 +50,15 @@ fun TypographyTokensContent() {
 @Preview
 @Composable
 private fun TypographyTokensPreview() {
-    MaterialTheme {
+    SkimbyteTheme {
+        TypographyTokensContent()
+    }
+}
+
+@Preview
+@Composable
+private fun TypographyTokensLightPreview() {
+    SkimbyteTheme(darkTheme = false) {
         TypographyTokensContent()
     }
 }

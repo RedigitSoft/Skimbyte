@@ -1,12 +1,6 @@
 package io.redigit.skimbyte.designsheet.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -17,38 +11,47 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.designsheet.catalog.CatalogPage
+import io.redigit.skimbyte.designsheet.catalog.CatalogSection
+import io.redigit.skimbyte.theme.SkimbyteTheme
 
 @Composable
 fun TextFieldsCatalogContent() {
-    Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        var filledValue by remember { mutableStateOf("") }
-        Text("Filled")
-        TextField(
-            value = filledValue,
-            onValueChange = { filledValue = it },
-            label = { Text("Label") },
-            modifier = Modifier.fillMaxWidth(),
-        )
+    CatalogPage {
+        CatalogSection(title = "Filled") {
+            var filledValue by remember { mutableStateOf("") }
+            TextField(
+                value = filledValue,
+                onValueChange = { filledValue = it },
+                label = { Text("Label") },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
 
-        var outlinedValue by remember { mutableStateOf("") }
-        Text("Outlined")
-        OutlinedTextField(
-            value = outlinedValue,
-            onValueChange = { outlinedValue = it },
-            label = { Text("Label") },
-            modifier = Modifier.fillMaxWidth(),
-        )
+        CatalogSection(title = "Outlined") {
+            var outlinedValue by remember { mutableStateOf("") }
+            OutlinedTextField(
+                value = outlinedValue,
+                onValueChange = { outlinedValue = it },
+                label = { Text("Label") },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 
 @Preview
 @Composable
 private fun TextFieldsCatalogPreview() {
-    MaterialTheme {
+    SkimbyteTheme {
+        TextFieldsCatalogContent()
+    }
+}
+
+@Preview
+@Composable
+private fun TextFieldsCatalogLightPreview() {
+    SkimbyteTheme(darkTheme = false) {
         TextFieldsCatalogContent()
     }
 }

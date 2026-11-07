@@ -1,30 +1,27 @@
 package io.redigit.skimbyte.designsheet.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import io.redigit.skimbyte.ui.components.TopicFilterRow
 import io.redigit.skimbyte.data.models.Topic
+import io.redigit.skimbyte.designsheet.catalog.CatalogPage
+import io.redigit.skimbyte.designsheet.catalog.CatalogSection
 import io.redigit.skimbyte.theme.SkimbyteTheme
+import io.redigit.skimbyte.ui.components.TopicFilterRow
 
 @Composable
 fun TopicFilterCatalogContent() {
-    Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        var selected by remember { mutableStateOf(Topic.All) }
-        TopicFilterRow(topics = Topic.defaults, selectedTopic = selected, onTopicSelected = { selected = it })
+    CatalogPage {
+        CatalogSection(
+            title = "Interactive",
+            description = "The feed's topic selector; the row scrolls horizontally when topics overflow.",
+        ) {
+            var selected by remember { mutableStateOf(Topic.All) }
+            TopicFilterRow(topics = Topic.defaults, selectedTopic = selected, onTopicSelected = { selected = it })
+        }
     }
 }
 
@@ -32,6 +29,14 @@ fun TopicFilterCatalogContent() {
 @Composable
 private fun TopicFilterCatalogPreview() {
     SkimbyteTheme {
+        TopicFilterCatalogContent()
+    }
+}
+
+@Preview
+@Composable
+private fun TopicFilterCatalogLightPreview() {
+    SkimbyteTheme(darkTheme = false) {
         TopicFilterCatalogContent()
     }
 }

@@ -3,14 +3,12 @@ package io.redigit.skimbyte.designsheet.components
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redigit.skimbyte.data.models.Post
+import io.redigit.skimbyte.designsheet.catalog.CatalogPage
+import io.redigit.skimbyte.designsheet.catalog.CatalogSection
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.components.SavedPostRow
 import kotlin.time.Instant
@@ -36,13 +34,17 @@ private val longTitle = sample.copy(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SavedPostRowCatalogContent() {
-    Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        SavedPostRow(post = sample, onClick = {}, onRemoveClick = {})
-        SavedPostRow(post = longTitle, onClick = {}, onRemoveClick = {})
-        SavedPostRow(post = sample.copy(id = "catalog-3"), onClick = {})
+    CatalogPage {
+        CatalogSection(
+            title = "Variants",
+            description = "Default, a wrapping headline that ellipsizes past two lines, and a row without the remove action.",
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                SavedPostRow(post = sample, onClick = {}, onRemoveClick = {})
+                SavedPostRow(post = longTitle, onClick = {}, onRemoveClick = {})
+                SavedPostRow(post = sample.copy(id = "catalog-3"), onClick = {})
+            }
+        }
     }
 }
 
@@ -51,6 +53,15 @@ fun SavedPostRowCatalogContent() {
 @Composable
 private fun SavedPostRowCatalogPreview() {
     SkimbyteTheme {
+        SavedPostRowCatalogContent()
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview
+@Composable
+private fun SavedPostRowCatalogLightPreview() {
+    SkimbyteTheme(darkTheme = false) {
         SavedPostRowCatalogContent()
     }
 }
