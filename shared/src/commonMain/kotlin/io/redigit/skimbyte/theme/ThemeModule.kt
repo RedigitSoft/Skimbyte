@@ -4,4 +4,5 @@ import org.koin.dsl.module
 
 val themeModule = module {
     single<ThemeModeStore> { SettingsThemeModeStore(get()) }
+    single<AccentColorStore> { SettingsAccentColorStore(get()) }
 }

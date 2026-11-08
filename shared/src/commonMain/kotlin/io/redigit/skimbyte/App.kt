@@ -52,6 +52,7 @@ import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsViewModel
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsScreen
 import io.redigit.skimbyte.ui.screens.onboarding.TutorialOverlay
+import io.redigit.skimbyte.theme.AccentColorStore
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.theme.ThemeModeStore
 import io.redigit.skimbyte.ui.screens.auth.AccountNavHost
@@ -87,7 +88,9 @@ fun App() {
         val topicsRepository = koinInject<TopicsRepository>()
         val themeModeStore = koinInject<ThemeModeStore>()
         val themeMode by themeModeStore.themeModeFlow.collectAsState()
-        SkimbyteTheme(themeMode = themeMode) {
+        val accentColorStore = koinInject<AccentColorStore>()
+        val accentColor by accentColorStore.accentColorFlow.collectAsState()
+        SkimbyteTheme(themeMode = themeMode, accent = accentColor) {
             val topicPreferencesStore = koinInject<TopicPreferencesStore>()
             // The onboarding check is a synchronous settings read, so the first stage is decided
             // before the first frame - no in-app splash. (On Android the system splash screen

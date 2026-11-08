@@ -26,6 +26,7 @@ class SettingsScreenScreenshotTest {
                 SettingsScreen(
                     state = SettingsState(themeMode = mode),
                     onIntent = {},
+                    onAppearanceClick = {},
                     onEditInterestsClick = {},
                     onPrivacyPolicyClick = {},
                     onLicensesClick = {},

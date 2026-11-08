@@ -25,6 +25,9 @@ data object AccountHome : NavKey
 data object Settings : NavKey
 
 @Serializable
+data object Appearance : NavKey
+
+@Serializable
 data object Topics : NavKey
 
 @Serializable

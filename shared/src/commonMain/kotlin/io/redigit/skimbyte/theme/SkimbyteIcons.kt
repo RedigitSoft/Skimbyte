@@ -75,6 +75,7 @@ object SkimbyteIcons {
     val SignOut = Icons.AutoMirrored.Filled.Logout
     val Privacy = Icons.Filled.PrivacyTip
     val Interests = Icons.Filled.Interests
+    val Appearance = Icons.Outlined.Palette
 
     // Theme mode (settings) and the designsheet's preview toggle.
     val ThemeLight = Icons.Filled.LightMode
@@ -109,6 +110,7 @@ object SkimbyteIcons {
         "Home" to Home,
         "Profile" to Profile,
         "Settings" to Settings,
+        "Appearance" to Appearance,
         "BookmarkFilled" to BookmarkFilled,
         "BookmarkOutline" to BookmarkOutline,
         "ReadingTime" to ReadingTime,

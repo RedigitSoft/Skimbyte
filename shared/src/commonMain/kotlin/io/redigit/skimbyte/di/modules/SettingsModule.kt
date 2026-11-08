@@ -6,5 +6,5 @@ import org.koin.dsl.module
 import io.redigit.skimbyte.ui.screens.settings.SettingsViewModel
 
 val settingsModule = module {
-    viewModel { SettingsViewModel(get()) }
+    viewModel { SettingsViewModel(get(), get()) }
 }

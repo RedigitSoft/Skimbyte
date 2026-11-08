@@ -291,7 +291,7 @@ private fun AccountActionRow(
             Text(
                 trailingValue,
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
         Icon(

@@ -12,6 +12,7 @@ import io.redigit.skimbyte.designsheet.components.PostDetailScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.ProfileImagesCatalogContent
 import io.redigit.skimbyte.designsheet.components.SavedPostRowCatalogContent
 import io.redigit.skimbyte.designsheet.components.SelectionControlsCatalogContent
+import io.redigit.skimbyte.designsheet.components.AppearanceScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.SettingsScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.StatusPromptCatalogContent
 import io.redigit.skimbyte.designsheet.components.SkimbyteBottomNavBarCatalogContent
@@ -132,8 +133,12 @@ val catalogItems: List<CatalogItem> = listOf(
     ) { ImageEditSheetCatalogContent() },
     CatalogItem(
         "settings-screen", "Settings", "Account",
-        "Settings with theme mode, interests, legal links, and account deletion.",
+        "Settings with appearance, interests, legal links, and account deletion.",
     ) { SettingsScreenCatalogContent() },
+    CatalogItem(
+        "appearance-screen", "Appearance", "Account",
+        "Light/dark theme toggle and the user-selectable accent swatches.",
+    ) { AppearanceScreenCatalogContent() },
     CatalogItem(
         "topics-screen", "Topics", "Onboarding",
         "Onboarding topic picker with live selection.",

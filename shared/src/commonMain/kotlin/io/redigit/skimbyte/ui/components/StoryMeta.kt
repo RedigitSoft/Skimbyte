@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.redigit.skimbyte.theme.LocalAccentText
 import io.redigit.skimbyte.theme.SkimbyteIcons
 import io.redigit.skimbyte.theme.SkimbyteShapeTokens
 import io.redigit.skimbyte.ui.SkimbyteStrings
@@ -61,9 +63,10 @@ internal fun TopicPill(topic: String, modifier: Modifier = Modifier) {
     }
 }
 
-/** The "N min read" estimate, shown with a small schedule icon. */
+/** The "N min read" estimate, shown with a small schedule icon, in the user's accent. */
 @Composable
 internal fun ReadingTimeLabel(minutes: Int, modifier: Modifier = Modifier) {
+    val accentText = LocalAccentText.current
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -72,13 +75,13 @@ internal fun ReadingTimeLabel(minutes: Int, modifier: Modifier = Modifier) {
         Icon(
             imageVector = SkimbyteIcons.ReadingTime,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = accentText,
             modifier = Modifier.size(14.dp),
         )
         Text(
             text = SkimbyteStrings.Story.minRead(minutes),
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = accentText,
         )
     }
 }
@@ -94,13 +97,13 @@ internal fun SourceAttribution(sourceName: String, publishedAt: Instant, modifie
         Icon(
             imageVector = SkimbyteIcons.Verified,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+            tint = LocalAccentText.current,
             modifier = Modifier.size(16.dp),
         )
         Text(
             text = sourceName,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = LocalAccentText.current,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f, fill = false),
@@ -144,17 +147,25 @@ internal fun StoryActionBar(
                     isLoading = isBookmarkLoading,
                     onClick = onBookmarkClick,
                 )
+                // Ink/cream, not primary: Flame as labelMedium text reaches only ~2:1 on this
+                // light surfaceVariant bar. The filled bookmark icon already carries the accent;
+                // the saved state keeps emphasis through onSurface vs onSurfaceVariant.
                 Text(
                     text = if (isBookmarked) SkimbyteStrings.Story.SAVED else SkimbyteStrings.Story.SAVE,
                     style = MaterialTheme.typography.labelMedium,
                     color = if (isBookmarked) {
-                        MaterialTheme.colorScheme.primary
+                        MaterialTheme.colorScheme.onSurface
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     },
                 )
             }
-            TextButton(onClick = onReadSourceClick) {
+            // The read-source link carries the accent, contrast-tuned for this bar so it stays
+            // legible at label size whatever accent the user picked (see LocalAccentText).
+            TextButton(
+                onClick = onReadSourceClick,
+                colors = ButtonDefaults.textButtonColors(contentColor = LocalAccentText.current),
+            ) {
                 Text(readSourceLabel)
                 Spacer(Modifier.size(6.dp))
                 Icon(

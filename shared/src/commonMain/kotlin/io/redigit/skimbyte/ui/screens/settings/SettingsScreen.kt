@@ -5,17 +5,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,7 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -57,6 +53,7 @@ import io.redigit.skimbyte.ui.SkimbyteStrings
 fun SettingsScreen(
     state: SettingsState,
     onIntent: (SettingsIntent) -> Unit,
+    onAppearanceClick: () -> Unit,
     onEditInterestsClick: () -> Unit,
     onPrivacyPolicyClick: () -> Unit,
     onLicensesClick: () -> Unit,
@@ -102,16 +99,12 @@ fun SettingsScreen(
             ) {
                 EyebrowText(SkimbyteStrings.Settings.SECTION_APPEARANCE, modifier = Modifier.padding(start = 4.dp))
                 Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        Text(SkimbyteStrings.Settings.THEME, style = MaterialTheme.typography.titleMedium)
-                        ThemeModeToggleGroup(
-                            selected = state.themeMode,
-                            onSelected = { onIntent(SettingsIntent.ThemeModeSelected(it)) },
-                        )
-                    }
+                    SettingsActionRow(
+                        icon = SkimbyteIcons.Appearance,
+                        label = SkimbyteStrings.Settings.THEME_AND_ACCENT,
+                        supporting = SkimbyteStrings.Settings.APPEARANCE_SUPPORTING,
+                        onClick = onAppearanceClick,
+                    )
                 }
 
                 EyebrowText(SkimbyteStrings.Settings.SECTION_CONTENT, modifier = Modifier.padding(start = 4.dp))
@@ -226,40 +219,6 @@ fun SettingsScreen(
 }
 
 /**
- * The Expressive connected button group: three equal-width [ToggleButton]s whose shapes morph
- * between the squared connected-middle form and a fully rounded pill when checked.
- */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun ThemeModeToggleGroup(
-    selected: ThemeMode,
-    onSelected: (ThemeMode) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-    ) {
-        ThemeMode.entries.forEachIndexed { index, mode ->
-            ToggleButton(
-                checked = mode == selected,
-                onCheckedChange = { if (mode != selected) onSelected(mode) },
-                modifier = Modifier.weight(1f),
-                shapes = when (index) {
-                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                    ThemeMode.entries.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                },
-            ) {
-                Icon(mode.icon(), contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(mode.displayLabel())
-            }
-        }
-    }
-}
-
-/**
  * Icon-tile row matching the Account screen's action rows (label, supporting text, chevron).
  * [tint] accents the icon (and the label, when not the default) — error for destructive actions;
  * [showChevron] is dropped for actions that open a dialog rather than navigate.
@@ -306,18 +265,6 @@ private fun SettingsActionRow(
     }
 }
 
-private fun ThemeMode.displayLabel(): String = when (this) {
-    ThemeMode.Light -> SkimbyteStrings.Settings.THEME_LIGHT
-    ThemeMode.Dark -> SkimbyteStrings.Settings.THEME_DARK
-    ThemeMode.System -> SkimbyteStrings.Settings.THEME_SYSTEM
-}
-
-private fun ThemeMode.icon(): ImageVector = when (this) {
-    ThemeMode.Light -> SkimbyteIcons.ThemeLight
-    ThemeMode.Dark -> SkimbyteIcons.ThemeDark
-    ThemeMode.System -> SkimbyteIcons.ThemeSystem
-}
-
 @Preview
 @Composable
 private fun SettingsScreenDarkThemePreview() {
@@ -325,6 +272,7 @@ private fun SettingsScreenDarkThemePreview() {
         SettingsScreen(
             state = SettingsState(themeMode = ThemeMode.Dark),
             onIntent = {},
+            onAppearanceClick = {},
             onEditInterestsClick = {},
             onPrivacyPolicyClick = {},
             onLicensesClick = {},
@@ -340,6 +288,7 @@ private fun SettingsScreenLightThemePreview() {
         SettingsScreen(
             state = SettingsState(themeMode = ThemeMode.Light),
             onIntent = {},
+            onAppearanceClick = {},
             onEditInterestsClick = {},
             onPrivacyPolicyClick = {},
             onLicensesClick = {},
@@ -355,6 +304,7 @@ private fun SettingsScreenSystemThemePreview() {
         SettingsScreen(
             state = SettingsState(themeMode = ThemeMode.System),
             onIntent = {},
+            onAppearanceClick = {},
             onEditInterestsClick = {},
             onPrivacyPolicyClick = {},
             onLicensesClick = {},

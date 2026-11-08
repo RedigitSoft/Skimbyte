@@ -15,6 +15,7 @@ class SettingsScreenContentTest {
 
     @OptIn(ExperimentalTestApi::class)
     private fun androidx.compose.ui.test.ComposeUiTest.settings(
+        onAppearanceClick: () -> Unit = {},
         onEditInterestsClick: () -> Unit = {},
         onPrivacyPolicyClick: () -> Unit = {},
         onLicensesClick: () -> Unit = {},
@@ -28,6 +29,7 @@ class SettingsScreenContentTest {
                 SettingsScreen(
                     state = SettingsState(themeMode = ThemeMode.System),
                     onIntent = {},
+                    onAppearanceClick = onAppearanceClick,
                     onEditInterestsClick = onEditInterestsClick,
                     onPrivacyPolicyClick = onPrivacyPolicyClick,
                     onLicensesClick = onLicensesClick,
@@ -57,6 +59,16 @@ class SettingsScreenContentTest {
         var clicked = false
         settings(onLicensesClick = { clicked = true })
         onNodeWithText("Open source licenses").performScrollTo().performClick()
+        waitForIdle()
+        assertEquals(true, clicked)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun tappingAppearanceRow_invokesCallback() = runComposeUiTest {
+        var clicked = false
+        settings(onAppearanceClick = { clicked = true })
+        onNodeWithText("Theme & accent").performScrollTo().performClick()
         waitForIdle()
         assertEquals(true, clicked)
     }

@@ -1,6 +1,7 @@
 package io.redigit.skimbyte.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
@@ -11,75 +12,70 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 
 /**
- * Both M3 color schemes, specified in full so no role inherits Material's violet baseline, mapped
- * onto the five-stop palette in Color.kt and nothing else.
+ * Both M3 color schemes, specified in full so no role inherits Material's violet baseline.
  *
- * Five values cannot give every role its own step, so the collapses are deliberate: all
- * `surfaceContainer*` levels share one neutral per scheme ([PaleSilver] on light, [BlackOlive] on
- * dark), `secondary`/`tertiary` are neutral rather than hued, and `error` shares [Flame] with
- * `primary` — the error signal comes from copy and iconography, not a separate hue.
+ * The structure is two neutral ramps plus one sharp accent (see Color.kt): dark is a matte-black
+ * field with grey containers stepping up from it, light is an off-white field with containers a
+ * step darker. `secondary`/`tertiary` are neutral rather than hued — the single accent carries all
+ * the colour — and `error` is an independent red. The `surfaceContainer*` ramp is given real steps
+ * here (not collapsed onto one neutral) so cards read as raised surfaces rather than flat slabs.
  *
- * Contrast: every on-color pairing here clears WCAG AA for normal text (ink on Flame 4.57:1,
- * muted-on-container 6.28:1, and field/ink pairs 9:1+), with one carried-over caveat — [Flame] as
- * *text* on light surfaces reaches 3.31:1, large-text/UI territory only.
+ * The accent is user-selectable ([AccentColor]); these base schemes bake in [AccentColor.Default]
+ * and [withAccent] swaps in the chosen hue across the primary family at theme time.
  */
-// M3's "fixed" accent roles hold the same value in both schemes by definition, so they are
-// declared once. Nothing in the app references them yet, but leaving them unset is what lets a
-// baseline value hide (and it would show through the designsheet catalog as soon as a component
-// did reach for one).
-private val PrimaryFixed = Flame
-private val PrimaryFixedDim = Flame
-private val OnPrimaryFixed = RaisinBlack
-private val OnPrimaryFixedVariant = RaisinBlack
-private val SecondaryFixed = PaleSilver
-private val SecondaryFixedDim = PaleSilver
-private val OnSecondaryFixed = RaisinBlack
-private val OnSecondaryFixedVariant = BlackOlive
-private val TertiaryFixed = PaleSilver
-private val TertiaryFixedDim = PaleSilver
-private val OnTertiaryFixed = RaisinBlack
-private val OnTertiaryFixedVariant = BlackOlive
+// M3's "fixed" accent roles hold the same value in both schemes by definition, so they are declared
+// once. Nothing in the app references them yet, but leaving them unset lets a baseline value hide.
+private val PrimaryFixed = AccentColor.Default.accent
+private val PrimaryFixedDim = AccentColor.Default.accent
+private val OnPrimaryFixed = AccentColor.Default.onAccent
+private val OnPrimaryFixedVariant = AccentColor.Default.onAccent
+private val SecondaryFixed = Paper30
+private val SecondaryFixedDim = Paper40
+private val OnSecondaryFixed = Ink
+private val OnSecondaryFixedVariant = InkMuted
+private val TertiaryFixed = Paper30
+private val TertiaryFixedDim = Paper40
+private val OnTertiaryFixed = Ink
+private val OnTertiaryFixedVariant = InkMuted
 
 internal val SkimbyteDarkColors = darkColorScheme(
-    primary = Flame,
-    // Ink, not white: FloralWhite on Flame reaches only 3.31:1 at the 12sp TopicPill label;
-    // RaisinBlack clears 4.57:1.
-    onPrimary = RaisinBlack,
-    primaryContainer = Flame,
-    onPrimaryContainer = RaisinBlack,
-    inversePrimary = Flame,
-    secondary = PaleSilver,
-    onSecondary = RaisinBlack,
-    secondaryContainer = BlackOlive,
-    onSecondaryContainer = PaleSilver,
-    tertiary = PaleSilver,
-    onTertiary = RaisinBlack,
-    tertiaryContainer = BlackOlive,
-    onTertiaryContainer = PaleSilver,
-    background = RaisinBlack,
-    onBackground = FloralWhite,
-    surface = RaisinBlack,
-    onSurface = FloralWhite,
-    surfaceDim = RaisinBlack,
-    surfaceBright = BlackOlive,
-    surfaceContainerLowest = RaisinBlack,
-    surfaceContainerLow = BlackOlive,
-    surfaceContainer = BlackOlive,
-    surfaceContainerHigh = BlackOlive,
-    surfaceContainerHighest = BlackOlive,
-    surfaceVariant = BlackOlive,
-    onSurfaceVariant = PaleSilver,
-    surfaceTint = Flame,
-    inverseSurface = FloralWhite,
-    inverseOnSurface = RaisinBlack,
-    outline = PaleSilver,
-    outlineVariant = BlackOlive,
-    // Flame doubles as the error hue; as text on this floor it clears 4.57:1.
-    error = Flame,
-    onError = RaisinBlack,
-    errorContainer = Flame,
-    onErrorContainer = RaisinBlack,
-    scrim = RaisinBlack,
+    primary = AccentColor.Default.accent,
+    onPrimary = AccentColor.Default.onAccent,
+    primaryContainer = AccentColor.Default.accent,
+    onPrimaryContainer = AccentColor.Default.onAccent,
+    inversePrimary = AccentColor.Default.accent,
+    // secondary/tertiary are neutral — the accent is the only hue.
+    secondary = MistMuted,
+    onSecondary = Black,
+    secondaryContainer = Graphite20,
+    onSecondaryContainer = Mist,
+    tertiary = MistMuted,
+    onTertiary = Black,
+    tertiaryContainer = Graphite20,
+    onTertiaryContainer = Mist,
+    background = Black,
+    onBackground = Mist,
+    surface = Black,
+    onSurface = Mist,
+    surfaceDim = Black,
+    surfaceBright = Graphite30,
+    surfaceContainerLowest = Black,
+    surfaceContainerLow = Graphite05,
+    surfaceContainer = Graphite10,
+    surfaceContainerHigh = Graphite20,
+    surfaceContainerHighest = Graphite30,
+    surfaceVariant = GraphiteVariant,
+    onSurfaceVariant = MistMuted,
+    surfaceTint = AccentColor.Default.accent,
+    inverseSurface = Mist,
+    inverseOnSurface = Black,
+    outline = GraphiteLine,
+    outlineVariant = Graphite20,
+    error = DangerDark,
+    onError = Black,
+    errorContainer = ErrorContainerDark,
+    onErrorContainer = OnErrorContainerDark,
+    scrim = Black,
     primaryFixed = PrimaryFixed,
     primaryFixedDim = PrimaryFixedDim,
     onPrimaryFixed = OnPrimaryFixed,
@@ -95,45 +91,42 @@ internal val SkimbyteDarkColors = darkColorScheme(
 )
 
 internal val SkimbyteLightColors = lightColorScheme(
-    primary = Flame,
-    // Same 3.31:1 failure as dark - the fill is identical in both schemes.
-    onPrimary = RaisinBlack,
-    primaryContainer = Flame,
-    onPrimaryContainer = RaisinBlack,
-    inversePrimary = Flame,
-    secondary = BlackOlive,
-    onSecondary = FloralWhite,
-    secondaryContainer = PaleSilver,
-    onSecondaryContainer = RaisinBlack,
-    tertiary = BlackOlive,
-    onTertiary = FloralWhite,
-    tertiaryContainer = PaleSilver,
-    onTertiaryContainer = RaisinBlack,
-    background = FloralWhite,
-    onBackground = RaisinBlack,
-    surface = FloralWhite,
-    onSurface = RaisinBlack,
-    surfaceDim = PaleSilver,
-    surfaceBright = FloralWhite,
-    surfaceContainerLowest = FloralWhite,
-    surfaceContainerLow = PaleSilver,
-    surfaceContainer = PaleSilver,
-    surfaceContainerHigh = PaleSilver,
-    surfaceContainerHighest = PaleSilver,
-    surfaceVariant = PaleSilver,
-    onSurfaceVariant = BlackOlive,
-    surfaceTint = Flame,
-    inverseSurface = RaisinBlack,
-    inverseOnSurface = FloralWhite,
-    outline = BlackOlive,
-    outlineVariant = PaleSilver,
-    // Flame doubles as the error hue; as a fill its ink clears AA, as text on this floor it is
-    // large-text only (3.31:1).
-    error = Flame,
-    onError = RaisinBlack,
-    errorContainer = Flame,
-    onErrorContainer = RaisinBlack,
-    scrim = RaisinBlack,
+    primary = AccentColor.Default.accent,
+    onPrimary = AccentColor.Default.onAccent,
+    primaryContainer = AccentColor.Default.accent,
+    onPrimaryContainer = AccentColor.Default.onAccent,
+    inversePrimary = AccentColor.Default.accent,
+    secondary = InkMuted,
+    onSecondary = Offwhite,
+    secondaryContainer = Paper30,
+    onSecondaryContainer = Ink,
+    tertiary = InkMuted,
+    onTertiary = Offwhite,
+    tertiaryContainer = Paper30,
+    onTertiaryContainer = Ink,
+    background = Offwhite,
+    onBackground = Ink,
+    surface = Offwhite,
+    onSurface = Ink,
+    surfaceDim = Paper30,
+    surfaceBright = Cloud,
+    surfaceContainerLowest = Cloud,
+    surfaceContainerLow = Paper10,
+    surfaceContainer = Paper20,
+    surfaceContainerHigh = Paper30,
+    surfaceContainerHighest = Paper40,
+    surfaceVariant = PaperVariant,
+    onSurfaceVariant = InkMuted,
+    surfaceTint = AccentColor.Default.accent,
+    inverseSurface = Ink,
+    inverseOnSurface = Offwhite,
+    outline = PaperLine,
+    outlineVariant = Paper30,
+    error = DangerLight,
+    onError = Cloud,
+    errorContainer = ErrorContainerLight,
+    onErrorContainer = OnErrorContainerLight,
+    scrim = Black,
     primaryFixed = PrimaryFixed,
     primaryFixedDim = PrimaryFixedDim,
     onPrimaryFixed = OnPrimaryFixed,
@@ -149,22 +142,48 @@ internal val SkimbyteLightColors = lightColorScheme(
 )
 
 /**
+ * Swap the chosen accent into every primary-family role. The neutrals, surfaces, and error stay
+ * fixed; only the accent-derived roles change, so a different [AccentColor] re-tints the app
+ * without touching anything else.
+ */
+private fun ColorScheme.withAccent(accent: AccentColor): ColorScheme = copy(
+    primary = accent.accent,
+    onPrimary = accent.onAccent,
+    primaryContainer = accent.accent,
+    onPrimaryContainer = accent.onAccent,
+    inversePrimary = accent.accent,
+    surfaceTint = accent.accent,
+    primaryFixed = accent.accent,
+    primaryFixedDim = accent.accent,
+    onPrimaryFixed = accent.onAccent,
+    onPrimaryFixedVariant = accent.onAccent,
+)
+
+/**
  * M3 Expressive theme: [MaterialExpressiveTheme] with [MotionScheme.expressive] gives every
  * Material component spring-based motion physics (per the Compose-first Expressive rollout); both
  * schemes are Skimbyte's own, specified role-by-role in [SkimbyteDarkColors] and
- * [SkimbyteLightColors].
+ * [SkimbyteLightColors], re-tinted with the user's [accent].
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun SkimbyteTheme(darkTheme: Boolean = true, content: @Composable () -> Unit) {
-    val colorScheme = if (darkTheme) SkimbyteDarkColors else SkimbyteLightColors
+fun SkimbyteTheme(
+    darkTheme: Boolean = true,
+    accent: AccentColor = AccentColor.Default,
+    content: @Composable () -> Unit,
+) {
+    val colorScheme = (if (darkTheme) SkimbyteDarkColors else SkimbyteLightColors).withAccent(accent)
     val windowChrome = LocalWindowChromeListener.current
     LaunchedEffect(windowChrome, darkTheme) {
         windowChrome.onThemeResolved(darkTheme, colorScheme.surface)
     }
     // Consume the listener so nested themes (light/dark preview sections in the designsheet
-    // catalog) don't also report and fight over the host window's chrome.
-    CompositionLocalProvider(LocalWindowChromeListener provides NoOpWindowChromeListener) {
+    // catalog) don't also report and fight over the host window's chrome. Also publish the
+    // contrast-tuned accent-text colour for source lines, links, and meta.
+    CompositionLocalProvider(
+        LocalWindowChromeListener provides NoOpWindowChromeListener,
+        LocalAccentText provides accentTextOn(accent.accent, colorScheme.surfaceContainer),
+    ) {
         MaterialExpressiveTheme(
             colorScheme = colorScheme,
             shapes = SkimbyteShapes,
@@ -175,11 +194,15 @@ fun SkimbyteTheme(darkTheme: Boolean = true, content: @Composable () -> Unit) {
 }
 
 @Composable
-fun SkimbyteTheme(themeMode: ThemeMode, content: @Composable () -> Unit) {
+fun SkimbyteTheme(
+    themeMode: ThemeMode,
+    accent: AccentColor = AccentColor.Default,
+    content: @Composable () -> Unit,
+) {
     val dark = when (themeMode) {
         ThemeMode.Light -> false
         ThemeMode.Dark -> true
         ThemeMode.System -> isSystemInDarkTheme()
     }
-    SkimbyteTheme(darkTheme = dark, content = content)
+    SkimbyteTheme(darkTheme = dark, accent = accent, content = content)
 }

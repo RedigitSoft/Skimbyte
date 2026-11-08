@@ -26,12 +26,14 @@ import io.redigit.skimbyte.ui.components.SharedElementContext
 import io.redigit.skimbyte.ui.navigation.AccountHome
 import io.redigit.skimbyte.ui.navigation.AvatarViewer
 import io.redigit.skimbyte.ui.navigation.BannerViewer
+import io.redigit.skimbyte.ui.navigation.Appearance
 import io.redigit.skimbyte.ui.navigation.Licenses
 import io.redigit.skimbyte.ui.navigation.Settings
 import io.redigit.skimbyte.ui.navigation.Topics
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsViewModel
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsScreen
+import io.redigit.skimbyte.ui.screens.settings.AppearanceRoute
 import io.redigit.skimbyte.ui.screens.settings.LicensesRoute
 import io.redigit.skimbyte.ui.screens.settings.SettingsViewModel
 import io.redigit.skimbyte.ui.screens.settings.SettingsScreen
@@ -52,6 +54,7 @@ private val navConfig = SavedStateConfiguration {
         polymorphic(NavKey::class) {
             subclass(AccountHome::class, AccountHome.serializer())
             subclass(Settings::class, Settings.serializer())
+            subclass(Appearance::class, Appearance.serializer())
             subclass(Topics::class, Topics.serializer())
             subclass(Licenses::class, Licenses.serializer())
             subclass(AvatarViewer::class, AvatarViewer.serializer())
@@ -126,6 +129,7 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
                     SettingsScreen(
                         state = settingsState,
                         onIntent = viewModel::onIntent,
+                        onAppearanceClick = { backStack.add(Appearance) },
                         onEditInterestsClick = { backStack.add(Topics) },
                         onPrivacyPolicyClick = { openUrl(WebsiteLinks.PRIVACY_POLICY_URL) },
                         onLicensesClick = { backStack.add(Licenses) },
@@ -136,6 +140,9 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
                         deleteInProgress = uiState.deleteDataInProgress,
                         deleteError = uiState.deleteDataError,
                     )
+                }
+                entry<Appearance>(metadata = ListDetailSceneStrategy.detailPane()) {
+                    AppearanceRoute(onBack = { backStack.removeLastOrNull() })
                 }
                 entry<Licenses>(metadata = ListDetailSceneStrategy.detailPane()) {
                     LicensesRoute(onBack = { backStack.removeLastOrNull() })
