@@ -19,6 +19,12 @@ skimbyteApiBaseUrl=
 # Sent on every register/login call so the auth server knows which app the auth event is for.
 skimbyteProductId=
 
+# Apple Development team id for signing iOS device builds (Xcode → Signing & Capabilities, or
+# developer.apple.com → Membership). Written into the gitignored iosApp/Configuration/Local.xcconfig
+# by :shared:generateIosLocalXcconfig (runs on IDE sync and on every Xcode build; a change is
+# picked up on the next build). Leave unset for simulator-only work.
+#iosTeamId=
+
 # DigitalOcean Spaces CDN domain for avatar/banner images — the bucket's CDN endpoint
 # (copy the real value from the deployment notes; kept out of the repo like the other
 # endpoints above). Leave unset to disable remote avatar/banner images.
