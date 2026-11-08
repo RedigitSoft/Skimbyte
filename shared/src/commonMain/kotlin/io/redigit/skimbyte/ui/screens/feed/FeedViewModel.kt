@@ -119,6 +119,26 @@ class FeedViewModel(
         val feed = _state.value.feeds[topic]
         if (feed == null || (feed.posts.isEmpty() && !feed.isLoadingInitial)) {
             loadInitial(topic)
+        } else {
+            // Already loaded (or loading): the loadInitial success hook won't fire for this
+            // selection, so warm the new neighbors here.
+            prefetchAdjacent(topic)
+        }
+    }
+
+    /**
+     * Warm the tabs on either side of [topic] so swiping to a neighbor shows content instead of a
+     * spinner. Only feeds that were never attempted are fetched - loaded, in-flight, and errored
+     * neighbors are left alone (an errored tab retries on selection, not in the background). Fired
+     * only for the *selected* tab, so a prefetched neighbor completing does not chain into
+     * prefetching its own neighbors: selecting "All" warms exactly "All"'s neighbors.
+     */
+    private fun prefetchAdjacent(topic: Topic) {
+        val topics = _state.value.availableTopics
+        val index = topics.indexOf(topic)
+        if (index == -1) return
+        listOfNotNull(topics.getOrNull(index - 1), topics.getOrNull(index + 1)).forEach { neighbor ->
+            if (_state.value.feeds[neighbor] == null) loadInitial(neighbor)
         }
     }
 
@@ -184,6 +204,9 @@ class FeedViewModel(
                     updateFeed(topic) {
                         it.copy(posts = page.items, nextCursor = page.nextCursor, isLoadingInitial = false, fetchedAt = timeSource.markNow())
                     }
+                    // Once the tab the reader is looking at has content, warm its neighbors. Gated
+                    // on still being the selected tab so prefetched loads don't cascade onward.
+                    if (topic == _state.value.selectedTopic) prefetchAdjacent(topic)
                 },
                 onFailure = { cause -> updateFeed(topic) { it.copy(isLoadingInitial = false, error = cause.toFeedError()) } },
             )

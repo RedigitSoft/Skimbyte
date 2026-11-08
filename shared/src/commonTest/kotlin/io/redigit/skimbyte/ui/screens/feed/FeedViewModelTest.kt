@@ -366,4 +366,65 @@ class FeedViewModelTest {
         assertEquals(0, viewModel.state.value.currentFeed.currentIndex)
         assertFalse(viewModel.state.value.isRefreshing)
     }
+
+    @Test
+    fun `loading the selected tab also warms its adjacent tab`() = runTest {
+        val fetched = mutableListOf<Topic>()
+        val repository = FakePostsRepository { topic, _ ->
+            fetched += topic
+            Result.success(Page(listOf(fakePost("p-${topic.displayLabel}", topic = topic)), null))
+        }
+        val store = fakeTopicPreferencesStore().apply {
+            setSelectedTopics(setOf(Topic.Kotlin, Topic.Android, Topic.Kmp))
+        }
+        FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
+
+        // "All" (selected) plus its single neighbor - and nothing beyond: a prefetched neighbor
+        // completing must not chain into prefetching its own neighbors.
+        assertEquals(listOf(Topic.All, Topic.Kotlin), fetched)
+    }
+
+    @Test
+    fun `selecting a middle tab warms both neighbors without refetching loaded ones`() = runTest {
+        val fetched = mutableListOf<Topic>()
+        val repository = FakePostsRepository { topic, _ ->
+            fetched += topic
+            Result.success(Page(listOf(fakePost("p-${topic.displayLabel}", topic = topic)), null))
+        }
+        val store = fakeTopicPreferencesStore().apply {
+            setSelectedTopics(setOf(Topic.Kotlin, Topic.Android, Topic.Kmp, Topic.Tooling))
+        }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
+
+        viewModel.onIntent(FeedIntent.TopicSelected(Topic.Android))
+
+        // Init fetched All + its neighbor Kotlin. Selecting Android fetches it, then warms Kmp;
+        // Kotlin is already loaded (not refetched) and Tooling is beyond the neighbors (untouched).
+        assertEquals(listOf(Topic.All, Topic.Kotlin, Topic.Android, Topic.Kmp), fetched)
+    }
+
+    @Test
+    fun `an errored neighbor is not retried in the background`() = runTest {
+        val fetched = mutableListOf<Topic>()
+        val repository = FakePostsRepository { topic, _ ->
+            fetched += topic
+            if (topic == Topic.Kotlin) {
+                Result.failure(RuntimeException("boom"))
+            } else {
+                Result.success(Page(listOf(fakePost("p-${topic.displayLabel}", topic = topic)), null))
+            }
+        }
+        val store = fakeTopicPreferencesStore().apply {
+            setSelectedTopics(setOf(Topic.Kotlin, Topic.Android))
+        }
+        val viewModel = FeedViewModel(repository, FakeAuthRepository(), fakeBookmarkIdsStore(), store)
+
+        // Init: All loads, the Kotlin prefetch fails and the tab holds its error state.
+        viewModel.onIntent(FeedIntent.TopicSelected(Topic.Android))
+
+        // Android's prefetch sees the errored Kotlin neighbor and leaves it alone - retrying is
+        // the tab's own job when the reader actually opens it.
+        assertEquals(1, fetched.count { it == Topic.Kotlin })
+        assertEquals(FeedError.Network, viewModel.state.value.feeds[Topic.Kotlin]?.error)
+    }
 }

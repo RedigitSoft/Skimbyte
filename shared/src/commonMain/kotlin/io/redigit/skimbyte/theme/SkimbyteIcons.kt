@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Bookmark
@@ -22,7 +23,6 @@ import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Interests
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PrivacyTip
@@ -62,7 +62,7 @@ object SkimbyteIcons {
     val BookmarkFilled = Icons.Filled.Bookmark
     val BookmarkOutline = Icons.Outlined.BookmarkBorder
     val ReadingTime = Icons.Outlined.Schedule
-    val OpenInNew = Icons.Filled.OpenInNew
+    val OpenInNew = Icons.AutoMirrored.Filled.OpenInNew
     val Document = Icons.Filled.Description
 
     // Account and profile images.

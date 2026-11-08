@@ -4,13 +4,6 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-	<!-- Required for the avatar/banner "Take photo" flow (UIImagePickerController .camera).
-	     iOS crashes the app on camera access if this usage string is absent. -->
-	<key>NSCameraUsageDescription</key>
-	<string>Take a photo for your profile picture or banner.</string>
-	<!-- OAuth deep link: the auth server redirects to skimbyte://auth/callback with tokens
-	     (must match local.properties' googleAuthRedirectUri and the auth server's allowlist);
-	     iOSApp.swift forwards it to the shared GoogleAuthCallback bridge via onOpenURL. -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
