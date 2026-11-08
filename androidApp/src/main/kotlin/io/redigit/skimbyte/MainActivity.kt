@@ -6,10 +6,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
 import android.net.Uri
+import androidx.core.view.WindowCompat
 import io.redigit.skimbyte.data.remote.BackendConfig
 import io.redigit.skimbyte.data.remote.GoogleAuthCallback
+import io.redigit.skimbyte.theme.LocalWindowChromeListener
+import io.redigit.skimbyte.theme.WindowChromeListener
 import io.redigit.skimbyte.util.AndroidContextHolder
 import androidx.core.net.toUri
 
@@ -23,7 +27,19 @@ class MainActivity : ComponentActivity() {
         handleAuthRedirect(intent)
 
         setContent {
-            App()
+            // Drive the system bar icon appearance from the *app's* resolved theme, not the OS dark
+            // setting enableEdgeToEdge() keys off — otherwise light-theme-over-dark-OS leaves white
+            // status-bar icons on the app's light bar. SkimbyteTheme reports the resolved theme here.
+            CompositionLocalProvider(
+                LocalWindowChromeListener provides WindowChromeListener { darkTheme, _ ->
+                    WindowCompat.getInsetsController(window, window.decorView).apply {
+                        isAppearanceLightStatusBars = !darkTheme
+                        isAppearanceLightNavigationBars = !darkTheme
+                    }
+                },
+            ) {
+                App()
+            }
         }
     }
 

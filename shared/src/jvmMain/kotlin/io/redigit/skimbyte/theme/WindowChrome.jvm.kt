@@ -13,9 +13,14 @@ import androidx.compose.ui.window.FrameWindowScope
  * AWT offers no way to recolor the title bar directly; what works on stock OpenJDK (12+) is making
  * it transparent via the `apple.awt.transparentTitleBar` root-pane property — the bar then shows
  * the NSWindow background — and steering the window background to the resolved surface color
- * through [LocalWindowChromeListener]. The title text follows the *system* appearance (see the
- * `apple.awt.application.appearance` property set in each entry point), so it can wash out when the
- * in-app theme is forced opposite to the OS; the window keeps the right surface color regardless.
+ * through [LocalWindowChromeListener].
+ *
+ * The title text and traffic-light glyphs take their colour from the window's NSAppearance. Left to
+ * the *system* appearance (`apple.awt.application.appearance`) they wash out — white on a light bar —
+ * whenever the in-app theme is the opposite of the macOS one. So the listener also pins the window's
+ * appearance to the resolved [ThemeMode] via the per-window `apple.awt.windowAppearance` root-pane
+ * property (JDK-8265447), which updates the live window; a theme toggle re-fires it and the bar
+ * follows.
  *
  * On Windows/Linux the window manager owns the bar, so this just runs [content] unchanged.
  */
@@ -30,8 +35,12 @@ fun FrameWindowScope.ThemeAwareWindowChrome(content: @Composable () -> Unit) {
         window.rootPane.putClientProperty("apple.awt.transparentTitleBar", true)
     }
     CompositionLocalProvider(
-        LocalWindowChromeListener provides WindowChromeListener { _, surface ->
+        LocalWindowChromeListener provides WindowChromeListener { darkTheme, surface ->
             window.background = java.awt.Color(surface.toArgb())
+            window.rootPane.putClientProperty(
+                "apple.awt.windowAppearance",
+                if (darkTheme) "NSAppearanceNameDarkAqua" else "NSAppearanceNameAqua",
+            )
         },
         content = content,
     )
