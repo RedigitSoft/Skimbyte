@@ -18,6 +18,11 @@ a living design-system catalog.
 | Desktop (JVM) | `desktopApp/` |
 | Web (Kotlin/Wasm + Kotlin/JS) | `webApp/` |
 
+## Get the app
+
+Desktop installers (macOS, Windows, Linux) are on the [Download](download.md) page,
+built and published straight from GitHub Actions. Mobile store releases are in progress.
+
 ## Try it in 60 seconds
 
 ```sh

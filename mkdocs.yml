@@ -36,6 +36,7 @@ markdown_extensions:
 # in nav because mkdocs --strict only accepts doc files there.
 nav:
   - Home: index.md
+  - Download: download.md
   - Architecture: architecture.md
   - Testing: testing.md
   - Design system: design-system.md
