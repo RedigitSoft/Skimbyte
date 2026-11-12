@@ -3,7 +3,7 @@
 **Effective date: 2026-10-31**
 
 > The canonical, always-current copy of this policy is the hosted version on the project
-> website (`/privacy/`). This file is the same document, kept in the repository so it ships
+> website (`/docs/privacy/`). This file is the same document, kept in the repository so it ships
 > and versions with the code.
 
 Skimbyte is a daily, skimmable developer-news brief. It is built to collect the minimum

@@ -3,7 +3,7 @@
 **Effective date: 2026-11-12**
 
 > The canonical, always-current copy of these terms is the hosted version on the project
-> website (`/terms/`). This file is the same document, kept in the repository so it ships
+> website (`/docs/terms/`). This file is the same document, kept in the repository so it ships
 > and versions with the code.
 
 Skimbyte is a free, open-source app that turns developer-news feeds into a daily,

@@ -23,7 +23,7 @@ on every release — download them from the
 
 ## Web
 
-The [live designsheet](designsheet/) (the app's component catalog) runs in your browser
+The [live designsheet](../designsheet/) (the app's component catalog) runs in your browser
 via Kotlin/Wasm today; a hosted build of the full web app is planned.
 
 ## Run from source

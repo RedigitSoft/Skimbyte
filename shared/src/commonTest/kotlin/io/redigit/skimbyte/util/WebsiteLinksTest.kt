@@ -13,7 +13,7 @@ class WebsiteLinksTest {
 
     @Test
     fun privacyPolicyUrlIsUnderTheSiteWithMkDocsDirectoryShape() {
-        // MkDocs serves docs-site/privacy.md as <site>/privacy/ — the trailing slash avoids a
+        // MkDocs serves docs-site/privacy.md as <site>/docs/privacy/ — the trailing slash avoids a
         // redirect hop on GitHub Pages.
         assertTrue(WebsiteLinks.PRIVACY_POLICY_URL.startsWith(WebsiteLinks.SITE_BASE_URL + "/"))
         assertTrue(WebsiteLinks.PRIVACY_POLICY_URL.endsWith("/privacy/"))

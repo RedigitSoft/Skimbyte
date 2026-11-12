@@ -1,9 +1,10 @@
 name: Deploy docs site to GitHub Pages
 
-# One Pages deployment, three artifacts:
-#   /            MkDocs site (docs-site/)
-#   /api/        Dokka HTML for :shared
-#   /designsheet/  the live component catalog (Wasm)
+# One Pages deployment, four artifacts:
+#   /                  landing page (website/)
+#   /docs/             MkDocs site (docs-site/)
+#   /docs/api/         Dokka HTML for :shared
+#   /docs/designsheet/ the live component catalog (Wasm)
 
 on:
   push:
@@ -49,12 +50,15 @@ jobs:
       - name: Build MkDocs site
         run: |
           pip install mkdocs-material
-          mkdocs build --strict --site-dir site
+          mkdocs build --strict --site-dir mkdocs-site
 
       - name: Assemble combined site
         run: |
-          cp -r shared/build/dokka/html site/api
-          cp -r designsheet/build/dist/wasmJs/productionExecutable site/designsheet
+          mkdir site
+          cp -r website/. site/
+          cp -r mkdocs-site site/docs
+          cp -r shared/build/dokka/html site/docs/api
+          cp -r designsheet/build/dist/wasmJs/productionExecutable site/docs/designsheet
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

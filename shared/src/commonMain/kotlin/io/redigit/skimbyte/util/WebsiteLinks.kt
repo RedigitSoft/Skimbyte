@@ -11,5 +11,5 @@ object WebsiteLinks {
     const val SITE_BASE_URL: String = "https://redigitsoft.github.io/Skimbyte"
 
     /** The hosted copy of PRIVACY.md (`docs-site/privacy.md`, served by MkDocs as a directory). */
-    const val PRIVACY_POLICY_URL: String = "$SITE_BASE_URL/privacy/"
+    const val PRIVACY_POLICY_URL: String = "$SITE_BASE_URL/docs/privacy/"
 }
