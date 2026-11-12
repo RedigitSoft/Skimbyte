@@ -3,6 +3,7 @@ package io.redigit.skimbyte.ui.screens.bookmarks
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redigit.skimbyte.data.repositories.AuthRepository
+import io.redigit.skimbyte.data.repositories.BookmarkIdsStore
 import io.redigit.skimbyte.data.repositories.PostsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,10 +13,13 @@ import kotlinx.coroutines.launch
 class BookmarksViewModel(
     private val postsRepository: PostsRepository,
     private val authRepository: AuthRepository,
+    private val bookmarkIdsStore: BookmarkIdsStore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BookmarksState())
     val state: StateFlow<BookmarksState> = _state.asStateFlow()
+
+    private var reconcileInFlight = false
 
     init {
         viewModelScope.launch {
@@ -27,6 +31,45 @@ class BookmarksViewModel(
                     loadInitial()
                 }
             }
+        }
+        // Bookmarks toggled on other screens (feed, post detail) flip the shared BookmarkIdsStore
+        // instantly, so reacting to its *transitions* keeps this list current without a manual
+        // pull-to-refresh. Transitions rather than absolute membership because the store only
+        // tracks the newest page of ids — posts paginated deeper into this list are legitimately
+        // absent from it and must not be dropped.
+        viewModelScope.launch {
+            var previous = bookmarkIdsStore.ids.value
+            bookmarkIdsStore.ids.collect { current ->
+                val added = current - previous
+                val removed = previous - current
+                previous = current
+                reconcile(added, removed)
+            }
+        }
+    }
+
+    private fun reconcile(added: Set<String>, removed: Set<String>) {
+        if (removed.isNotEmpty()) {
+            _state.value = _state.value.copy(posts = _state.value.posts.filterNot { it.id in removed })
+        }
+        // An id this list has never seen means a bookmark made elsewhere: quietly re-fetch the
+        // first page so the tab is already up to date when the user switches to it. Skipped while
+        // the initial load is in flight — its response will contain the new id anyway.
+        val state = _state.value
+        if (state.isLoggedOut || state.isLoadingInitial) return
+        if (added.any { id -> state.posts.none { it.id == id } }) reloadQuietly()
+    }
+
+    // Like onRefresh but with no indicator and best-effort: a failure just leaves the list stale,
+    // and pull-to-refresh remains the explicit recovery path.
+    private fun reloadQuietly() {
+        if (reconcileInFlight) return
+        reconcileInFlight = true
+        viewModelScope.launch {
+            postsRepository.fetchBookmarkedPosts(cursor = null).onSuccess { page ->
+                _state.value = _state.value.copy(posts = page.items, nextCursor = page.nextCursor)
+            }
+            reconcileInFlight = false
         }
     }
 
