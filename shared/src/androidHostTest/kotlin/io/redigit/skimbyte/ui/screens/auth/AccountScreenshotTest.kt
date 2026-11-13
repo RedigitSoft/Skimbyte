@@ -4,7 +4,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.takahirom.roborazzi.captureRoboImage
+import io.redigit.skimbyte.captureScreenshot
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import org.junit.Rule
@@ -52,24 +52,24 @@ class AccountScreenshotTest {
     @Test
     fun loggedInDark() {
         content(dark = true)
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     @Test
     fun loggedInLight() {
         content(dark = false)
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     @Test
     fun signedOutDark() {
         content(dark = true, state = AccountState(isLoggedIn = false))
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     @Test
     fun signedOutLight() {
         content(dark = false, state = AccountState(isLoggedIn = false))
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 }

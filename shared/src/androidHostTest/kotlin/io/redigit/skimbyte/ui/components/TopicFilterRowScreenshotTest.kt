@@ -3,7 +3,7 @@ package io.redigit.skimbyte.ui.components
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.takahirom.roborazzi.captureRoboImage
+import io.redigit.skimbyte.captureScreenshot
 import io.redigit.skimbyte.data.models.Topic
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import org.junit.Rule
@@ -25,7 +25,7 @@ class TopicFilterRowScreenshotTest {
         composeTestRule.setContent {
             SkimbyteTheme { TopicFilterRow(topics = Topic.defaults, selectedTopic = Topic.All, onTopicSelected = {}) }
         }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     @Test
@@ -33,6 +33,6 @@ class TopicFilterRowScreenshotTest {
         composeTestRule.setContent {
             SkimbyteTheme { TopicFilterRow(topics = Topic.defaults, selectedTopic = Topic.Kotlin, onTopicSelected = {}) }
         }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 }

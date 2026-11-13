@@ -3,7 +3,7 @@ package io.redigit.skimbyte.ui.navigation
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.takahirom.roborazzi.captureRoboImage
+import io.redigit.skimbyte.captureScreenshot
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import org.junit.Rule
 import org.junit.Test
@@ -26,7 +26,7 @@ class SkimbyteNavigationRailScreenshotTest {
                 SkimbyteNavigationRail(selected = TopLevelDestination.Feed, onDestinationSelected = {})
             }
         }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     @Test
@@ -36,6 +36,6 @@ class SkimbyteNavigationRailScreenshotTest {
                 SkimbyteNavigationRail(selected = TopLevelDestination.Bookmarks, onDestinationSelected = {})
             }
         }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 }

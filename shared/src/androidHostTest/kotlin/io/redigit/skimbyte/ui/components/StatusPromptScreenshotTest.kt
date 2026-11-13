@@ -7,7 +7,7 @@ import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.takahirom.roborazzi.captureRoboImage
+import io.redigit.skimbyte.captureScreenshot
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import org.junit.Rule
 import org.junit.Test
@@ -35,7 +35,7 @@ class StatusPromptScreenshotTest {
                 )
             }
         }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     @Test
@@ -50,7 +50,7 @@ class StatusPromptScreenshotTest {
                 )
             }
         }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     /** The actionless variant: no button, and no gap left where one would have been. */
@@ -65,6 +65,6 @@ class StatusPromptScreenshotTest {
                 )
             }
         }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 }

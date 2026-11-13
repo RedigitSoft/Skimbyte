@@ -3,7 +3,7 @@ package io.redigit.skimbyte.ui.screens.settings
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.takahirom.roborazzi.captureRoboImage
+import io.redigit.skimbyte.captureScreenshot
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.theme.ThemeMode
 import org.junit.Rule
@@ -39,12 +39,12 @@ class SettingsScreenScreenshotTest {
     @Test
     fun darkState() {
         content(dark = true, mode = ThemeMode.Dark)
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     @Test
     fun lightState() {
         content(dark = false, mode = ThemeMode.System)
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 }

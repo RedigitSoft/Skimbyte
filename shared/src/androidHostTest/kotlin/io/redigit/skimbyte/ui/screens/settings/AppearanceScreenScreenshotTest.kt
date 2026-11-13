@@ -3,7 +3,7 @@ package io.redigit.skimbyte.ui.screens.settings
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.takahirom.roborazzi.captureRoboImage
+import io.redigit.skimbyte.captureScreenshot
 import io.redigit.skimbyte.theme.AccentColor
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.theme.ThemeMode
@@ -36,12 +36,12 @@ class AppearanceScreenScreenshotTest {
     @Test
     fun darkState() {
         content(dark = true, mode = ThemeMode.Dark, accent = AccentColor.Emerald)
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     @Test
     fun lightState() {
         content(dark = false, mode = ThemeMode.System, accent = AccentColor.Violet)
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 }

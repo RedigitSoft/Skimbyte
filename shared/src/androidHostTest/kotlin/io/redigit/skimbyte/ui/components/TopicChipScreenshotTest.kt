@@ -9,7 +9,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.takahirom.roborazzi.captureRoboImage
+import io.redigit.skimbyte.captureScreenshot
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import org.junit.Rule
 import org.junit.Test
@@ -28,13 +28,13 @@ class TopicChipScreenshotTest {
     @Test
     fun statesDark() {
         composeTestRule.setContent { SkimbyteTheme { ChipStates() } }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     @Test
     fun statesLight() {
         composeTestRule.setContent { SkimbyteTheme(darkTheme = false) { ChipStates() } }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     /** Every state side by side, so the selected/unselected/read-only trio is locked as a set. */

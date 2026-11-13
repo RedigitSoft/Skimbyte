@@ -3,7 +3,7 @@ package io.redigit.skimbyte.ui.screens.auth
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.takahirom.roborazzi.captureRoboImage
+import io.redigit.skimbyte.captureScreenshot
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.util.AVATAR_ASPECT
 import io.redigit.skimbyte.util.BANNER_ASPECT
@@ -33,7 +33,7 @@ class ImageCropScreenScreenshotTest {
                 ImageCropScreen(image = blank, aspect = AVATAR_ASPECT, circularMask = true, onCancel = {}, onConfirm = {})
             }
         }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 
     @Test
@@ -43,6 +43,6 @@ class ImageCropScreenScreenshotTest {
                 ImageCropScreen(image = blank, aspect = BANNER_ASPECT, circularMask = false, onCancel = {}, onConfirm = {})
             }
         }
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureScreenshot()
     }
 }
