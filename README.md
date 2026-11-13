@@ -19,6 +19,13 @@
 
 ---
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="marketing/out/social/github-preview-1280x640.png">
+    <img src="marketing/out/social/banner-1200x630.png" alt="Skimbyte on iPhone, Android, and desktop — one Kotlin codebase" width="840">
+  </picture>
+</p>
+
 Skimbyte turns the firehose of developer news (Kotlin, Android, AI, tooling release feeds) into a
 once-a-day brief of short, readable summaries. Pick your topics, skim the cards, and bookmark what
 you want to keep — the same UI, rendered natively from one Kotlin codebase on every platform.
@@ -37,6 +44,16 @@ KMP.
 | Desktop (JVM) | ✅ | `desktopApp/` |
 | Web (Kotlin/Wasm) | ✅ | `webApp/` |
 | Web (Kotlin/JS) | ✅ | `webApp/` |
+
+## Screenshots
+
+Captured from the app's bundled demo feed — what a fresh clone shows with no backend configured.
+
+| Feed | Topics | Light theme | Appearance |
+|---|---|---|---|
+| ![The feed, dark theme](marketing/out/appstore/01-feed.png) | ![Topic picker](marketing/out/appstore/02-topics.png) | ![The feed, light theme](marketing/out/appstore/03-feed-light.png) | ![Theme & accent settings](marketing/out/appstore/04-appearance.png) |
+
+![The desktop app: feed list and reader side by side](marketing/out/desktop/hero-2880x1620.png)
 
 ## Try it in 60 seconds — no backend needed
 
