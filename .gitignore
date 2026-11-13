@@ -21,3 +21,4 @@ node_modules/
 /SERVER_API.md
 /design-refs/
 iosApp/Configuration/Local.xcconfig
+.taste-skill/

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    font-family: system-ui, -apple-system, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    background: #F7F6F3;
+    color: #1A1A18;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+  .glow {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(760px 480px at 88% 0%, #7C5CFC, transparent 70%),
+      radial-gradient(560px 460px at 55% 115%, #EB5E28, transparent 72%);
+    opacity: 0.12;
+  }
+  .text {
+    position: absolute; left: 66px; top: 50%; transform: translateY(-50%);
+    width: 420px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 20px; font-weight: 600;
+  }
+  .brand img { width: 28px; height: 28px; border-radius: 7px; display: block; }
+  h1 {
+    margin-top: 24px;
+    font-size: 50px; line-height: 1.04; font-weight: 700; letter-spacing: -0.025em;
+  }
+  h1 em { font-style: normal; color: #EB5E28; }
+  .sub {
+    margin-top: 18px;
+    font-size: 18px; line-height: 1.5; letter-spacing: -0.01em;
+    color: #5B5A55;
+  }
+  .sub b { color: #1A1A18; font-weight: 600; }
+  .meta {
+    margin-top: 26px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 15px; font-weight: 600; color: #5B5A55;
+  }
+  .meta span {
+    background: #EBE9E4; border-radius: 999px; padding: 7px 15px; color: #1A1A18;
+  }
+  /* desktop window */
+  .window {
+    position: absolute; left: 648px; top: 96px;
+    width: 760px;
+    background: #1C1C1C;
+    border-radius: 14px;
+    box-shadow: 0 50px 110px -30px rgba(26,26,24,0.45), 0 12px 30px -14px rgba(26,26,24,0.3);
+    overflow: hidden;
+  }
+  .titlebar {
+    height: 34px; display: flex; align-items: center; gap: 7px; padding: 0 14px;
+    background: #242424;
+  }
+  .titlebar i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+  .titlebar i:nth-child(1) { background: #FF5F57; }
+  .titlebar i:nth-child(2) { background: #FEBC2E; }
+  .titlebar i:nth-child(3) { background: #28C840; }
+  .window img { width: 100%; display: block; }
+  /* phone in front */
+  .phone {
+    position: absolute; left: 516px; top: 150px;
+    width: 206px;
+    background: #050505;
+    border-radius: 36px; padding: 8px;
+    box-shadow:
+      inset 0 0 0 1.5px rgba(255,255,255,0.16),
+      0 40px 80px -24px rgba(26,26,24,0.5);
+  }
+  .phone img { width: 100%; border-radius: 29px; display: block; }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="window">
+  <div class="titlebar"><i></i><i></i><i></i></div>
+  <img src="../shots/desktop-dark.png" alt="">
+</div>
+<div class="phone"><img src="../../website/screen-dark.png" alt=""></div>
+<div class="text">
+  <div class="brand"><img src="../../website/app-icon.svg" alt="">Skimbyte</div>
+  <h1>The day's developer news. <em>Skimmed.</em></h1>
+  <p class="sub">A once-a-day brief of short, readable summaries. <b>Free &amp; open source</b> — no ads, no tracking.</p>
+  <div class="meta"><span>Android</span><span>iOS</span><span>Desktop</span><span>Web</span></div>
+</div>
+</body>
+</html>
