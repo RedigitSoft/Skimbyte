@@ -34,35 +34,93 @@ private const val PAGE_SIZE = 8
 
 private val demoJson = Json { ignoreUnknownKeys = true }
 
-private fun demoPost(id: String, topic: String, title: String, summary: String, source: String, hoursAgo: Int) = PostDto(
+// Branded sample-post images, hosted with the website (marketing/generate.mjs keeps them
+// fresh). Offline, the image simply falls back to the monogram placeholder under it.
+private const val PLACEHOLDER_DARK = "https://redigitsoft.github.io/Skimbyte/post-placeholder-dark.png"
+private const val PLACEHOLDER_LIGHT = "https://redigitsoft.github.io/Skimbyte/post-placeholder-light.png"
+
+private fun demoPost(
+    id: String,
+    topic: String,
+    title: String,
+    summary: String,
+    hoursAgo: Int,
+    imageUrl: String? = null,
+) = PostDto(
     id = id,
     topic = topic,
     title = title,
     summaryMarkdown = summary,
-    sourceName = source,
+    sourceName = "Skimbyte Samples",
     sourceUrl = "https://example.com/posts/$id",
-    imageUrl = null,
-    digestDate = "2026-10-13",
-    publishedAt = Instant.parse("2026-10-13T12:00:00Z") - hoursAgo.hours,
+    imageUrl = imageUrl,
+    digestDate = "2026-11-13",
+    publishedAt = Instant.parse("2026-11-13T08:00:00Z") - hoursAgo.hours,
+)
+
+// Hand-written sample stories about Skimbyte itself — clearly demo content, never fake news.
+private val featuredDemoPosts: List<PostDto> = listOf(
+    demoPost(
+        id = "demo-featured-0",
+        topic = "Tooling & Products",
+        title = "This is a Skimbyte brief: the day's news in a minute",
+        summary = "A Skimbyte story is a one-minute summary of a real article, with the source it " +
+            "came from and the read time. Skim it, **save it for later**, or jump straight to the " +
+            "full piece. This sample card ships with the app so demo mode works without a network.",
+        hoursAgo = 0,
+        imageUrl = PLACEHOLDER_DARK,
+    ),
+    demoPost(
+        id = "demo-featured-1",
+        topic = "Kotlin",
+        title = "What a release note really means, the Skimbyte way",
+        summary = "A sample brief showing how Skimbyte condenses a long changelog into the three " +
+            "changes that actually affect your project. **Demo mode** runs on bundled stories like " +
+            "this one — no account, no backend, every screen still works.",
+        hoursAgo = 1,
+        imageUrl = PLACEHOLDER_LIGHT,
+    ),
+    demoPost(
+        id = "demo-featured-2",
+        topic = "KMP / Compose Multiplatform",
+        title = "One Kotlin codebase, and this card is proof",
+        summary = "The card you are reading renders from the same Compose code on Android, iOS, " +
+            "desktop, and the browser. Skimbyte is **open source** — clone it and run every target " +
+            "on this bundled sample feed.",
+        hoursAgo = 2,
+        imageUrl = PLACEHOLDER_DARK,
+    ),
+    demoPost(
+        id = "demo-featured-3",
+        topic = "AI for Mobile Devs",
+        title = "Summaries for humans: how Skimbyte keeps the caveats",
+        summary = "Sample content: Skimbyte's daily pipeline turns announcements into plain-words " +
+            "briefs and keeps the caveats in. Pick your topics and the feed stays **short enough " +
+            "to finish with your coffee**.",
+        hoursAgo = 3,
+        imageUrl = PLACEHOLDER_LIGHT,
+    ),
 )
 
 private val demoPosts: List<PostDto> = buildList {
+    addAll(featuredDemoPosts)
     val topics = listOf(
-        "Kotlin" to "Kotlin Blog",
-        "Android" to "Android Developers Blog",
-        "KMP / Compose Multiplatform" to "Compose Multiplatform Releases",
-        "Tooling & Products" to "JetBrains Blog (all)",
+        "Kotlin",
+        "Android",
+        "KMP / Compose Multiplatform",
+        "Tooling & Products",
     )
-    topics.forEachIndexed { topicIndex, (topic, source) ->
+    topics.forEachIndexed { topicIndex, topic ->
         repeat(6) { i ->
             add(
                 demoPost(
                     id = "demo-${topicIndex}-$i",
                     topic = topic,
-                    title = "$topic update #${i + 1}",
-                    summary = "Demo summary for a **$topic** post, standing in until a live API is available.",
-                    source = source,
-                    hoursAgo = topicIndex * 6 + i,
+                    title = "Skimbyte sample brief: $topic #${i + 1}",
+                    summary = "Bundled sample content for the **$topic** feed. Skimbyte's demo " +
+                        "mode ships with stories like this so every screen works without a backend.",
+                    hoursAgo = 4 + topicIndex * 6 + i,
+                    imageUrl = if (i % 2 == 0) PLACEHOLDER_LIGHT else PLACEHOLDER_DARK,
                 ),
             )
         }
