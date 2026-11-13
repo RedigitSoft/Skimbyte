@@ -167,7 +167,9 @@ val generatedAuthConfigDir = layout.buildDirectory.dir("generated/backendConfig/
 val generateAuthConfig by tasks.registering {
     val localProperties = rootProject.file("local.properties")
     val outputDir = generatedAuthConfigDir
-    inputs.file(localProperties).optional()
+    // inputs.files (not .file) so a missing local.properties is an empty input, not an error —
+    // CI builds the demo configuration without the file existing at all.
+    inputs.files(localProperties)
     outputs.dir(outputDir)
     doLast {
         val props = Properties()
@@ -227,7 +229,9 @@ kotlin {
 val generateIosLocalXcconfig by tasks.registering {
     val localProperties = rootProject.file("local.properties")
     val outputFile = rootProject.file("iosApp/Configuration/Local.xcconfig")
-    inputs.file(localProperties).optional()
+    // inputs.files (not .file) so a missing local.properties is an empty input, not an error —
+    // CI builds the demo configuration without the file existing at all.
+    inputs.files(localProperties)
     outputs.file(outputFile)
     doLast {
         val props = Properties()
