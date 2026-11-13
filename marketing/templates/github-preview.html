@@ -69,12 +69,35 @@
     position: absolute; left: 572px; top: 170px;
     width: 200px;
     background: #050505;
-    border-radius: 36px; padding: 8px;
+    border-radius: 32px; padding: 8px;
     box-shadow:
       inset 0 0 0 1.5px rgba(255,255,255,0.16),
       0 40px 80px -24px rgba(0,0,0,0.8);
   }
-  .phone img { width: 100%; border-radius: 29px; display: block; }
+  .phone .screen { position: relative; overflow: hidden; border-radius: 29px; background: #F7F6F3; padding-top: 24px; }
+  .phone img { width: 100%; border-radius: 0; }
+  .statusbar {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+    height: 24px; padding: 0 15px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 9.5px; font-weight: 600; color: #1A1A18; letter-spacing: 0;
+    font-family: system-ui, sans-serif;
+  }
+  .statusbar svg { display: block; }
+  .homebar {
+    position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 38%; height: 3px; border-radius: 999px; background: #1A1A18; opacity: .85; z-index: 2;
+  }
+  .hole {
+    position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+    width: 9px; height: 9px; border-radius: 50%; background: #050505; z-index: 3;
+  }
+  .phone::after {
+    content: ""; position: absolute; right: -2px; top: 22%;
+    width: 2.5px; height: 40px; border-radius: 2px; background: #1C1C1C;
+    box-shadow: 0 50px 0 #1C1C1C;
+  }
+
 </style>
 </head>
 <body>
@@ -83,7 +106,12 @@
   <div class="titlebar"><i></i><i></i><i></i></div>
   <img src="../shots/desktop-light.png" alt="">
 </div>
-<div class="phone"><img src="../shots/feed-light.png" alt=""></div>
+<div class="phone"><div class="screen">
+  <div class="statusbar"><span>9:41</span><svg width="36" height="10" viewBox="0 0 44 12" fill="currentColor"><path d="M1 6.2a10 10 0 0 1 12 0l-2.2 2.4a6.6 6.6 0 0 0-7.6 0z"/><circle cx="7" cy="10" r="1.7"/><path d="M18 12 28 12 28 1z"/><rect x="33" y="1" width="6" height="11" rx="1.6"/></svg></div>
+  <div class="hole"></div>
+  <img src="../shots/feed-light.png" alt="">
+  <div class="homebar"></div>
+</div></div>
 <div class="text">
   <div class="brand"><img src="../../website/app-icon.svg" alt="">Skimbyte</div>
   <h1>One Kotlin codebase. <em>Every platform.</em></h1>
