@@ -21,8 +21,8 @@ They are deliberately short — there is no catch.
 
 ## Accounts
 
-An account is optional — the feed works without one. Signing in (via **the auth server**,
-Redigit's shared authentication service) exists only to sync your bookmarks across
+An account is optional — the feed works without one. Signing in (via Redigit's
+authentication service) exists only to sync your bookmarks across
 devices. You are responsible for activity under your account. You can delete your data at
 any time from the **Account** screen in the app; see the [privacy policy](privacy.md) for
 exactly what is stored and how deletion works.

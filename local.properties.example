@@ -15,7 +15,7 @@ skimbyteApiBaseUrl=
 # set this if the placeholder assets move off the API host (e.g. to a CDN/bucket).
 #skimbyteAssetBaseUrl=
 
-# the auth server (auth-server) product id for this app — provisioned once via POST /admin/products.
+# Auth-server product id for this app — provisioned once via POST /admin/products.
 # Sent on every register/login call so the auth server knows which app the auth event is for.
 skimbyteProductId=
 

@@ -18,7 +18,7 @@ import io.redigit.skimbyte.data.models.dto.RefreshRequestDto
 import io.redigit.skimbyte.data.models.dto.RegisterRequestDto
 import io.redigit.skimbyte.util.PickedImage
 
-// Talks to the live auth server (auth-server, the auth server) at ApiConfig.AUTH_BASE_URL — routes and
+// Talks to the live auth server at ApiConfig.AUTH_BASE_URL — routes and
 // request/response shapes confirmed against its source (routes/AuthRoutes.kt, routes/Dtos.kt).
 interface AuthApi {
     suspend fun login(email: String, password: String): LoginResponseDto

@@ -204,7 +204,7 @@ val generateAuthConfig by tasks.registering {
                 // local.properties, falling back to API_BASE_URL when unset.
                 const val ASSET_BASE_URL = "$skimbyteAssetBaseUrl"
                 const val SPACES_CDN_BASE_URL = "$spacesCdnBaseUrl"
-                // the auth server's product id for this app — provisioned via POST /admin/products.
+                // The auth server's product id for this app — provisioned via POST /admin/products.
                 const val PRODUCT_ID = "$productId"
             }
 

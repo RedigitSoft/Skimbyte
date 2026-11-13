@@ -19,8 +19,7 @@ uploaded.
 
 ### If you sign in (optional)
 
-Signing in uses **the auth server**, Redigit's shared authentication service.
-the auth server holds your account data:
+Signing in uses Redigit's authentication service, which holds your account data:
 
 - Email address and display name. When you sign in with Google or GitHub, only your name
   and email are shared by the provider — never your contacts, repositories, or anything else.
@@ -36,7 +35,7 @@ The Skimbyte server itself stores exactly one kind of per-user data:
 
 - Followed topics / interests
 - Theme and display preferences
-- Session tokens (sent only as `Authorization` headers to the Skimbyte and the auth server servers)
+- Session tokens (sent only as `Authorization` headers to the Skimbyte and auth servers)
 
 ## What we don't do
 
@@ -47,7 +46,7 @@ The Skimbyte server itself stores exactly one kind of per-user data:
 
 ## Transport security
 
-All communication with the Skimbyte and the auth server servers uses HTTPS.
+All communication with the Skimbyte and auth servers uses HTTPS.
 
 ## Deleting your data
 
@@ -55,9 +54,8 @@ In the app, open your **Account** screen and choose **Delete my data**. This imm
 permanently deletes everything the Skimbyte server stores about you (your bookmarks) and
 signs you out.
 
-The sign-in account itself (email, display name, profile images) is shared across
-Redigit apps and is not removed by this flow. To delete it entirely, email
-**akshay@redigit.io** and it will be removed.
+To delete your sign-in account as well (email, display name, and any profile images),
+email **akshay@redigit.io** and it will be removed.
 
 ## Changes to this policy
 
