@@ -9,6 +9,7 @@ import io.redigit.skimbyte.data.remote.AuthApi
 import io.redigit.skimbyte.data.remote.KtorAuthApi
 import io.redigit.skimbyte.data.remote.RefreshCoordinator
 import io.redigit.skimbyte.data.remote.createHttpClient
+import io.redigit.skimbyte.data.repositories.AuthRedirectHandler
 import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.AuthRepositoryImpl
 import io.redigit.skimbyte.data.repositories.ProfileRepository
@@ -35,11 +36,22 @@ val authModule = module {
     // demo-mode-toggled one injected into PostsApi.
     single(authHttpClientQualifier) { createHttpClient(get(), get()) }
     single<AuthApi> { KtorAuthApi(get(authHttpClientQualifier)) }
-    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
+    single<AuthRepository> {
+        AuthRepositoryImpl(
+            get(),
+            get(),
+            CoroutineScope(SupervisorJob() + Dispatchers.Default),
+            // Both bearer-caching clients: the auth one here and the main one from the network
+            // module (real or demo — both come from createHttpClient, so both cache).
+            httpClients = listOf(get(authHttpClientQualifier), get()),
+        )
+    }
+    // Completes OAuth redirect deep links app-wide (collection is launched from the root of App).
+    single { AuthRedirectHandler(get()) }
     single<ProfileRepository> {
         ProfileRepositoryImpl(get(), get<AuthRepository>().session, CoroutineScope(SupervisorJob() + Dispatchers.Default))
     }
-    viewModel { LoginSheetViewModel(get()) }
+    viewModel { LoginSheetViewModel(get(), get<AuthRedirectHandler>().failures) }
     viewModel {
         AccountViewModel(
             get(),

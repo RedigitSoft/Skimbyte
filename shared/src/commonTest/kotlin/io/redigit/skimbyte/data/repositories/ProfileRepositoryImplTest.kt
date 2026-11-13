@@ -20,6 +20,7 @@ private class FakeAuthApiForProfile(private val result: Result<MeResponseDto>) :
     override suspend fun login(email: String, password: String) = error("unused")
     override suspend fun register(email: String, password: String) = error("unused")
     override suspend fun refresh(refreshToken: String) = error("unused")
+    override suspend fun logout(refreshToken: String) = Unit
     override suspend fun me(): MeResponseDto = result.getOrThrow()
     override suspend fun uploadImage(type: String, image: PickedImage) {
         uploadCallCount++
@@ -82,6 +83,7 @@ class ProfileRepositoryImplTest {
             override suspend fun login(email: String, password: String) = error("unused")
             override suspend fun register(email: String, password: String) = error("unused")
             override suspend fun refresh(refreshToken: String) = error("unused")
+            override suspend fun logout(refreshToken: String) = Unit
             override suspend fun me(): MeResponseDto {
                 call++
                 return MeResponseDto("u$call")
@@ -108,6 +110,7 @@ class ProfileRepositoryImplTest {
             override suspend fun login(email: String, password: String) = error("unused")
             override suspend fun register(email: String, password: String) = error("unused")
             override suspend fun refresh(refreshToken: String) = error("unused")
+            override suspend fun logout(refreshToken: String) = Unit
             override suspend fun me(): MeResponseDto = gate.await()
             override suspend fun uploadImage(type: String, image: PickedImage) = error("unused")
         }
@@ -131,6 +134,7 @@ class ProfileRepositoryImplTest {
             override suspend fun login(email: String, password: String) = error("unused")
             override suspend fun register(email: String, password: String) = error("unused")
             override suspend fun refresh(refreshToken: String) = error("unused")
+            override suspend fun logout(refreshToken: String) = Unit
             override suspend fun me(): MeResponseDto {
                 callCount++
                 // Only the first call waits on gate1; the second resolves immediately, so

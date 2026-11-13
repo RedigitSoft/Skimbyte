@@ -5,6 +5,7 @@ import io.redigit.skimbyte.data.repositories.AuthRepository
 import io.redigit.skimbyte.data.repositories.Session
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.toList
@@ -20,13 +21,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-private class FakeAuthRepository(
-    private val googleResult: Result<Unit> = Result.success(Unit),
-) : AuthRepository {
-    override val session: StateFlow<Session?> = MutableStateFlow(null)
+private class FakeAuthRepository : AuthRepository {
+    val sessionFlow = MutableStateFlow<Session?>(null)
+    override val session: StateFlow<Session?> = sessionFlow
     override suspend fun login(email: String, password: String): Result<Unit> = Result.success(Unit)
     override suspend fun register(email: String, password: String): Result<Unit> = Result.success(Unit)
-    override suspend fun completeGoogleSignIn(redirectUri: String): Result<Unit> = googleResult
+    override suspend fun completeGoogleSignIn(redirectUri: String): Result<Unit> = Result.success(Unit)
     override fun logout() = Unit
 }
 
@@ -40,13 +40,18 @@ class LoginSheetViewModelTest {
     @AfterTest
     fun tearDownMainDispatcher() = Dispatchers.resetMain()
 
+    private fun viewModel(
+        repository: FakeAuthRepository = FakeAuthRepository(),
+        redirectFailures: MutableSharedFlow<Unit> = MutableSharedFlow(extraBufferCapacity = 1),
+    ) = LoginSheetViewModel(repository, redirectFailures)
+
     // The gated providers' contract is relative to their ApiConfig flag (GitHub is live today,
     // Apple parked): enabled → a real submission starts; disabled → an honest "coming soon".
     // Asserting against the flag keeps these green across future flips.
 
     @Test
     fun githubSignIn_matchesItsAvailabilityFlag() = runTest {
-        val viewModel = LoginSheetViewModel(FakeAuthRepository())
+        val viewModel = viewModel()
 
         viewModel.onIntent(LoginSheetIntent.GithubSignInStarted)
 
@@ -60,7 +65,7 @@ class LoginSheetViewModelTest {
 
     @Test
     fun appleSignIn_matchesItsAvailabilityFlag() = runTest {
-        val viewModel = LoginSheetViewModel(FakeAuthRepository())
+        val viewModel = viewModel()
 
         viewModel.onIntent(LoginSheetIntent.AppleSignInStarted)
 
@@ -74,7 +79,7 @@ class LoginSheetViewModelTest {
 
     @Test
     fun googleSignInStarted_setsSubmitting() = runTest {
-        val viewModel = LoginSheetViewModel(FakeAuthRepository())
+        val viewModel = viewModel()
 
         viewModel.onIntent(LoginSheetIntent.GoogleSignInStarted)
 
@@ -82,13 +87,17 @@ class LoginSheetViewModelTest {
     }
 
     @Test
-    fun googleRedirect_success_resetsState_andEmitsLoginSucceeded() = runTest {
-        val viewModel = LoginSheetViewModel(FakeAuthRepository(Result.success(Unit)))
+    fun sessionAppearing_resetsState_andEmitsLoginSucceeded() = runTest {
+        // Sign-in completion is app-level (AuthRedirectHandler); the sheet reacts to the session
+        // appearing — regardless of whether the sheet or a deep link initiated it.
+        val repository = FakeAuthRepository()
+        val viewModel = viewModel(repository)
+        viewModel.onIntent(LoginSheetIntent.GoogleSignInStarted)
         val effects = mutableListOf<LoginSheetEffect>()
         val collectJob = launch { viewModel.effects.toList(effects) }
         yield()
 
-        viewModel.onIntent(LoginSheetIntent.GoogleRedirect("skimbyte://auth/callback?access_token=a&refresh_token=b"))
+        repository.sessionFlow.value = Session(accessToken = "a")
         yield()
 
         assertEquals(listOf<LoginSheetEffect>(LoginSheetEffect.LoginSucceeded), effects)
@@ -97,11 +106,13 @@ class LoginSheetViewModelTest {
     }
 
     @Test
-    fun googleRedirect_failure_setsError_andStopsSubmitting() = runTest {
-        val viewModel = LoginSheetViewModel(FakeAuthRepository(Result.failure(RuntimeException("boom"))))
+    fun redirectFailure_setsError_andStopsSubmitting() = runTest {
+        val redirectFailures = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+        val viewModel = viewModel(redirectFailures = redirectFailures)
         viewModel.onIntent(LoginSheetIntent.GoogleSignInStarted)
 
-        viewModel.onIntent(LoginSheetIntent.GoogleRedirect("skimbyte://auth/callback"))
+        redirectFailures.emit(Unit)
+        yield()
 
         assertEquals(false, viewModel.state.value.isSubmitting)
         assertEquals("Google sign-in failed", viewModel.state.value.error)
@@ -109,7 +120,7 @@ class LoginSheetViewModelTest {
 
     @Test
     fun dismissed_resetsState() = runTest {
-        val viewModel = LoginSheetViewModel(FakeAuthRepository())
+        val viewModel = viewModel()
         viewModel.onIntent(LoginSheetIntent.GithubSignInStarted) // sets an error
 
         viewModel.onIntent(LoginSheetIntent.Dismissed)

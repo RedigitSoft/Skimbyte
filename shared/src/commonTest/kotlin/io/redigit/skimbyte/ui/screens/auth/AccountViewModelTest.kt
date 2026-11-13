@@ -15,6 +15,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -24,6 +27,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 private class FakeAuthRepositoryForAccount(loggedIn: Boolean) : AuthRepository {
     private val _session = MutableStateFlow(if (loggedIn) Session("token") else null)
@@ -271,6 +275,38 @@ class AccountViewModelTest {
         assertEquals(false, vm.state.value.deleteDataInProgress)
         assertNull(vm.state.value.deleteDataError)
         assertEquals(false, vm.state.value.isLoggedIn) // logout() flipped the session to signed out
+    }
+
+    @Test
+    fun onDeleteData_success_emitsDataDeleted() = runTest {
+        // The effect drives navigation: pop the account stack and return to the feed.
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), FakeProfileRepository(), userData = FakeUserDataRepository())
+        val effects = mutableListOf<AccountEffect>()
+        val collectJob = launch { vm.effects.toList(effects) }
+        yield()
+
+        vm.onIntent(AccountIntent.DeleteDataConfirmed)
+        yield()
+
+        assertEquals(listOf<AccountEffect>(AccountEffect.DataDeleted), effects)
+        collectJob.cancel()
+    }
+
+    @Test
+    fun onDeleteData_failure_emitsNoEffect() = runTest {
+        // A failed delete keeps the user in place to read the error and retry.
+        val userData = FakeUserDataRepository()
+        userData.result = Result.failure(RuntimeException("boom"))
+        val vm = accountVm(FakeAuthRepositoryForAccount(loggedIn = true), FakeProfileRepository(), userData = userData)
+        val effects = mutableListOf<AccountEffect>()
+        val collectJob = launch { vm.effects.toList(effects) }
+        yield()
+
+        vm.onIntent(AccountIntent.DeleteDataConfirmed)
+        yield()
+
+        assertTrue(effects.isEmpty())
+        collectJob.cancel()
     }
 
     @Test

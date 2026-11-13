@@ -105,7 +105,10 @@ class AccountViewModel(
             )
             // Sign out only once the server confirms the delete; the session flow then flips to
             // signed-out and the combine block re-renders the screen.
-            if (result.isSuccess) authRepository.logout()
+            if (result.isSuccess) {
+                authRepository.logout()
+                _effects.emit(AccountEffect.DataDeleted)
+            }
         }
     }
 

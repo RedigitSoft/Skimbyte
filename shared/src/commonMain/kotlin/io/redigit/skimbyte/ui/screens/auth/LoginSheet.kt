@@ -31,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.ktor.http.URLBuilder
 import io.redigit.skimbyte.data.remote.ApiConfig
-import io.redigit.skimbyte.data.remote.GoogleAuthCallback
 import io.redigit.skimbyte.theme.SkimbyteTheme
 import io.redigit.skimbyte.ui.SkimbyteStrings
 import io.redigit.skimbyte.util.authRedirectUri
@@ -71,9 +70,8 @@ fun LoginSheet(
 ) {
     val state by viewModel.state.collectAsState()
     val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
-    LaunchedEffect(Unit) {
-        GoogleAuthCallback.redirects.collect { uri -> viewModel.onIntent(LoginSheetIntent.GoogleRedirect(uri)) }
-    }
+    // Redirect completion is app-level (AuthRedirectHandler, launched in App) — the sheet only
+    // listens for the outcome via its view model, so it works whether or not it's open.
     LaunchedEffect(Unit) {
         viewModel.effects.collect { effect ->
             when (effect) {

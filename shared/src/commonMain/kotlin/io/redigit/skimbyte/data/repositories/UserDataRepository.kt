@@ -3,9 +3,10 @@ package io.redigit.skimbyte.data.repositories
 import io.redigit.skimbyte.data.remote.MeApi
 
 /**
- * Deletes everything skimbyte-server stores for the current user (currently bookmarks) via
- * `DELETE /v1/me`. A data concern, kept out of [AuthRepository] — signing out afterward is the
- * caller's decision. The sign-in account itself is not touched; see PRIVACY.md.
+ * Deletes everything stored server-side for the current user in this app via `DELETE /v1/me` —
+ * server removes the bookmarks it holds and cascades to the auth server, which wipes
+ * the app-scoped profile data (uploaded images).
+ * See PRIVACY.md.
  */
 interface UserDataRepository {
     suspend fun deleteAll(): Result<Unit>

@@ -46,6 +46,7 @@ import io.redigit.skimbyte.ui.navigation.SkimbyteBottomNavBar
 import io.redigit.skimbyte.ui.navigation.SkimbyteNavigationRail
 import io.redigit.skimbyte.data.local.TopicPreferencesStore
 import io.redigit.skimbyte.data.local.TutorialStore
+import io.redigit.skimbyte.data.repositories.AuthRedirectHandler
 import io.redigit.skimbyte.data.repositories.TopicsRepository
 import io.redigit.skimbyte.ui.components.NewTopicsDialog
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
@@ -82,6 +83,11 @@ fun App() {
             .build()
     }
     KoinApplication(configuration = koinConfiguration { modules(appModule) }) {
+        // OAuth redirect deep links are completed here, at app scope, because they can arrive with
+        // no login sheet showing — even cold-starting the app. GoogleAuthCallback replays a
+        // pre-composition redirect into this collector.
+        val authRedirectHandler = koinInject<AuthRedirectHandler>()
+        LaunchedEffect(Unit) { authRedirectHandler.run() }
         // Eagerly create the topics repository: its init fetches GET /v1/topics on every app open
         // and reconciles the result with the persisted catalogue, so new server-side topics are
         // discovered (and announced below) without any polling.
@@ -219,7 +225,12 @@ private fun MainShell() {
                     when (selected) {
                         TopLevelDestination.Feed -> FeedNavHost(onRootChanged = { isShowingRoot = it })
                         TopLevelDestination.Bookmarks -> BookmarksNavHost(onRootChanged = { isShowingRoot = it })
-                        TopLevelDestination.Account -> AccountNavHost(onRootChanged = { isShowingRoot = it })
+                        TopLevelDestination.Account -> AccountNavHost(
+                            onRootChanged = { isShowingRoot = it },
+                            // After "Delete my data" there is nothing left to show in Account —
+                            // land the user back on the feed.
+                            onDataDeleted = { selected = TopLevelDestination.Feed },
+                        )
                     }
                 }
             }

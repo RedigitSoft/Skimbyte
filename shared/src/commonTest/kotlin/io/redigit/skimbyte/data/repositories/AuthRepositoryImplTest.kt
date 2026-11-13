@@ -5,7 +5,10 @@ import io.redigit.skimbyte.data.models.dto.LoginResponseDto
 import io.redigit.skimbyte.data.models.dto.MeResponseDto
 import io.redigit.skimbyte.data.remote.AuthApi
 import io.redigit.skimbyte.util.PickedImage
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -28,12 +31,19 @@ private class FakeSessionStorage(initialAccessToken: String? = null) : SessionSt
 }
 
 private class FakeAuthApi(private val result: Result<LoginResponseDto>) : AuthApi {
+    val revokedRefreshTokens = mutableListOf<String>()
     override suspend fun login(email: String, password: String): LoginResponseDto = result.getOrThrow()
     override suspend fun register(email: String, password: String): LoginResponseDto = result.getOrThrow()
     override suspend fun refresh(refreshToken: String): LoginResponseDto = result.getOrThrow()
+    override suspend fun logout(refreshToken: String) { revokedRefreshTokens += refreshToken }
     override suspend fun me(): MeResponseDto = error("unused")
     override suspend fun uploadImage(type: String, image: PickedImage) = error("unused")
 }
+
+/** Repository under test with an unconfined scope so the fire-and-forget logout runs eagerly. */
+@OptIn(ExperimentalCoroutinesApi::class)
+private fun repository(authApi: AuthApi, sessionStorage: SessionStorage): AuthRepositoryImpl =
+    AuthRepositoryImpl(authApi, sessionStorage, CoroutineScope(UnconfinedTestDispatcher()), httpClients = emptyList())
 
 class AuthRepositoryImplTest {
 
@@ -41,7 +51,7 @@ class AuthRepositoryImplTest {
     fun login_success_persistsSession_andUpdatesSessionFlow() = runTest {
         val sessionStorage = FakeSessionStorage()
         val authApi = FakeAuthApi(Result.success(LoginResponseDto("access-1", "refresh-1", 3600)))
-        val repository = AuthRepositoryImpl(authApi, sessionStorage)
+        val repository = repository(authApi, sessionStorage)
 
         val result = repository.login("demo@skimbyte.app", "demo")
 
@@ -54,7 +64,7 @@ class AuthRepositoryImplTest {
     fun login_failure_returnsFailure_andLeavesSessionNull() = runTest {
         val sessionStorage = FakeSessionStorage()
         val authApi = FakeAuthApi(Result.failure(RuntimeException("invalid credentials")))
-        val repository = AuthRepositoryImpl(authApi, sessionStorage)
+        val repository = repository(authApi, sessionStorage)
 
         val result = repository.login("wrong@skimbyte.app", "wrong")
 
@@ -66,7 +76,7 @@ class AuthRepositoryImplTest {
     @Test
     fun existingPersistedToken_isReflectedAsSessionAtConstruction() {
         val sessionStorage = FakeSessionStorage(initialAccessToken = "already-logged-in")
-        val repository = AuthRepositoryImpl(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
+        val repository = repository(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
 
         assertEquals("already-logged-in", repository.session.value?.accessToken)
     }
@@ -75,7 +85,7 @@ class AuthRepositoryImplTest {
     fun register_success_persistsSession_andUpdatesSessionFlow() = runTest {
         val sessionStorage = FakeSessionStorage()
         val authApi = FakeAuthApi(Result.success(LoginResponseDto("access-2", "refresh-2", 3600)))
-        val repository = AuthRepositoryImpl(authApi, sessionStorage)
+        val repository = repository(authApi, sessionStorage)
 
         val result = repository.register("new@skimbyte.app", "newpass")
 
@@ -87,7 +97,7 @@ class AuthRepositoryImplTest {
     @Test
     fun completeGoogleSignIn_parsesTokensFromRedirectUri_andPersistsSession() = runTest {
         val sessionStorage = FakeSessionStorage()
-        val repository = AuthRepositoryImpl(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
+        val repository = repository(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
 
         val result = repository.completeGoogleSignIn(
             "skimbyte://auth/callback?access_token=google-access&refresh_token=google-refresh&token_type=Bearer",
@@ -102,7 +112,7 @@ class AuthRepositoryImplTest {
     @Test
     fun completeGoogleSignIn_missingTokenInRedirect_returnsFailure() = runTest {
         val sessionStorage = FakeSessionStorage()
-        val repository = AuthRepositoryImpl(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
+        val repository = repository(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
 
         val result = repository.completeGoogleSignIn("skimbyte://auth/callback?access_token=only-access")
 
@@ -113,11 +123,36 @@ class AuthRepositoryImplTest {
     @Test
     fun logout_clearsSessionStorage_andSessionFlow() {
         val sessionStorage = FakeSessionStorage(initialAccessToken = "already-logged-in")
-        val repository = AuthRepositoryImpl(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
+        val repository = repository(FakeAuthApi(Result.failure(RuntimeException())), sessionStorage)
 
         repository.logout()
 
         assertNull(repository.session.value)
         assertNull(sessionStorage.accessToken())
+    }
+
+    @Test
+    fun logout_revokesTheRefreshTokenServerSide() = runTest {
+        val sessionStorage = FakeSessionStorage()
+        val authApi = FakeAuthApi(Result.success(LoginResponseDto("access-1", "refresh-1", 3600)))
+        val repository = repository(authApi, sessionStorage)
+        repository.login("demo@skimbyte.app", "demo")
+
+        repository.logout()
+
+        assertEquals(listOf("refresh-1"), authApi.revokedRefreshTokens)
+        assertNull(sessionStorage.refreshToken())
+    }
+
+    @Test
+    fun logout_withNoStoredRefreshToken_skipsTheServerCall() {
+        val sessionStorage = FakeSessionStorage(initialAccessToken = "orphan-access")
+        val authApi = FakeAuthApi(Result.failure(RuntimeException()))
+        val repository = repository(authApi, sessionStorage)
+
+        repository.logout()
+
+        assertTrue(authApi.revokedRefreshTokens.isEmpty())
+        assertNull(repository.session.value)
     }
 }

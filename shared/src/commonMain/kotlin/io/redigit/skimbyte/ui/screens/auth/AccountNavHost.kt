@@ -71,12 +71,22 @@ private val navConfig = SavedStateConfiguration {
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun AccountNavHost(onRootChanged: (Boolean) -> Unit) {
+fun AccountNavHost(onRootChanged: (Boolean) -> Unit, onDataDeleted: () -> Unit) {
     val backStack = rememberNavBackStack(navConfig, AccountHome)
     val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
     LaunchedEffect(backStack.size) { onRootChanged(backStack.size == 1) }
     val accountViewModel = koinViewModel<AccountViewModel>()
     val uiState by accountViewModel.state.collectAsState()
+    LaunchedEffect(Unit) {
+        accountViewModel.effects.collect { effect ->
+            when (effect) {
+                AccountEffect.DataDeleted -> {
+                    while (backStack.size > 1) backStack.removeLastOrNull()
+                    onDataDeleted()
+                }
+            }
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
     SharedTransitionLayout {

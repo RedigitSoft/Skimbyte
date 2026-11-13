@@ -13,6 +13,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.redigit.skimbyte.data.models.dto.LoginRequestDto
 import io.redigit.skimbyte.data.models.dto.LoginResponseDto
+import io.redigit.skimbyte.data.models.dto.LogoutRequestDto
 import io.redigit.skimbyte.data.models.dto.MeResponseDto
 import io.redigit.skimbyte.data.models.dto.RefreshRequestDto
 import io.redigit.skimbyte.data.models.dto.RegisterRequestDto
@@ -24,6 +25,10 @@ interface AuthApi {
     suspend fun login(email: String, password: String): LoginResponseDto
     suspend fun register(email: String, password: String): LoginResponseDto
     suspend fun refresh(refreshToken: String): LoginResponseDto
+
+    /** `POST /auth/logout` — revokes the refresh-token family server-side, so signing out on
+     * this device actually ends the session rather than just forgetting it locally. */
+    suspend fun logout(refreshToken: String)
     suspend fun me(): MeResponseDto
     suspend fun uploadImage(type: String, image: PickedImage)
 }
@@ -47,6 +52,13 @@ class KtorAuthApi(private val client: HttpClient) : AuthApi {
             contentType(ContentType.Application.Json)
             setBody(RefreshRequestDto(refreshToken = refreshToken))
         }.body()
+
+    override suspend fun logout(refreshToken: String) {
+        client.post("${ApiConfig.AUTH_BASE_URL}/auth/logout") {
+            contentType(ContentType.Application.Json)
+            setBody(LogoutRequestDto(refreshToken = refreshToken))
+        }
+    }
 
     override suspend fun me(): MeResponseDto =
         client.get("${ApiConfig.AUTH_BASE_URL}/me").body()

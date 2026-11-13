@@ -31,6 +31,7 @@ class ProfileUploadPipelineJvmTest {
         override suspend fun login(email: String, password: String) = error("unused")
         override suspend fun register(email: String, password: String) = error("unused")
         override suspend fun refresh(refreshToken: String) = error("unused")
+        override suspend fun logout(refreshToken: String) = Unit
         override suspend fun me(): MeResponseDto = MeResponseDto("u1", avatarUrl = "avatars/u1/a.jpg")
         override suspend fun uploadImage(type: String, image: PickedImage) {
             uploadedType = type

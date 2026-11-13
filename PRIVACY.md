@@ -52,11 +52,9 @@ All communication with the Skimbyte and auth servers uses HTTPS.
 ## Deleting your data
 
 In the app, open your **Account** screen and choose **Delete my data**. This immediately and
-permanently deletes everything the Skimbyte server stores about you (your bookmarks) and
-signs you out.
-
-To delete your sign-in account as well (email, display name, and any profile images),
-email **akshay@redigit.io** and it will be removed.
+permanently deletes everything our servers store about you for Skimbyte — your bookmarks and
+any avatar or banner images you uploaded — and signs you out. A minimal record that you
+requested the deletion is kept. If you sign in again later, Skimbyte starts fresh for you.
 
 ## Changes to this policy
 
