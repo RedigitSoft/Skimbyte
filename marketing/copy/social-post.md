@@ -13,7 +13,7 @@ or a single framed screenshot from `marketing/out/appstore/`.
 > Free & open source. No ads, no tracking. One Kotlin codebase on Android, iOS,
 > desktop & web.
 >
-> https://redigitsoft.github.io/Skimbyte
+> https://skimbyte.com
 
 ## X — app screenshot post (short)
 
@@ -22,7 +22,7 @@ or a single framed screenshot from `marketing/out/appstore/`.
 > Skimbyte is a free, open-source app that summarizes the day's dev news into
 > cards you can skim with your coffee — then jump to the source when it's worth it.
 >
-> https://redigitsoft.github.io/Skimbyte
+> https://skimbyte.com
 
 ## X — desktop screenshot post
 
@@ -31,7 +31,7 @@ or a single framed screenshot from `marketing/out/appstore/`.
 >
 > Same Kotlin Multiplatform codebase as the phone app, down to the pixel.
 >
-> https://redigitsoft.github.io/Skimbyte
+> https://skimbyte.com
 
 ## LinkedIn — longer form
 
@@ -50,7 +50,7 @@ or a single framed screenshot from `marketing/out/appstore/`.
 >
 > Apache-2.0. A fresh clone runs end to end on bundled sample data — no backend needed.
 >
-> 🌐 https://redigitsoft.github.io/Skimbyte
+> 🌐 https://skimbyte.com
 > ⭐ https://github.com/redigitsoft/Skimbyte
 
 ## Reddit (r/Kotlin, r/androiddev) — title + body
@@ -71,7 +71,7 @@ or a single framed screenshot from `marketing/out/appstore/`.
 > Apache-2.0, and a fresh clone runs in demo mode on bundled sample data, so every
 > target works without a backend. Feedback very welcome.
 >
-> Site: https://redigitsoft.github.io/Skimbyte
+> Site: https://skimbyte.com
 > Source: https://github.com/redigitsoft/Skimbyte
 
 ## Show HN — title + first comment

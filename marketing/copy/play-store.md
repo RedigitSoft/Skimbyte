@@ -42,7 +42,7 @@ Assets: `marketing/out/play/` — icon-512.png, feature-graphic.png (1024×500),
 > Compose Multiplatform — the same code ships natively on Android, iOS, macOS,
 > Windows, Linux, and the web. Developers: clone it, run it, learn from it.
 >
-> Website: https://redigitsoft.github.io/Skimbyte
+> Website: https://skimbyte.com
 > Source: https://github.com/redigitsoft/Skimbyte
 <!-- ~1460 chars, well under 4000 -->
 

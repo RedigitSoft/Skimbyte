@@ -23,7 +23,7 @@
 Add at the top of a release:
 
 ```markdown
-![Skimbyte on desktop](https://redigitsoft.github.io/Skimbyte/og-image.png)
+![Skimbyte on desktop](https://skimbyte.com/og-image.png)
 ```
 
 ## Release / download blurb (reusable)

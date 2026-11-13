@@ -36,8 +36,8 @@ private val demoJson = Json { ignoreUnknownKeys = true }
 
 // Branded sample-post images, hosted with the website (marketing/generate.mjs keeps them
 // fresh). Offline, the image simply falls back to the monogram placeholder under it.
-private const val PLACEHOLDER_DARK = "https://redigitsoft.github.io/Skimbyte/post-placeholder-dark.png"
-private const val PLACEHOLDER_LIGHT = "https://redigitsoft.github.io/Skimbyte/post-placeholder-light.png"
+private const val PLACEHOLDER_DARK = "https://skimbyte.com/post-placeholder-dark.png"
+private const val PLACEHOLDER_LIGHT = "https://skimbyte.com/post-placeholder-light.png"
 
 private fun demoPost(
     id: String,

@@ -51,7 +51,7 @@ the 6.7" size; App Store Connect scales it for smaller devices).
 > Skimbyte is built with Kotlin Multiplatform and Compose Multiplatform — the same
 > code ships natively on iOS, Android, macOS, Windows, Linux, and the web.
 >
-> Website: https://redigitsoft.github.io/Skimbyte
+> Website: https://skimbyte.com
 > Source: https://github.com/redigitsoft/Skimbyte
 
 ## Keywords (max 100 chars, comma-separated, no spaces)
@@ -61,9 +61,9 @@ the 6.7" size; App Store Connect scales it for smaller devices).
 
 ## URLs
 
-- Marketing URL: https://redigitsoft.github.io/Skimbyte
-- Privacy Policy URL: https://redigitsoft.github.io/Skimbyte/docs/privacy/
-- Terms of Use (EULA) URL: https://redigitsoft.github.io/Skimbyte/docs/terms/
+- Marketing URL: https://skimbyte.com
+- Privacy Policy URL: https://skimbyte.com/docs/privacy/
+- Terms of Use (EULA) URL: https://skimbyte.com/docs/terms/
 - Support URL: https://github.com/redigitsoft/Skimbyte/issues
 
 ## Notes
