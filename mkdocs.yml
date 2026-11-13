@@ -1,6 +1,8 @@
 site_name: Skimbyte
 site_description: A daily, skimmable developer-news brief — one shared Compose codebase on Android, iOS, Desktop, and Web.
+site_url: https://skimbyte.com/docs/
 repo_name: Skimbyte
+repo_url: https://github.com/RedigitSoft/Skimbyte
 docs_dir: docs-site
 
 theme:
@@ -32,13 +34,15 @@ markdown_extensions:
   - tables
 
 # The Dokka API reference (/api/) and live designsheet (/designsheet/) are deployed alongside
-# this site by .github/workflows/deploy-site.yml and linked from the pages — they can't appear
-# in nav because mkdocs --strict only accepts doc files there.
+# this site by .github/workflows/deploy-site.yml, so they appear in nav as absolute URLs
+# (relative non-doc paths would fail mkdocs --strict).
 nav:
   - Home: index.md
   - Download: download.md
   - Architecture: architecture.md
   - Testing: testing.md
   - Design system: design-system.md
+  - API reference: https://skimbyte.com/docs/api/
+  - Live designsheet: https://skimbyte.com/docs/designsheet/
   - Privacy: privacy.md
   - Terms: terms.md

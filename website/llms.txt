@@ -1,0 +1,25 @@
+# Skimbyte
+
+> Skimbyte is a free, open-source app that turns developer-news feeds (Kotlin, Android, AI, tooling release feeds) into a once-a-day brief of short, readable summaries. It is built as a single Kotlin Multiplatform + Compose Multiplatform codebase shipping natively to Android, iOS, Desktop (JVM), and Web (Kotlin/Wasm + Kotlin/JS), and doubles as a production-shaped reference project: real architecture, a three-layer test suite (unit / Compose UI / Roborazzi screenshots), adaptive foldable-ready layouts, Navigation 3, Koin DI, and a living design-system catalog.
+
+Skimbyte is developed by Redigit Softwares and has no ads and no tracking. A fresh clone runs in demo mode on bundled sample data, so every platform target works end to end without a backend.
+
+## Docs
+
+- [Documentation home](https://skimbyte.com/docs/): overview, platforms, and quick start
+- [Architecture](https://skimbyte.com/docs/architecture/): modules, state management, navigation, and DI
+- [Testing](https://skimbyte.com/docs/testing/): the unit / Compose UI / screenshot test layers
+- [Design system](https://skimbyte.com/docs/design-system/): tokens, components, and the designsheet catalog
+- [API reference](https://skimbyte.com/docs/api/): Dokka-generated API docs for the shared module
+- [Live designsheet](https://skimbyte.com/docs/designsheet/): the component catalog running in the browser (Wasm)
+- [Download](https://skimbyte.com/docs/download/): desktop installers for macOS, Windows, and Linux
+
+## Source
+
+- [GitHub repository](https://github.com/RedigitSoft/Skimbyte): full source, issues, and contribution guide
+- [Contributing guide](https://github.com/RedigitSoft/Skimbyte/blob/main/CONTRIBUTING.md): architecture conventions, Compose rules, and testing requirements
+
+## Optional
+
+- [Privacy policy](https://skimbyte.com/docs/privacy/)
+- [Terms of service](https://skimbyte.com/docs/terms/)
