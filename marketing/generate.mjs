@@ -62,6 +62,10 @@ const PANELS = [
 
 // Flat renders: template → viewport → output (master is @dpr, final via sips where set).
 const FLATS = [
+  // App Store "universal" creative asset — one 16:9 PNG App Store Connect uses for
+  // both the product-page header and search results (spec: 5244×2950, no alpha;
+  // key art inside the 1402×962 safe area at x:1921 y:660 — see the template).
+  { tpl: 'appstore-universal.html', w: 2622, h: 1475, dpr: 2, master: 'appstore/universal-5244x2950.png' },
   { tpl: 'feature-graphic.html',  w: 1024, h: 500, dpr: 2, master: 'play/feature-graphic@2x.png',       final: ['play/feature-graphic.png', 1024, 500] },
   { tpl: 'social-banner.html',    w: 1200, h: 630, dpr: 2, master: 'social/banner@2x.png',              final: ['social/banner-1200x630.png', 1200, 630] },
   { tpl: 'github-preview.html',   w: 1280, h: 640, dpr: 2, master: 'social/github-preview@2x.png',      final: ['social/github-preview-1280x640.png', 1280, 640] },

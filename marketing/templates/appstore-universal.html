@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  /*
+   * App Store "universal" creative asset (product-page header + search results).
+   * Spec: 16:9, 5244×2950 PNG (no alpha) — rendered at 2622×1475 CSS px @ dpr 2.
+   * Art safe area (final px): 1402×962 at (x:1921, y:660) → CSS px: 701×481 at
+   * (960.5, 330), i.e. centred horizontally but biased ABOVE the vertical middle
+   * (safe centre y = 570.5 of 1475). Key art must stay inside it; everything else
+   * is auxiliary background that devices may crop.
+   */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 2622px; height: 1475px; overflow: hidden; }
+  body {
+    font-family: system-ui, -apple-system, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    background: #121214;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+  .glow {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(1500px 900px at 86% -4%, #7C5CFC, transparent 70%),
+      radial-gradient(1200px 860px at 10% 112%, #EB5E28, transparent 72%);
+    opacity: 0.12;
+  }
+  /* Key art: centred on the safe area's centre (1311, 570.5), capped to its bounds. */
+  .key {
+    position: absolute; left: 1311px; top: 570px; transform: translate(-50%, -50%);
+    width: 701px; max-height: 481px;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+  }
+  .key img { width: 470px; display: block; }
+  .tagline {
+    margin-top: 44px;
+    font-size: 44px; line-height: 1.1; font-weight: 600; letter-spacing: -0.02em;
+    color: #CFCDC8;
+  }
+  .tagline em { font-style: normal; color: #9B82FF; }
+  .debug {
+    position: absolute; left: 960.5px; top: 330px; width: 701px; height: 481px;
+    outline: 3px dashed #00FF88; display: none;
+  }
+  body.debug .debug { display: block; }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="key">
+    <img src="assets/wordmark-mist.svg" alt="Skimbyte">
+    <div class="tagline">The day's dev news, <em>skimmed</em>.</div>
+  </div>
+  <div class="debug"></div>
+<script>
+  if (new URLSearchParams(location.search).get('debug')) document.body.classList.add('debug');
+</script>
+</body>
+</html>
