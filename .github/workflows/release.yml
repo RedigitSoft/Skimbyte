@@ -46,7 +46,9 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 45
+    # Generous because notarizeDmg blocks on Apple's notary service — usually minutes,
+    # but the first submission from a new Developer ID account can take an hour+.
+    timeout-minutes: 120
     env:
       HAS_MACOS_SIGNING: ${{ secrets.MACOS_CERT_P12 != '' }}
       HAS_BACKEND_CONFIG: ${{ secrets.SKIMBYTE_LOCAL_PROPERTIES != '' }}
