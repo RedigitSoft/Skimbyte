@@ -105,6 +105,18 @@ for (const p of PANELS) {
   sips(master, 1080, 2340, join(OUT, 'play', p.out + '.png'));
 }
 
+// iPad 13" store panel (2732×2048 landscape, Apple's accepted size for 12.9"/13").
+// Uses the desktop capture: the same shared Compose UI in its adaptive large-screen
+// list-detail layout, which is what the app shows on iPad.
+{
+  const q = new URLSearchParams({
+    img: 'desktop-dark.png', theme: 'dark', accent: 'EB5E28',
+    title: "The day's dev news, <em>skimmed</em>.",
+    sub: 'The same once-a-day brief, built for the big screen.',
+  });
+  await shot(url('panel-ipad.html') + '?' + q, 1366, 1024, 2, join(OUT, 'appstore', 'ipad-01-feed.png'));
+}
+
 // Banners, feature graphic, hero, placeholders.
 for (const f of FLATS) {
   const master = join(OUT, f.master);
