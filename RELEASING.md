@@ -11,7 +11,9 @@ latest release.
 
 One-time setup — add these repository secrets (details in the workflow header):
 `MACOS_CERT_P12`, `MACOS_CERT_PASSWORD`, `MACOS_SIGNING_IDENTITY`,
-`NOTARIZATION_APPLE_ID`, `NOTARIZATION_PASSWORD`, `NOTARIZATION_TEAM_ID`.
+`NOTARIZATION_APPLE_ID`, `NOTARIZATION_PASSWORD`, `NOTARIZATION_TEAM_ID`, and
+`SKIMBYTE_LOCAL_PROPERTIES` — the backend-endpoint lines of a working
+`local.properties` (without it the installers build in demo mode on sample data).
 
 ## iOS — App Store
 

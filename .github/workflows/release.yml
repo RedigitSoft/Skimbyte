@@ -18,6 +18,12 @@ name: Release desktop apps
 #   NOTARIZATION_PASSWORD  app-specific password from appleid.apple.com (not the account password)
 #   NOTARIZATION_TEAM_ID   10-character team id
 #
+# Backend wiring needs this repository secret (without it the installers are demo-mode
+# builds running on bundled sample data):
+#   SKIMBYTE_LOCAL_PROPERTIES  the backend-endpoint lines of a working local.properties
+#                              (authBaseUrl, googleAuthRedirectUri, skimbyteApiBaseUrl,
+#                              skimbyteProductId, spacesCdnBaseUrl — not the signing keys)
+#
 # The Windows MSI is unsigned for now (needs a paid code-signing certificate; SmartScreen
 # warns but installs). Candidate fix: SignPath's free open-source signing tier.
 
@@ -43,6 +49,7 @@ jobs:
     timeout-minutes: 45
     env:
       HAS_MACOS_SIGNING: ${{ secrets.MACOS_CERT_P12 != '' }}
+      HAS_BACKEND_CONFIG: ${{ secrets.SKIMBYTE_LOCAL_PROPERTIES != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -62,6 +69,16 @@ jobs:
           else
             echo "DESKTOP_VERSION=1.0.0" >> "$GITHUB_ENV"
           fi
+
+      # Without this the build falls back to the demo configuration (blank BackendConfig →
+      # bundled sample data, no sign-in) — fine for CI checks, wrong for installers users
+      # download. The secret holds the backend lines of local.properties (authBaseUrl,
+      # googleAuthRedirectUri, skimbyteApiBaseUrl, skimbyteProductId, spacesCdnBaseUrl).
+      - name: Write local.properties (backend endpoints)
+        if: env.HAS_BACKEND_CONFIG == 'true'
+        env:
+          SKIMBYTE_LOCAL_PROPERTIES: ${{ secrets.SKIMBYTE_LOCAL_PROPERTIES }}
+        run: printf '%s\n' "$SKIMBYTE_LOCAL_PROPERTIES" > local.properties
 
       - name: Import Developer ID certificate (macOS)
         if: matrix.os == 'macos-latest' && env.HAS_MACOS_SIGNING == 'true'
