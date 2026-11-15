@@ -109,7 +109,7 @@ jobs:
           NOTARIZATION_APPLE_ID: ${{ secrets.NOTARIZATION_APPLE_ID }}
           NOTARIZATION_PASSWORD: ${{ secrets.NOTARIZATION_PASSWORD }}
           NOTARIZATION_TEAM_ID: ${{ secrets.NOTARIZATION_TEAM_ID }}
-        run: ./gradlew :desktopApp:notarizeDmg "-PskimbyteDesktopVersion=$DESKTOP_VERSION"
+        run: ./gradlew --no-configuration-cache :desktopApp:notarizeDmg "-PskimbyteDesktopVersion=$DESKTOP_VERSION"
 
       - name: Add CPU architecture to installer names
         run: |
