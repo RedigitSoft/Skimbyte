@@ -12,10 +12,7 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep line numbers so retraced crash reports point at real source lines,
+# while hiding the original file names.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

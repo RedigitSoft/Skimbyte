@@ -50,22 +50,27 @@ One-time setup:
 1. **Play Console account** — play.google.com/console, one-time $25 fee. New personal
    accounts must run a 14-day closed test with 12+ testers before production access —
    budget for this.
-2. **Upload keystore** — the repo has no release signing config yet. Generate a keystore
-   (`keytool -genkeypair -v -keystore skimbyte-upload.jks -alias upload -keyalg RSA
-   -keysize 2048 -validity 10000`), keep it out of git, and wire a `signingConfigs.release`
-   block in `androidApp/build.gradle.kts` reading the path/passwords from
-   `local.properties` (same pattern as the other local config). Opt in to **Play App
-   Signing** on first upload — Google holds the app signing key, the keystore above is
-   only the upload key.
+2. **Upload keystore** — `androidApp/build.gradle.kts` has a `signingConfigs.release`
+   block that reads `uploadKeystorePath` / `uploadKeystorePassword` / `uploadKeyAlias`
+   from `local.properties` (or `UPLOAD_KEYSTORE_*` env vars in CI) — see
+   `local.properties.example` for the keys and the `keytool` command to generate the
+   keystore. Keep the keystore outside the repo (e.g. `~/keystores/`) and back it up
+   with its password; without the keys the release build is simply unsigned. Opt in to
+   **Play App Signing** on first upload — Google holds the app signing key, the keystore
+   above is only the upload key (recoverable via Play Console if ever lost).
 3. **Create the app** in Play Console and complete the setup checklist: app content
    declarations (privacy policy URL, data-safety form mirroring the App Privacy answers
    above, content rating questionnaire, ads declaration — none, target audience).
 
 Per release:
 
-1. Bump `versionCode`/`versionName` in `androidApp/build.gradle.kts`.
-2. Build the bundle: `./gradlew :androidApp:bundleRelease` →
-   `androidApp/build/outputs/bundle/release/androidApp-release.aab`.
+1. Bump `versionName`/`versionCode` in the repo-root `VERSION` file — the single source
+   of truth consumed by Android (`androidApp/build.gradle.kts`), iOS
+   (`iosApp/Configuration/Config.xcconfig` includes it directly), and desktop packaging
+   (`desktopApp/build.gradle.kts`). Keep the file comment-free: it is parsed both as a
+   Java properties file and as an xcconfig include.
+2. Build the bundle: `./gradlew :androidApp:bundleRelease` → copied to
+   `release/Skimbyte-<versionName>-<versionCode>.aab` at the repo root (gitignored).
 3. Play Console → Testing/Production → **Create new release**, upload the `.aab`, write
    release notes, roll out.
 

@@ -29,3 +29,15 @@ skimbyteProductId=
 # (copy the real value from the deployment notes; kept out of the repo like the other
 # endpoints above). Leave unset to disable remote avatar/banner images.
 spacesCdnBaseUrl=
+
+# Play Store upload-key signing (release builds only). Generate once with:
+#   keytool -genkeypair -v -keystore ~/keystores/skimbyte-upload.jks -alias upload \
+#     -keyalg RSA -keysize 4096 -validity 10000
+# Keep the keystore OUTSIDE the repo and back it up. Leave unset to build unsigned —
+# every value here can also come from the environment (UPLOAD_KEYSTORE_PATH,
+# UPLOAD_KEYSTORE_PASSWORD, UPLOAD_KEY_ALIAS, UPLOAD_KEY_PASSWORD) for CI.
+#uploadKeystorePath=/absolute/path/to/skimbyte-upload.jks
+#uploadKeystorePassword=
+#uploadKeyAlias=
+# Only needed for old-style JKS stores where the key password differs from the store's.
+#uploadKeyPassword=

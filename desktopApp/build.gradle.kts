@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinJvm)
@@ -24,10 +25,15 @@ compose.desktop {
             // The user-visible app name (window manager, installer, /Applications);
             // the reverse-DNS identity lives in macOS.bundleID below.
             packageName = "Skimbyte"
-            // Overridden by the release workflow with the tag being released. jpackage
-            // requires a MAJOR.MINOR.PATCH version with MAJOR >= 1 on macOS, which is why
-            // release.yml only triggers on v1+ tags.
-            packageVersion = providers.gradleProperty("skimbyteDesktopVersion").orNull ?: "1.0.0"
+            // Overridden by the release workflow with the tag being released; otherwise read
+            // from the repo-root VERSION file (shared with Android and iOS). jpackage requires
+            // a MAJOR.MINOR.PATCH version with MAJOR >= 1 on macOS, which is why release.yml
+            // only triggers on v1+ tags and why a two-part versionName gets a ".0" appended.
+            packageVersion = providers.gradleProperty("skimbyteDesktopVersion").orNull
+                ?: Properties()
+                    .apply { rootProject.file("VERSION").inputStream().use { load(it) } }
+                    .getProperty("versionName")
+                    .let { if (it.count { c -> c == '.' } == 1) "$it.0" else it }
             macOS {
                 bundleID = "io.redigit.skimbyte"
                 iconFile.set(project.file("icons/skimbyte.icns"))

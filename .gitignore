@@ -22,3 +22,11 @@ node_modules/
 /design-refs/
 iosApp/Configuration/Local.xcconfig
 .taste-skill/
+/marketing/redigit/
+# Release signing — keystores and signing credentials must never be committed
+*.jks
+*.keystore
+keystore.properties
+# Versioned store-upload artifacts collected by :androidApp:collectReleaseBundle
+/release/
+androidApp/release/
