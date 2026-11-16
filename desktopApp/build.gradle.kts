@@ -22,6 +22,13 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            // jpackage runs jlink, which strips JDK modules not found by static analysis.
+            // The desktop OAuth flow (AuthRedirect.jvm.kt) uses com.sun.net.httpserver for its
+            // RFC 8252 loopback listener; that lives in jdk.httpserver, which jlink doesn't
+            // detect, so packaged builds (DMG/MSI/DEB) crash with NoClassDefFoundError:
+            // com/sun/net/httpserver/HttpServer. `./gradlew :desktopApp:run` hides this because
+            // it uses the full JDK. Declaring the module forces jlink to include it.
+            modules("jdk.httpserver")
             // The user-visible app name (window manager, installer, /Applications);
             // the reverse-DNS identity lives in macOS.bundleID below.
             packageName = "Skimbyte"

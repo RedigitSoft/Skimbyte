@@ -146,5 +146,13 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: installers/*
+          # Recursive patterns: download-artifact preserves each artifact's
+          # dmg/ msi/ deb/ subfolders, so a non-recursive `installers/*` would
+          # match those directories (which action-gh-release skips) and silently
+          # attach nothing while the job still exits 0.
+          files: |
+            installers/**/*.dmg
+            installers/**/*.msi
+            installers/**/*.deb
+          fail_on_unmatched_files: true
           generate_release_notes: true
