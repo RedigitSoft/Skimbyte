@@ -17,6 +17,7 @@ class SettingsScreenContentTest {
     private fun androidx.compose.ui.test.ComposeUiTest.settings(
         onAppearanceClick: () -> Unit = {},
         onEditInterestsClick: () -> Unit = {},
+        onContactClick: () -> Unit = {},
         onPrivacyPolicyClick: () -> Unit = {},
         onLicensesClick: () -> Unit = {},
         isLoggedIn: Boolean = false,
@@ -31,6 +32,7 @@ class SettingsScreenContentTest {
                     onIntent = {},
                     onAppearanceClick = onAppearanceClick,
                     onEditInterestsClick = onEditInterestsClick,
+                    onContactClick = onContactClick,
                     onPrivacyPolicyClick = onPrivacyPolicyClick,
                     onLicensesClick = onLicensesClick,
                     onBack = {},

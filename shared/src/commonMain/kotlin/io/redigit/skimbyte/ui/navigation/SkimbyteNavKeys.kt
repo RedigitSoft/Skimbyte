@@ -34,6 +34,9 @@ data object Topics : NavKey
 data object Licenses : NavKey
 
 @Serializable
+data object Contact : NavKey
+
+@Serializable
 data object AvatarViewer : NavKey
 
 @Serializable

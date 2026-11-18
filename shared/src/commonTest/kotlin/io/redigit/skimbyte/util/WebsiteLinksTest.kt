@@ -18,4 +18,19 @@ class WebsiteLinksTest {
         assertTrue(WebsiteLinks.PRIVACY_POLICY_URL.startsWith(WebsiteLinks.SITE_BASE_URL + "/"))
         assertTrue(WebsiteLinks.PRIVACY_POLICY_URL.endsWith("/privacy/"))
     }
+
+    @Test
+    fun contactUrlIsUnderTheSiteWithMkDocsDirectoryShape() {
+        // docs-site/contact.md is served as <site>/docs/contact/ — the in-app ContactScreen links here.
+        assertTrue(WebsiteLinks.CONTACT_URL.startsWith(WebsiteLinks.SITE_BASE_URL + "/"))
+        assertTrue(WebsiteLinks.CONTACT_URL.endsWith("/contact/"))
+    }
+
+    @Test
+    fun contactEmailLooksLikeAnAddress() {
+        // Play's News & Magazines policy requires a real contact email; a bare @-less string would
+        // silently produce a broken mailto:.
+        assertTrue(WebsiteLinks.CONTACT_EMAIL.contains("@"))
+        assertTrue(WebsiteLinks.CONTACT_EMAIL.substringAfter("@").contains("."))
+    }
 }

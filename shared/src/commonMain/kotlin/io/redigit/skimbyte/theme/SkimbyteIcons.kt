@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Interests
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PrivacyTip
@@ -74,6 +75,7 @@ object SkimbyteIcons {
     val DeleteForever = Icons.Filled.DeleteForever
     val SignOut = Icons.AutoMirrored.Filled.Logout
     val Privacy = Icons.Filled.PrivacyTip
+    val Mail = Icons.Filled.MailOutline
     val Interests = Icons.Filled.Interests
     val Appearance = Icons.Outlined.Palette
 
@@ -124,6 +126,7 @@ object SkimbyteIcons {
         "DeleteForever" to DeleteForever,
         "SignOut" to SignOut,
         "Privacy" to Privacy,
+        "Mail" to Mail,
         "Interests" to Interests,
         "ThemeLight" to ThemeLight,
         "ThemeDark" to ThemeDark,

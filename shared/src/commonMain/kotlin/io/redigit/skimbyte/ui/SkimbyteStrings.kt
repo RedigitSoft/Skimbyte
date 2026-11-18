@@ -125,6 +125,8 @@ object SkimbyteStrings {
         const val ACCENT_OXBLOOD = "Oxblood"
         const val EDIT_INTERESTS = "Edit interests"
         const val EDIT_INTERESTS_SUPPORTING = "Choose the topics in your daily brief"
+        const val CONTACT = "Contact us"
+        const val CONTACT_SUPPORTING = "Reach a human about the app or your data"
         const val PRIVACY_POLICY = "Privacy policy"
         const val PRIVACY_POLICY_SUPPORTING = "How Skimbyte handles your data"
         const val LICENSES = "Open source licenses"
@@ -139,6 +141,22 @@ object SkimbyteStrings {
         const val DELETE_DATA_DIALOG_TEXT = "This permanently deletes your bookmarks and other Skimbyte data from our " +
             "servers and signs you out. All your data related to the Skimbyte app " +
             "will be removed. This can't be undone."
+    }
+
+    object Contact {
+        const val TITLE = "Contact us"
+        const val INTRO = "Skimbyte is built and maintained by Redigit. Email us about the app, your " +
+            "account, or your data — a real person reads every message."
+        const val EMAIL_SECTION = "Email"
+        const val EMAIL_SUPPORTING = "Include your platform and app version so we can help faster."
+        const val SEND_EMAIL = "Send email"
+        const val MORE_SECTION = "More ways to reach us"
+        const val WEBSITE = "Contact page on the web"
+        const val WEBSITE_SUPPORTING = "Support, privacy, and security contacts"
+        const val ISSUES = "Bug reports & feature requests"
+        const val ISSUES_SUPPORTING = "Open an issue on the public tracker"
+        const val SOURCES_NOTE = "Every story links to its original publisher — open any post and " +
+            "tap “Read full source” to go straight to the source."
     }
 
     object Onboarding {

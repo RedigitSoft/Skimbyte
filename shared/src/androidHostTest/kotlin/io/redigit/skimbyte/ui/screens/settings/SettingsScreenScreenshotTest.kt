@@ -28,6 +28,7 @@ class SettingsScreenScreenshotTest {
                     onIntent = {},
                     onAppearanceClick = {},
                     onEditInterestsClick = {},
+                    onContactClick = {},
                     onPrivacyPolicyClick = {},
                     onLicensesClick = {},
                     onBack = {},

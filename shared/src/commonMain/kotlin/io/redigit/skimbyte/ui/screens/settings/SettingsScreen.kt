@@ -55,6 +55,7 @@ fun SettingsScreen(
     onIntent: (SettingsIntent) -> Unit,
     onAppearanceClick: () -> Unit,
     onEditInterestsClick: () -> Unit,
+    onContactClick: () -> Unit,
     onPrivacyPolicyClick: () -> Unit,
     onLicensesClick: () -> Unit,
     onBack: () -> Unit,
@@ -120,6 +121,14 @@ fun SettingsScreen(
                 EyebrowText(SkimbyteStrings.Settings.SECTION_ABOUT, modifier = Modifier.padding(start = 4.dp))
                 Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                     Column {
+                        SettingsActionRow(
+                            icon = SkimbyteIcons.Mail,
+                            label = SkimbyteStrings.Settings.CONTACT,
+                            supporting = SkimbyteStrings.Settings.CONTACT_SUPPORTING,
+                            onClick = onContactClick,
+                            modifier = Modifier.testTag("contactRow"),
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         SettingsActionRow(
                             icon = SkimbyteIcons.Privacy,
                             label = SkimbyteStrings.Settings.PRIVACY_POLICY,
@@ -274,6 +283,7 @@ private fun SettingsScreenDarkThemePreview() {
             onIntent = {},
             onAppearanceClick = {},
             onEditInterestsClick = {},
+            onContactClick = {},
             onPrivacyPolicyClick = {},
             onLicensesClick = {},
             onBack = {},
@@ -290,6 +300,7 @@ private fun SettingsScreenLightThemePreview() {
             onIntent = {},
             onAppearanceClick = {},
             onEditInterestsClick = {},
+            onContactClick = {},
             onPrivacyPolicyClick = {},
             onLicensesClick = {},
             onBack = {},
@@ -306,6 +317,7 @@ private fun SettingsScreenSystemThemePreview() {
             onIntent = {},
             onAppearanceClick = {},
             onEditInterestsClick = {},
+            onContactClick = {},
             onPrivacyPolicyClick = {},
             onLicensesClick = {},
             onBack = {},

@@ -27,6 +27,7 @@ import io.redigit.skimbyte.ui.navigation.AccountHome
 import io.redigit.skimbyte.ui.navigation.AvatarViewer
 import io.redigit.skimbyte.ui.navigation.BannerViewer
 import io.redigit.skimbyte.ui.navigation.Appearance
+import io.redigit.skimbyte.ui.navigation.Contact
 import io.redigit.skimbyte.ui.navigation.Licenses
 import io.redigit.skimbyte.ui.navigation.Settings
 import io.redigit.skimbyte.ui.navigation.Topics
@@ -34,10 +35,12 @@ import io.redigit.skimbyte.ui.screens.onboarding.TopicsEffect
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsViewModel
 import io.redigit.skimbyte.ui.screens.onboarding.TopicsScreen
 import io.redigit.skimbyte.ui.screens.settings.AppearanceRoute
+import io.redigit.skimbyte.ui.screens.settings.ContactScreen
 import io.redigit.skimbyte.ui.screens.settings.LicensesRoute
 import io.redigit.skimbyte.ui.screens.settings.SettingsViewModel
 import io.redigit.skimbyte.ui.screens.settings.SettingsScreen
 import io.redigit.skimbyte.util.WebsiteLinks
+import io.redigit.skimbyte.util.openEmail
 import io.redigit.skimbyte.util.openUrl
 import io.redigit.skimbyte.ui.components.AVATAR_SHARED_ELEMENT_KEY
 import io.redigit.skimbyte.ui.components.BANNER_SHARED_ELEMENT_KEY
@@ -57,6 +60,7 @@ private val navConfig = SavedStateConfiguration {
             subclass(Appearance::class, Appearance.serializer())
             subclass(Topics::class, Topics.serializer())
             subclass(Licenses::class, Licenses.serializer())
+            subclass(Contact::class, Contact.serializer())
             subclass(AvatarViewer::class, AvatarViewer.serializer())
             subclass(BannerViewer::class, BannerViewer.serializer())
         }
@@ -141,6 +145,7 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit, onDataDeleted: () -> Unit) 
                         onIntent = viewModel::onIntent,
                         onAppearanceClick = { backStack.add(Appearance) },
                         onEditInterestsClick = { backStack.add(Topics) },
+                        onContactClick = { backStack.add(Contact) },
                         onPrivacyPolicyClick = { openUrl(WebsiteLinks.PRIVACY_POLICY_URL) },
                         onLicensesClick = { backStack.add(Licenses) },
                         onBack = { backStack.removeLastOrNull() },
@@ -156,6 +161,14 @@ fun AccountNavHost(onRootChanged: (Boolean) -> Unit, onDataDeleted: () -> Unit) 
                 }
                 entry<Licenses>(metadata = ListDetailSceneStrategy.detailPane()) {
                     LicensesRoute(onBack = { backStack.removeLastOrNull() })
+                }
+                entry<Contact>(metadata = ListDetailSceneStrategy.detailPane()) {
+                    ContactScreen(
+                        onBack = { backStack.removeLastOrNull() },
+                        onSendEmail = { openEmail(WebsiteLinks.CONTACT_EMAIL) },
+                        onWebsiteClick = { openUrl(WebsiteLinks.CONTACT_URL) },
+                        onIssuesClick = { openUrl(WebsiteLinks.ISSUES_URL) },
+                    )
                 }
                 entry<Topics>(metadata = ListDetailSceneStrategy.detailPane()) {
                     val viewModel = koinViewModel<TopicsViewModel> { parametersOf(true) }
