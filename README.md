@@ -82,6 +82,26 @@ time and are never committed.
 
 ## Architecture
 
+```mermaid
+flowchart TD
+    subgraph client["Skimbyte client — one Kotlin codebase, 5 targets"]
+        UI["Compose UI<br/>stateless, previewed light + dark"]
+        VM["ViewModels<br/>immutable StateFlow of UiState (MVI)"]
+        Repo["Repositories"]
+        Net{"Backend URL<br/>configured?"}
+        Ktor["Ktor client<br/>+ kotlinx.serialization"]
+        Demo["Demo network module<br/>bundled sample data"]
+        UI --> VM --> Repo --> Net
+        Net -- "yes" --> Ktor
+        Net -- "no (fresh clone)" --> Demo
+    end
+    Ktor -. "HTTPS + bearer JWT" .-> Backend["Posts API + Auth server<br/>closed-source backend"]
+    Pipeline["ktbrief<br/>Rust content pipeline"] -. "daily ingest" .-> Backend
+```
+
+Koin wires the same graph on every target, swapping in the demo module when no backend URL is
+present — which is why a fresh clone runs end to end with no server.
+
 - **UI:** 100% [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/), Material 3
   Expressive theme, every reusable component previewed light + dark.
 - **State:** MVI-flavored ViewModels exposing immutable `StateFlow<UiState>`; composables stay
@@ -155,6 +175,12 @@ Issues and PRs are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first — it
 architecture rules, Compose conventions, testing requirements, and what belongs in the
 designsheet. The short version: stateless composables, previews for everything, tests for
 everything, no hardcoded design values.
+
+## Built by Redigit
+
+Skimbyte is designed and built by [Redigit](https://redigit.io). It's the reference app behind our
+Kotlin Multiplatform work — questions, feedback, or partnership enquiries are welcome at
+[akshay@redigit.io](mailto:akshay@redigit.io).
 
 ## License
 

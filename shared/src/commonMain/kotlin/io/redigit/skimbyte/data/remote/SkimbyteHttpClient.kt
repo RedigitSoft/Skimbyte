@@ -45,7 +45,7 @@ private fun HttpClientConfig<*>.configureSkimbyteClient(sessionStorage: SessionS
         logger = object : Logger {
             override fun log(message: String) = println("HttpClient: $message")
         }
-        level = LogLevel.ALL
+        level = LogLevel.HEADERS
         sanitizeHeader { header -> header == HttpHeaders.Authorization }
     }
     install(Auth) {
