@@ -18,8 +18,8 @@ on every release — download them from the
 
 ## Mobile
 
-- **iOS** — App Store release in progress.
-- **Android** — Play Store release in progress.
+- **Android** — **[Get it on Google Play](https://play.google.com/store/apps/details?id=io.redigit.skimbyte)**.
+- **iOS** — **[Download on the App Store](https://apps.apple.com/app/skimbyte/id6832336017)**.
 
 ## Web
 
