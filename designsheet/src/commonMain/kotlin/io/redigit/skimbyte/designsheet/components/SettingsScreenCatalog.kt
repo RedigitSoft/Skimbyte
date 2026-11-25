@@ -21,6 +21,7 @@ fun SettingsScreenCatalogContent() {
                 onIntent = {},
                 onAppearanceClick = {},
                 onEditInterestsClick = {},
+                onContactClick = {},
                 onPrivacyPolicyClick = {},
                 onLicensesClick = {},
                 onBack = {},
