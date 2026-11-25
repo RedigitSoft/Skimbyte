@@ -3,6 +3,7 @@ package io.redigit.skimbyte.designsheet.catalog
 import io.redigit.skimbyte.designsheet.components.AccountScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.BookmarkButtonCatalogContent
 import io.redigit.skimbyte.designsheet.components.ButtonsCatalogContent
+import io.redigit.skimbyte.designsheet.components.ContactScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.ImageEditSheetCatalogContent
 import io.redigit.skimbyte.designsheet.components.ImageCropScreenCatalogContent
 import io.redigit.skimbyte.designsheet.components.LoginSheetCatalogContent
@@ -139,6 +140,10 @@ val catalogItems: List<CatalogItem> = listOf(
         "appearance-screen", "Appearance", "Account",
         "Light/dark theme toggle and the user-selectable accent swatches.",
     ) { AppearanceScreenCatalogContent() },
+    CatalogItem(
+        "contact-screen", "Contact", "Account",
+        "In-app contact page: visible email, one-tap send, and support links.",
+    ) { ContactScreenCatalogContent() },
     CatalogItem(
         "topics-screen", "Topics", "Onboarding",
         "Onboarding topic picker with live selection.",
