@@ -87,7 +87,7 @@ private fun StatusPromptPreview() {
         StatusPrompt(
             icon = SkimbyteIcons.AccountCircle,
             title = "You're not signed in",
-            message = "Sign in to sync your profile, bookmarks, and reading stats across devices.",
+            message = "Sign in to sync your profile and bookmarks across devices.",
             action = StatusPromptAction("Sign in") {},
         )
     }

@@ -21,7 +21,9 @@ a living design-system catalog.
 ## Get the app
 
 Desktop installers (macOS, Windows, Linux) are on the [Download](download.md) page,
-built and published straight from GitHub Actions. Mobile store releases are in progress.
+built and published straight from GitHub Actions. The mobile app is live on
+[Google Play](https://play.google.com/store/apps/details?id=io.redigit.skimbyte) and the
+[App Store](https://apps.apple.com/app/skimbyte/id6832336017).
 
 ## Try it in 60 seconds
 

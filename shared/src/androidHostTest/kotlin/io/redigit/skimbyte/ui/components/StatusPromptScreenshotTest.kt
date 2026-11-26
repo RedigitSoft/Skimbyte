@@ -30,7 +30,7 @@ class StatusPromptScreenshotTest {
                 StatusPrompt(
                     icon = Icons.Filled.AccountCircle,
                     title = "You're not signed in",
-                    message = "Sign in to sync your profile, bookmarks, and reading stats across devices.",
+                    message = "Sign in to sync your profile and bookmarks across devices.",
                     action = StatusPromptAction("Sign in") {},
                 )
             }

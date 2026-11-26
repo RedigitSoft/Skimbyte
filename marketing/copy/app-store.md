@@ -5,8 +5,8 @@ the 6.7" size; App Store Connect scales it for smaller devices), ipad-01-feed.pn
 (2732×2048, the accepted 12.9"/13" size — required because the app runs on iPad),
 universal-5244x2950.png (the 16:9 universal creative asset, no alpha).
 
-Version to submit: **1.0.2** (`VERSION` → `MARKETING_VERSION` via
-`iosApp/Configuration/Config.xcconfig`).
+First shipped version: **1.0.2**, live since 2026-11-23 (`VERSION` →
+`MARKETING_VERSION` via `iosApp/Configuration/Config.xcconfig`).
 
 ## Name (max 30 chars)
 
@@ -160,21 +160,23 @@ and I have the necessary rights**: cards show AI-generated summaries of publicly
 available articles with the source always named and linked; full articles open at
 the source's own site. (Same model the live Play listing declares.)
 
-## Pre-submission checklist
+## Submission checklist (for the next release)
 
-1. **Guideline 4.8 (Login Services) — the one real blocker.** The app offers
-   Google/GitHub login, so iOS must also offer a privacy-focused option; Sign in
-   with Apple is the standard answer. The client flow is built but gated off
-   (`ApiConfig.APPLE_SIGN_IN_ENABLED = false` — the comment says it awaits the
-   auth server's `/auth/oauth/apple/start`). Verify the server endpoint is live,
+1.0.2 shipped to the App Store on 2026-11-23 and was approved **without** Sign in
+with Apple — a deliberate deferral. For update submissions:
+
+1. **Guideline 4.8 (Login Services).** The app offers Google/GitHub login only;
+   Apple approved 1.0.2 anyway, but the question can resurface on any update
+   review. The client flow is built but gated off
+   (`ApiConfig.APPLE_SIGN_IN_ENABLED = false`, awaiting the auth server's
+   `/auth/oauth/apple/start`). If/when enabling: verify the server endpoint,
    flip the flag, update the description/What's New sign-in lines, and rebuild.
-2. Build & archive from Xcode (`iosApp/`), upload via Organizer; icon asset
-   catalog is already set up, `MARKETING_VERSION` follows `VERSION` (1.0.2).
-3. Upload 6.7" screenshots (01–05) + the iPad 13" panel + universal creative.
-4. Fill App Privacy + age rating per above (one-time forms).
-5. Paste review notes with the real reviewer key; phone-test the reviewer URL on
-   an iOS device first (it must cold-start the app via the deep link).
-6. App Store Connect → Agreements: free app needs only the free agreement.
+2. Build & archive from Xcode (`iosApp/`), upload via Organizer;
+   `MARKETING_VERSION` follows `VERSION`.
+3. Screenshots, App Privacy, age rating, and agreements are one-time forms —
+   already filled; only touch them if the relevant facts change.
+4. Update the review notes if the sign-in options change; the reviewer URL
+   (from the auth server's private config) must cold-start the app on a device.
 
 ## Notes
 

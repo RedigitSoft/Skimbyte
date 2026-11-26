@@ -56,7 +56,7 @@ object SkimbyteStrings {
 
     object Account {
         const val SIGNED_OUT_TITLE = "You're not signed in"
-        const val SIGNED_OUT_MESSAGE = "Sign in to sync your profile, bookmarks, and reading stats across devices."
+        const val SIGNED_OUT_MESSAGE = "Sign in to sync your profile and bookmarks across devices."
         const val SECTION = "Account"
         const val SETTINGS_LABEL = "Settings"
         const val SETTINGS_SUPPORTING = "Theme, account, privacy & more"
